@@ -1,0 +1,21 @@
+{
+  "short_name": "Roller",
+  "name": "Roller",
+  "icons": [
+    {
+      "src": "AAA.png",
+      "sizes": "192x192px",
+      "type": "image/png"
+    },
+    {
+      "src": "AAA.png",
+      "sizes": "512x512px",
+      "type": "image/png"
+    }
+  ],
+  "prefer_related_applications": false,
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#000000",
+  "background_color": "#ffffff"
+}
