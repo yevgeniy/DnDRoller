@@ -20,7 +20,7 @@ const isLocalhost = Boolean(
     )
 );
 
-export function register(config) {
+export function register(config: any = null) {
   console.log(config);
   // if (process.env.NODE_ENV === "production" && "serviceWorker" in navigator) {
   if ("serviceWorker" in navigator) {
