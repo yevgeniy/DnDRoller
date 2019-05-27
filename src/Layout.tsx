@@ -91,7 +91,7 @@ function MainMenu({ setMainMenuOpen }: MainMenuProps) {
       <List
         subheader={<ListSubheader component="div">Repositories</ListSubheader>}
       >
-        {["Instance", "Starred", "Send email", "Drafts"].map((text, index) => (
+        {["Instance", "Character", "Image"].map((text, index) => (
           <ListItem button key={text}>
             <ListItemIcon>
               {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
@@ -102,7 +102,7 @@ function MainMenu({ setMainMenuOpen }: MainMenuProps) {
       </List>
       <Divider />
       <List>
-        {["All mail", "Trash", "Spam"].map((text, index) => (
+        {["Settings", "Roller"].map((text, index) => (
           <ListItem button key={text}>
             <ListItemIcon>
               {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
