@@ -1,5 +1,6 @@
 import * as React from "react";
+import Layout from "./Layout";
 
-export default (props: any) => {
-  return <div>hi</div>;
+export default props => {
+  return <Layout title="Instance">hello world</Layout>;
 };
