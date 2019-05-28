@@ -1,18 +1,17 @@
 import * as React from "react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import clsx from "clsx";
 import Card from "@material-ui/core/Card";
-import CardHeader from "@material-ui/core/CardHeader";
 import CardMedia from "@material-ui/core/CardMedia";
 import CardContent from "@material-ui/core/CardContent";
 import CardActions from "@material-ui/core/CardActions";
-import Collapse from "@material-ui/core/Collapse";
 import Avatar from "@material-ui/core/Avatar";
 import IconButton from "@material-ui/core/IconButton";
 import Typography from "@material-ui/core/Typography";
 import red from "@material-ui/core/colors/red";
 import green from "@material-ui/core/colors/green";
+import blue from "@material-ui/core/colors/blue";
 import FavoriteIcon from "@material-ui/icons/Favorite";
 import ShareIcon from "@material-ui/icons/Share";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
@@ -21,6 +20,16 @@ import Divider from "@material-ui/core/Divider";
 
 import Chip from "@material-ui/core/Chip";
 import FaceIcon from "@material-ui/icons/Face";
+
+import Button from "@material-ui/core/Button";
+import Fab from "@material-ui/core/Fab";
+import AddIcon from "@material-ui/icons/Add";
+import DeleteIcon from "@material-ui/icons/Delete";
+import NavigationIcon from "@material-ui/icons/Navigation";
+import ArrowDownwardIcon from "@material-ui/icons/ArrowDownward";
+import Collapse from "@material-ui/core/Collapse";
+
+import CardHeader from "@material-ui/core/CardHeader";
 
 const useCharactersStyles = makeStyles(theme => {
   return {
@@ -71,6 +80,12 @@ const useCharacterStyles = makeStyles(theme => ({
   },
   chip: {
     margin: theme.spacing(1)
+  },
+  margin: {
+    margin: theme.spacing(1)
+  },
+  extendedIcon: {
+    marginRight: theme.spacing(1)
   }
 }));
 
@@ -86,6 +101,7 @@ export function PageInstanceCharacter(props: PageInstanceCharacterProps) {
     setExpanded(!expanded);
   }
 
+  const [openContextMenu, setOpenContextMenu] = useState(false);
   return (
     <Card className={classes.card}>
       <CardHeader
@@ -103,15 +119,22 @@ export function PageInstanceCharacter(props: PageInstanceCharacterProps) {
               color="secondary"
               variant="outlined"
             />
-            <IconButton>
-              <MoreVertIcon />
+            <IconButton
+              className={clsx(classes.expand, {
+                [classes.expandOpen]: expanded
+              })}
+              onClick={handleExpandClick}
+              aria-expanded={expanded}
+              aria-label="Show more"
+            >
+              <ExpandMoreIcon />
             </IconButton>
           </>
         }
         title="Arhail"
         subheader="Priest lvl: 3"
       />
-      <Collapse in={false} timeout="auto" unmountOnExit>
+      <Collapse in={expanded} timeout="auto" unmountOnExit>
         <CardContent>
           <Divider />
           <div className={classes.content}>
