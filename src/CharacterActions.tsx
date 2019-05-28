@@ -1,11 +1,12 @@
 import * as React from "react";
+import { useState } from "react";
 import Paper from "@material-ui/core/Paper";
 import { makeStyles } from "@material-ui/core/styles";
 import Divider from "@material-ui/core/Divider";
 import Typography from "@material-ui/core/Typography";
 import Chip from "@material-ui/core/Chip";
 import FaceIcon from "@material-ui/icons/Face";
-import { Card, CardHeader } from "@material-ui/core";
+import { Card, CardHeader, TextField } from "@material-ui/core";
 
 const useStyle = makeStyles(theme => {
   return {
@@ -18,6 +19,13 @@ const useStyle = makeStyles(theme => {
 
 export default function() {
   const classes = useStyle();
+  const [demage, setDemage] = useState();
+  console.log(demage);
+  const addDemage = e => {
+    e.preventDefault();
+
+    console.log("a", demage);
+  };
   return (
     <div className={classes.root}>
       <Card>
@@ -29,14 +37,20 @@ export default function() {
         />
       </Card>
 
-      {/* <Typography variant="h5">Arhail</Typography>
-      <Chip
-        icon={<FaceIcon />}
-        label="10/40"
-        className={classes.chip}
-        color="secondary"
-        variant="outlined"
-      /> */}
+      <form onSubmit={addDemage}>
+        <TextField
+          id="standard-number"
+          label="Add Demage"
+          value={demage}
+          onChange={e => setDemage(e.target.value)}
+          type="number"
+          InputLabelProps={{
+            shrink: true
+          }}
+          margin="normal"
+          variant="filled"
+        />
+      </form>
     </div>
   );
 }
