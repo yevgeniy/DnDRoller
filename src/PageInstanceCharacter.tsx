@@ -110,7 +110,6 @@ export function PageInstanceCharacter(props: PageInstanceCharacterProps) {
     setOpenAction(true);
   }
 
-  const [openContextMenu, setOpenContextMenu] = useState(false);
   return (
     <>
       <Card className={classes.card}>

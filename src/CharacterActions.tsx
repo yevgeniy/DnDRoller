@@ -7,6 +7,7 @@ import Typography from "@material-ui/core/Typography";
 import Chip from "@material-ui/core/Chip";
 import FaceIcon from "@material-ui/icons/Face";
 import { Card, CardHeader, TextField } from "@material-ui/core";
+import { ModelActor } from "./models/ModelActor";
 
 const useStyle = makeStyles(theme => {
   return {
@@ -17,15 +18,20 @@ const useStyle = makeStyles(theme => {
   };
 });
 
-export default function() {
+interface CharacterActionsProps {
+  actor: ModelActor;
+  setActor: (a: ModelActor) => void;
+}
+
+export default function(props: CharacterActionsProps) {
   const classes = useStyle();
   const [demage, setDemage] = useState();
-  console.log(demage);
-  const addDemage = e => {
+
+  function addDemage(e) {
     e.preventDefault();
 
     console.log("a", demage);
-  };
+  }
   return (
     <div className={classes.root}>
       <Card>
