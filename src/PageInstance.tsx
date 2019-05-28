@@ -1,18 +1,43 @@
 import * as React from "react";
+import { useEffect, useState, useMemo } from "react";
 import Layout from "./Layout";
+import ServiceInstance from "./services/ServiceInstance";
+import { useService } from "./util/hooks";
 
-import {
-  PageInstanceCharacter,
-  PageInstanceCharacters
-} from "./PageInstanceCharacter";
+import { PageInstanceActor, PageInstanceActors } from "./PageInstanceActor";
 
-export default props => {
+interface PageInstanceProps {
+  id: number;
+}
+
+function useInstance(id) {
+  const serviceInstance: ServiceInstance = useService(ServiceInstance);
+  const [instance, setInstance] = useState(null);
+
+  useEffect(() => {
+    if (!serviceInstance) return;
+    serviceInstance.get(id).then(v => {
+      setInstance(v);
+    });
+  }, [serviceInstance]);
+
+  return instance;
+}
+
+const INSTANCE_ID = 1;
+const PageInstance = props => {
+  const instance = useInstance(INSTANCE_ID);
+  if (!instance) return null;
+
   return (
     <Layout title="Instance">
-      <PageInstanceCharacters>
-        <PageInstanceCharacter />
-        <PageInstanceCharacter />
-      </PageInstanceCharacters>
+      <PageInstanceActors>
+        {instance.actors.map(v => (
+          <PageInstanceActor key={v.id} {...v} />
+        ))}
+      </PageInstanceActors>
     </Layout>
   );
 };
+
+export default PageInstance;

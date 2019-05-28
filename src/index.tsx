@@ -6,6 +6,8 @@ import PageInstance from "./PageInstance";
 
 import "./styles.css";
 
+import "./util/extends";
+
 function App() {
   return (
     <BrowserRouter>

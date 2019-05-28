@@ -19,8 +19,8 @@ const useStyle = makeStyles(theme => {
 });
 
 interface CharacterActionsProps {
-  actor: ModelActor;
-  setActor: (a: ModelActor) => void;
+  actor?: ModelActor;
+  setActor?: (a: ModelActor) => void;
 }
 
 export default function(props: CharacterActionsProps) {

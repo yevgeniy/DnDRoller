@@ -33,8 +33,9 @@ import Collapse from "@material-ui/core/Collapse";
 import Drawer from "@material-ui/core/Drawer";
 
 import CharacterActions from "./CharacterActions";
+import { ModelActor } from "./models/ModelActor";
 
-const useCharactersStyles = makeStyles(theme => {
+const useActorsStyles = makeStyles(theme => {
   return {
     card: {
       marginTop: theme.spacing(1),
@@ -44,14 +45,14 @@ const useCharactersStyles = makeStyles(theme => {
     }
   };
 });
-interface PageInstanceCharactersProps {
-  children: React.ReactElement;
+interface PageInstanceActorsProps {
+  children: React.ReactElement | React.ReactElement[];
 }
-export function PageInstanceCharacters({
+export function PageInstanceActors({
   children,
   ...props
-}: PageInstanceCharactersProps) {
-  const classes = useCharactersStyles(props);
+}: PageInstanceActorsProps) {
+  const classes = useActorsStyles(props);
   return (
     <div>
       {React.Children.map(children, v => {
@@ -63,7 +64,7 @@ export function PageInstanceCharacters({
   );
 }
 
-const useCharacterStyles = makeStyles(theme => ({
+const useActorStyles = makeStyles(theme => ({
   card: {},
   expand: {
     transform: "rotate(0deg)",
@@ -92,12 +93,12 @@ const useCharacterStyles = makeStyles(theme => ({
   }
 }));
 
-interface PageInstanceCharacterProps {
-  classes: { card: string };
-}
+type PageInstanceActorProps = { [P in keyof ModelActor]: ModelActor[P] } & {
+  classes?: { card: string };
+};
 
-export function PageInstanceCharacter(props: PageInstanceCharacterProps) {
-  const classes = useCharacterStyles(props);
+export function PageInstanceActor(props: PageInstanceActorProps) {
+  const classes = useActorStyles(props);
   const [expanded, setExpanded] = useState(false);
   const [openAction, setOpenAction] = useState(false);
 
@@ -110,6 +111,9 @@ export function PageInstanceCharacter(props: PageInstanceCharacterProps) {
     setOpenAction(true);
   }
 
+  const c = [];
+  for (let i in props.class) c.push(`${i}: ${props.class[i]}`);
+
   return (
     <>
       <Card className={classes.card}>
@@ -117,14 +121,14 @@ export function PageInstanceCharacter(props: PageInstanceCharacterProps) {
           onClick={openActionPanel}
           avatar={
             <Avatar aria-label="Recipe" className={classes.avatar}>
-              R
+              {props.name[0]}
             </Avatar>
           }
           action={
             <>
               <Chip
                 icon={<FaceIcon />}
-                label="10/40"
+                label={`${props.hp}/${props.hp}`}
                 className={classes.chip}
                 color="secondary"
                 variant="outlined"
@@ -141,8 +145,8 @@ export function PageInstanceCharacter(props: PageInstanceCharacterProps) {
               </IconButton>
             </>
           }
-          title="Arhail"
-          subheader="Priest lvl: 3"
+          title={props.name}
+          subheader={c.join(", ")}
         />
         <Collapse in={expanded} timeout="auto" unmountOnExit>
           <CardContent>
