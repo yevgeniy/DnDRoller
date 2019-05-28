@@ -47,6 +47,9 @@ const useActorsStyles = makeStyles(theme => {
     }
   };
 });
+
+type sortBy = "initiative";
+
 interface PageInstanceActorsProps {
   children: React.ReactElement | React.ReactElement[];
 }
@@ -55,13 +58,15 @@ export function PageInstanceActors({
   ...props
 }: PageInstanceActorsProps) {
   const classes = useActorsStyles(props);
+  const [sortedElms, setSortActors] = useSort("initiative", children);
+
   return (
     <div>
-      {React.Children.map(children, v => {
-        return React.cloneElement(v, {
+      {sortedElms.map(v =>
+        React.cloneElement(v, {
           classes
-        });
-      })}
+        })
+      )}
     </div>
   );
 }
@@ -97,13 +102,10 @@ const useActorStyles = makeStyles(theme => ({
   }
 }));
 
-// type PageInstanceActorProps = { [P in keyof ModelActor]: ModelActor[P] } & {
-//   classes?: { card: string };
-// };
-interface PageInstanceActorProps {
+type PageInstanceActorProps = { [P in keyof ModelActor]?: ModelActor[P] } & {
   classes?: { card: string };
-  id: number;
-}
+  setSortActor: (a: ModelActor) => void;
+};
 
 export function PageInstanceActor(props: PageInstanceActorProps) {
   const classes = useActorStyles(props);
@@ -122,6 +124,7 @@ export function PageInstanceActor(props: PageInstanceActorProps) {
   }
 
   if (!actor) return null;
+  props.setSortActor(actor);
 
   const c = [];
   for (let i in actor.class) c.push(`${i}: ${actor.class[i]}`);
@@ -203,4 +206,36 @@ function useActor(id: number) {
   }, [serviceActor]);
 
   return [actor];
+}
+
+function useSort(
+  by: sortBy,
+  children: React.ReactElement | React.ReactElement[]
+): [any[], (f: any) => void] {
+  const [sortActors, setSortActors] = useState([]);
+
+  switch (by) {
+    case "initiative":
+      sortActors.sort((a, b) => (a.initiative > b.initiative ? -1 : 1));
+      break;
+    default:
+  }
+
+  const elms = React.Children.map(children, v => {
+    return React.cloneElement(v, {
+      setSortActor: a => {
+        if (!sortActors.some(v => v.id == a.id))
+          setSortActors([...sortActors, a]);
+      }
+    });
+  });
+  const sortedelms = [];
+
+  sortActors.forEach(v => {
+    var id = elms.findIndex(z => z.props.id == v.id);
+    var elm = elms.splice(id, 1)[0];
+    if (elm) sortedelms.push(elm);
+  });
+  sortedelms.push(...elms);
+  return [sortedelms, setSortActors];
 }
