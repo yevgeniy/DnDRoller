@@ -37,12 +37,6 @@ class ServiceInstance {
 
   async get(id: number): Promise<ModelInstance> {
     const instance = await this.record.get(id);
-
-    instance.actors = await instance.actors.mapAsync(async (v: number) => {
-      let res = await this.serviceActor.get(v);
-      return res;
-    });
-
     return instance;
   }
 }

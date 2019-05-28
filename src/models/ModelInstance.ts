@@ -4,5 +4,5 @@ export interface ModelInstance {
   id: number;
   name: string;
   datetime: number;
-  actors: (number | ModelActor)[];
+  actors: number[];
 }

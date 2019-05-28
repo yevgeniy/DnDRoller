@@ -7,6 +7,8 @@ const mockactors: ModelActor[] = [
     id: ++ID,
     class: { Priest: 3 },
     hp: 30,
+    hpCurrent: 30,
+    initiative: 5,
     name: "Arhail Melil'Il",
     race: "human",
     size: "midium"
@@ -15,6 +17,8 @@ const mockactors: ModelActor[] = [
     id: ++ID,
     class: { Bard: 3 },
     hp: 20,
+    hpCurrent: 20,
+    initiative: 15,
     name: "Leshi Gathop",
     race: "dwarf",
     size: "midium"

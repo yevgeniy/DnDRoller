@@ -1,8 +1,9 @@
 import * as React from "react";
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, useCallback } from "react";
 import Layout from "./Layout";
 import ServiceInstance from "./services/ServiceInstance";
 import { useService } from "./util/hooks";
+import { ModelActor } from "./models/ModelActor";
 
 import { PageInstanceActor, PageInstanceActors } from "./PageInstanceActor";
 
@@ -21,19 +22,19 @@ function useInstance(id) {
     });
   }, [serviceInstance]);
 
-  return instance;
+  return [instance];
 }
 
 const INSTANCE_ID = 1;
 const PageInstance = props => {
-  const instance = useInstance(INSTANCE_ID);
+  const [instance] = useInstance(INSTANCE_ID);
   if (!instance) return null;
 
   return (
     <Layout title="Instance">
       <PageInstanceActors>
         {instance.actors.map(v => (
-          <PageInstanceActor key={v.id} {...v} />
+          <PageInstanceActor key={v} id={v} />
         ))}
       </PageInstanceActors>
     </Layout>
