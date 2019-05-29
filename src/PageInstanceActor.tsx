@@ -85,7 +85,11 @@ const useActorStyles = makeStyles(theme => ({
     transform: "rotate(180deg)"
   },
   avatar: {
-    backgroundColor: red[500]
+    backgroundColor: red[500],
+    [theme.breakpoints.down("xs")]: {
+      width: 30,
+      height: 30
+    }
   },
   content: {
     marginTop: theme.spacing(1)
