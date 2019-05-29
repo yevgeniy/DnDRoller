@@ -14,5 +14,6 @@
     "noImplicitThis": false,
     "noImplicitAny": false,
     "noImplicitUseStrict": false,
-    "string": false
+    "string": false,
+    "skipLibCheck": false,
 }
