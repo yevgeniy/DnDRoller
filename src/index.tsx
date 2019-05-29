@@ -3,7 +3,12 @@ import { render } from "react-dom";
 import * as serviceWorker from "./serviceWorker";
 import { Switch, Route, Link, BrowserRouter, Redirect } from "react-router-dom";
 import PageInstance from "./PageInstance";
-import { withStyles, StyleRules } from "@material-ui/core/styles";
+import {
+  withStyles,
+  StyleRules,
+  createMuiTheme,
+  responsiveFontSizes
+} from "@material-ui/core/styles";
 
 import "./styles.css";
 

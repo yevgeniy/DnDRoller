@@ -93,7 +93,11 @@ const useActorStyles = makeStyles(theme => ({
   chip: {
     margin: theme.spacing(1),
     minWidth: 70,
-    justifyContent: "flex-start"
+    justifyContent: "flex-start",
+    [theme.breakpoints.down("xs")]: {
+      minWidth: "auto",
+      margin: theme.spacing(1 / 2)
+    }
   },
   margin: {
     margin: theme.spacing(1)
