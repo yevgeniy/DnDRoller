@@ -1,10 +1,10 @@
 import * as React from "react";
 import CardHeader from "@material-ui/core/CardHeader";
 import { useState } from "react";
-import { makeStyles } from "@material-ui/core/styles";
+import { makeStyles, StyleRules } from "@material-ui/core/styles";
 
 const useStyles = makeStyles(() => {
-  return {
+  const styles: StyleRules = {
     root: {
       position: "relative"
     },
@@ -18,6 +18,7 @@ const useStyles = makeStyles(() => {
       alignItems: "center"
     }
   };
+  return styles;
 });
 
 export default function(props) {

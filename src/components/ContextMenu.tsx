@@ -1,22 +1,22 @@
 import * as React from "react";
 import { useEffect } from "react";
-import { makeStyles } from "@material-ui/core/styles";
+import { makeStyles, StyleRules } from "@material-ui/core/styles";
 import clsx from "clsx";
 import ClickAwayListener from "@material-ui/core/ClickAwayListener";
 
 const useStyles = makeStyles(() => {
-  return {
-    root: {
-      boxSizing: "border-box",
+  const style: StyleRules = {
+    container: {
       background: "linear-gradient(to bottom, #afafafee, #8f8f8fee, #afafafee)",
       boxShadow: "1px 1px 25px inset",
       borderRadius: "60px 0 0 60px"
     },
-    rootOpen: {
+    containerOpen: {
       transition: "width ease 400ms",
+      //@ts-ignore
       width: props => props.openWidth
     },
-    rootClose: {
+    containerClose: {
       width: 0,
       transition: "width ease 500ms 200ms"
     },
@@ -34,6 +34,7 @@ const useStyles = makeStyles(() => {
       display: "flex"
     }
   };
+  return style;
 });
 
 interface ContextMenuProps {
@@ -52,9 +53,9 @@ export default function(props: ContextMenuProps) {
   return (
     <ClickAwayListener onClickAway={clickaway}>
       <div
-        className={clsx(classes.root, {
-          [classes.rootOpen]: props.open,
-          [classes.rootClose]: !props.open
+        className={clsx(classes.container, {
+          [classes.containerOpen]: props.open,
+          [classes.containerClose]: !props.open
         })}
       >
         <div
