@@ -50,6 +50,14 @@ function CharacterActions(props: CharacterActionsProps) {
     props.updateActor({ initiative: initiative });
     props.setOpenAction(false);
   };
+  const onResetInitiative = e => {
+    props.updateActor({ initiative: null });
+    props.setOpenAction(false);
+  };
+  const onResetHp = e => {
+    props.updateActor({ hpCurrent: props.hp });
+    props.setOpenAction(false);
+  };
 
   const c: string[] = [];
   for (let i in props.class) c.push(`${i} lvl ${props.class[i]}`);
@@ -85,7 +93,7 @@ function CharacterActions(props: CharacterActionsProps) {
           margin="normal"
           variant="filled"
         />
-        <Fab color="secondary" size="small">
+        <Fab color="secondary" size="small" onClick={onResetHp}>
           <Replay />
         </Fab>
       </form>
@@ -103,7 +111,7 @@ function CharacterActions(props: CharacterActionsProps) {
           margin="normal"
           variant="filled"
         />
-        <Fab color="secondary" size="small">
+        <Fab color="secondary" size="small" onClick={onResetInitiative}>
           <Replay />
         </Fab>
       </form>

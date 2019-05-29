@@ -117,11 +117,12 @@ const useActorStyles = makeStyles(theme => ({
 type PageInstanceActorProps = { [P in keyof ModelActor]?: ModelActor[P] } & {
   classes?: { card: string };
   setSortActor?: (a: ModelActor) => void;
+  resetActor?: number;
 };
 
 export function PageInstanceActor(props: PageInstanceActorProps) {
   const classes = useActorStyles(props);
-  const [actor, updateActor] = useActor(props.id);
+  const [actor, updateActor] = useActor(props.id, props.resetActor);
   useEffect(() => {
     if (!actor) return;
     props.setSortActor(actor);
@@ -156,13 +157,16 @@ export function PageInstanceActor(props: PageInstanceActorProps) {
           }
           action={
             <>
-              <Chip
-                icon={<FlashOn />}
-                label={actor.initiative}
-                className={classes.chip}
-                color="primary"
-                variant="outlined"
-              />
+              {actor.initiative ? (
+                <Chip
+                  icon={<FlashOn />}
+                  label={actor.initiative}
+                  className={classes.chip}
+                  color="primary"
+                  variant="outlined"
+                />
+              ) : null}
+
               <Chip
                 icon={<FaceIcon />}
                 label={`${actor.hpCurrent}/${actor.hp}`}
@@ -211,7 +215,7 @@ export function PageInstanceActor(props: PageInstanceActorProps) {
   );
 }
 
-function useActor(id: number) {
+function useActor(id: number, resetActorToken?: number) {
   const serviceActor = useService(ServiceActor);
   const [actor, setActor] = useState(null);
 
@@ -219,6 +223,13 @@ function useActor(id: number) {
     if (!serviceActor) return;
     serviceActor.get(id).then(setActor);
   }, [serviceActor]);
+
+  useEffect(() => {
+    if (!resetActorToken) return;
+    if (!actor) return;
+
+    updateActor({ hp: actor.hpCurrent, initiative: null });
+  }, [resetActorToken]);
 
   function updateActor(updateActor) {
     setActor({ ...actor, ...updateActor });
