@@ -13,4 +13,5 @@
     "noImplicitReturns": false,
     "noImplicitThis": false,
     "noImplicitAny": false,
+    "noImplicitUseStrict": false,
 }
