@@ -7,13 +7,13 @@
             "dom",
             "es2015"
         ],
-        "jsx": "react"
+        "jsx": "react",
+        "downlevelIteration": true,
+        "noImplicitReturns": false,
+        "noImplicitThis": false,
+        "noImplicitAny": false,
+        "noImplicitUseStrict": false,
+        "string": false,
+        "skipLibCheck": false,
     },
-    "downlevelIteration": true,
-    "noImplicitReturns": false,
-    "noImplicitThis": false,
-    "noImplicitAny": false,
-    "noImplicitUseStrict": false,
-    "string": false,
-    "skipLibCheck": false,
 }
