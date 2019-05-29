@@ -16,6 +16,7 @@ import blue from "@material-ui/core/colors/blue";
 import FavoriteIcon from "@material-ui/icons/Favorite";
 import ShareIcon from "@material-ui/icons/Share";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
+import FlashOn from "@material-ui/icons/FlashOn";
 import MoreVertIcon from "@material-ui/icons/MoreVert";
 import Divider from "@material-ui/core/Divider";
 
@@ -48,17 +49,17 @@ const useActorsStyles = makeStyles(theme => {
   };
 });
 
-type sortBy = "initiative";
-
+type sortBy = "initiative" | "name";
 interface PageInstanceActorsProps {
   children: React.ReactElement | React.ReactElement[];
+  sort: sortBy;
 }
 export function PageInstanceActors({
   children,
   ...props
 }: PageInstanceActorsProps) {
   const classes = useActorsStyles(props);
-  const [sortedElms, setSortActors] = useSort("initiative", children);
+  const [sortedElms] = useSort(props.sort, children);
 
   return (
     <div>
@@ -104,12 +105,16 @@ const useActorStyles = makeStyles(theme => ({
 
 type PageInstanceActorProps = { [P in keyof ModelActor]?: ModelActor[P] } & {
   classes?: { card: string };
-  setSortActor: (a: ModelActor) => void;
+  setSortActor?: (a: ModelActor) => void;
 };
 
 export function PageInstanceActor(props: PageInstanceActorProps) {
   const classes = useActorStyles(props);
-  const [actor] = useActor(props.id);
+  const [actor, updateActor] = useActor(props.id);
+  useEffect(() => {
+    if (!actor) return;
+    props.setSortActor(actor);
+  }, [actor]);
 
   const [expanded, setExpanded] = useState(false);
   const [openAction, setOpenAction] = useState(false);
@@ -124,7 +129,6 @@ export function PageInstanceActor(props: PageInstanceActorProps) {
   }
 
   if (!actor) return null;
-  props.setSortActor(actor);
 
   const c = [];
   for (let i in actor.class) c.push(`${i}: ${actor.class[i]}`);
@@ -142,7 +146,7 @@ export function PageInstanceActor(props: PageInstanceActorProps) {
           action={
             <>
               <Chip
-                avatar={<Avatar>I</Avatar>}
+                icon={<FlashOn />}
                 label={actor.initiative}
                 className={classes.chip}
                 color="primary"
@@ -189,7 +193,7 @@ export function PageInstanceActor(props: PageInstanceActorProps) {
         onClose={() => setOpenAction(false)}
       >
         <div>
-          <CharacterActions />
+          <CharacterActions {...{ updateActor, setOpenAction, ...actor }} />
         </div>
       </Drawer>
     </>
@@ -205,18 +209,25 @@ function useActor(id: number) {
     serviceActor.get(id).then(setActor);
   }, [serviceActor]);
 
-  return [actor];
+  function updateActor(updateActor) {
+    setActor({ ...actor, ...updateActor });
+  }
+
+  return [actor, updateActor];
 }
 
 function useSort(
   by: sortBy,
   children: React.ReactElement | React.ReactElement[]
-): [any[], (f: any) => void] {
+): [any[]] {
   const [sortActors, setSortActors] = useState([]);
 
   switch (by) {
     case "initiative":
       sortActors.sort((a, b) => (a.initiative > b.initiative ? -1 : 1));
+      break;
+    case "name":
+      sortActors.sort((a, b) => (a.name > b.name ? 1 : -1));
       break;
     default:
   }
@@ -224,8 +235,12 @@ function useSort(
   const elms = React.Children.map(children, v => {
     return React.cloneElement(v, {
       setSortActor: a => {
-        if (!sortActors.some(v => v.id == a.id))
-          setSortActors([...sortActors, a]);
+        const i = sortActors.findIndex(v => v.id == a.id);
+        if (i === -1) setSortActors([...sortActors, a]);
+        else {
+          sortActors[i] = { ...a };
+          setSortActors([...sortActors]);
+        }
       }
     });
   });
@@ -237,5 +252,5 @@ function useSort(
     if (elm) sortedelms.push(elm);
   });
   sortedelms.push(...elms);
-  return [sortedelms, setSortActors];
+  return [sortedelms];
 }

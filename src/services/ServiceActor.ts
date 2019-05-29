@@ -60,7 +60,7 @@ class Record {
   }
   async save(data: ModelActor) {}
   async getAll(): Promise<ModelActor[]> {
-    await new Promise(res => setTimeout(res, 1000));
+    await new Promise(res => setTimeout(res, 100));
     return mockactors;
   }
 }

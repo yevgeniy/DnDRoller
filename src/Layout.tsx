@@ -21,6 +21,7 @@ import MailIcon from "@material-ui/icons/Mail";
 interface LayoutProps {
   children: React.ReactNode;
   title: React.ReactNode;
+  control: React.ReactNode;
 }
 
 const useStyles = makeStyles(theme => ({
@@ -58,7 +59,7 @@ export default (props: LayoutProps) => {
           <Typography variant="h6" className={classes.title}>
             {props.title}
           </Typography>
-          <Button color="inherit">Login</Button>
+          {props.control}
         </Toolbar>
       </AppBar>
       <div className={classes.content}>{props.children}</div>

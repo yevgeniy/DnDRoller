@@ -18,28 +18,47 @@ const useStyle = makeStyles(theme => {
   };
 });
 
-interface CharacterActionsProps {
-  actor?: ModelActor;
-  setActor?: (a: ModelActor) => void;
-}
+type CharacterActionsProps = { [P in keyof ModelActor]: ModelActor[P] } & {
+  /*update any prop of actor*/
+  updateActor: (a: { [P in keyof ModelActor]?: ModelActor[P] }) => void;
+  setOpenAction: (a: boolean) => void;
+};
 
-export default function(props: CharacterActionsProps) {
+function CharacterActions(props: CharacterActionsProps) {
   const classes = useStyle();
   const [demage, setDemage] = useState();
+  const [initiative, setInitiative] = useState();
 
-  function addDemage(e) {
+  const addDemage = e => {
     e.preventDefault();
 
-    console.log("a", demage);
-  }
+    props.updateActor({ hpCurrent: props.hpCurrent - demage });
+    props.setOpenAction(false);
+  };
+  const assignInitiative = e => {
+    e.preventDefault();
+
+    props.updateActor({ initiative: initiative });
+    props.setOpenAction(false);
+  };
+
+  const c = [];
+  for (let i in props.class) c.push(`${i} lvl ${props.class[i]}`);
+
   return (
     <div className={classes.root}>
       <Card>
         <CardHeader
           avatar={<FaceIcon />}
-          title="Arhail"
-          subheader="Priest lvl 3"
-          action={<Chip label="10/40" color="secondary" variant="outlined" />}
+          title={props.name}
+          subheader={c.join(", ")}
+          action={
+            <Chip
+              label={`${props.hpCurrent}/${props.hp}`}
+              color="secondary"
+              variant="outlined"
+            />
+          }
         />
       </Card>
 
@@ -57,6 +76,22 @@ export default function(props: CharacterActionsProps) {
           variant="filled"
         />
       </form>
+      <form onSubmit={assignInitiative}>
+        <TextField
+          id="standard-number"
+          label="Set Initiative"
+          value={initiative}
+          onChange={e => setInitiative(e.target.value)}
+          type="number"
+          InputLabelProps={{
+            shrink: true
+          }}
+          margin="normal"
+          variant="filled"
+        />
+      </form>
     </div>
   );
 }
+
+export default CharacterActions;

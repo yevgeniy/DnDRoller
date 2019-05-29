@@ -59,7 +59,7 @@ class Record {
     return all.find(v => v.id === id);
   }
   async getAll(): Promise<ModelInstance[]> {
-    await new Promise(res => setTimeout(res, 1000));
+    await new Promise(res => setTimeout(res, 100));
 
     return [...mockinstance.map(v => ({ ...v }))];
   }
