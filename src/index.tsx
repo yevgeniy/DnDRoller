@@ -35,8 +35,9 @@ const styles = theme => {
 };
 
 const rootElement = document.getElementById("root");
-//@ts-ignore
+
 const Comp = withStyles(styles)(App);
+//@ts-ignore
 render(<Comp />, rootElement);
 
 serviceWorker.register();

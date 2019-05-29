@@ -13,7 +13,7 @@ const useStyle = makeStyles(theme => {
   return {
     container: {
       padding: theme.spacing(1),
-      minWidth: 300
+      minWidth: 200
     }
   };
 });
