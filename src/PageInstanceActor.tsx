@@ -79,7 +79,10 @@ const useActorStyles = makeStyles(theme => ({
     marginLeft: "auto",
     transition: theme.transitions.create("transform", {
       duration: theme.transitions.duration.shortest
-    })
+    }),
+    [theme.breakpoints.down("xs")]: {
+      padding: 0
+    }
   },
   expandOpen: {
     transform: "rotate(180deg)"
