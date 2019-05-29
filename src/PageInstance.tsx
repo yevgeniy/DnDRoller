@@ -34,12 +34,12 @@ const INSTANCE_ID = 1;
 const PageInstance = props => {
   const [instance] = useInstance(INSTANCE_ID);
   const [menuOpen, setMenuOpen] = useState(false);
-  const [sort, setSort] = useState("initiative");
+  const [sort, setSort] = useState<"initiative" | "name">("initiative");
   const buttonRef = useRef();
   const onShowSort = e => {
     setMenuOpen(true);
   };
-  const onSetSort = (by: string) => {
+  const onSetSort = (by: "initiative" | "name") => {
     return e => {
       setSort(by);
       setMenuOpen(false);

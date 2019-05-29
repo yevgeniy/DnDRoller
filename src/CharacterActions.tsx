@@ -42,7 +42,7 @@ function CharacterActions(props: CharacterActionsProps) {
     props.setOpenAction(false);
   };
 
-  const c = [];
+  const c: string[] = [];
   for (let i in props.class) c.push(`${i} lvl ${props.class[i]}`);
 
   return (
