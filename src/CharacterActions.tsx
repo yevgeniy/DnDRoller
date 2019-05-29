@@ -6,7 +6,8 @@ import Divider from "@material-ui/core/Divider";
 import Typography from "@material-ui/core/Typography";
 import Chip from "@material-ui/core/Chip";
 import FaceIcon from "@material-ui/icons/Face";
-import { Card, CardHeader, TextField } from "@material-ui/core";
+import Replay from "@material-ui/icons/Replay";
+import { Card, CardHeader, TextField, Fab } from "@material-ui/core";
 import { ModelActor } from "./models/ModelActor";
 
 const useStyle = makeStyles(theme => {
@@ -14,6 +15,14 @@ const useStyle = makeStyles(theme => {
     container: {
       padding: theme.spacing(1),
       minWidth: 200
+    },
+    nameCard: {
+      marginBottom: theme.spacing(1)
+    },
+    mainEntry: {
+      width: "60%",
+      marginTop: 0,
+      marginRight: theme.spacing(1)
     }
   };
 });
@@ -47,7 +56,7 @@ function CharacterActions(props: CharacterActionsProps) {
 
   return (
     <div className={classes.container}>
-      <Card>
+      <Card className={classes.nameCard}>
         <CardHeader
           avatar={<FaceIcon />}
           title={props.name}
@@ -64,6 +73,7 @@ function CharacterActions(props: CharacterActionsProps) {
 
       <form onSubmit={addDemage}>
         <TextField
+          className={classes.mainEntry}
           id="standard-number"
           label="Add Demage"
           value={demage}
@@ -75,9 +85,13 @@ function CharacterActions(props: CharacterActionsProps) {
           margin="normal"
           variant="filled"
         />
+        <Fab color="secondary" size="small">
+          <Replay />
+        </Fab>
       </form>
       <form onSubmit={assignInitiative}>
         <TextField
+          className={classes.mainEntry}
           id="standard-number"
           label="Set Initiative"
           value={initiative}
@@ -89,6 +103,9 @@ function CharacterActions(props: CharacterActionsProps) {
           margin="normal"
           variant="filled"
         />
+        <Fab color="secondary" size="small">
+          <Replay />
+        </Fab>
       </form>
     </div>
   );
