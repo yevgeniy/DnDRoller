@@ -29,13 +29,13 @@ function CharacterActions(props: CharacterActionsProps) {
   const [demage, setDemage] = useState();
   const [initiative, setInitiative] = useState();
 
-  const addDemage = e => {
+  const addDemage = (e: any) => {
     e.preventDefault();
 
     props.updateActor({ hpCurrent: props.hpCurrent - demage });
     props.setOpenAction(false);
   };
-  const assignInitiative = e => {
+  const assignInitiative = (e: any) => {
     e.preventDefault();
 
     props.updateActor({ initiative: initiative });
