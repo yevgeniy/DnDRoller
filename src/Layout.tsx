@@ -25,7 +25,7 @@ interface LayoutProps {
 }
 
 const useStyles = makeStyles(theme => ({
-  root: {
+  container: {
     flexGrow: 1
   },
   menuButton: {
@@ -44,7 +44,7 @@ export default (props: LayoutProps) => {
   const [mainMenuOpen, setMainMenuOpen] = useState(false);
 
   return (
-    <div className={classes.root}>
+    <div className={classes.container}>
       <AppBar position="static">
         <Toolbar>
           <IconButton

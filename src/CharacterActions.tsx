@@ -11,7 +11,7 @@ import { ModelActor } from "./models/ModelActor";
 
 const useStyle = makeStyles(theme => {
   return {
-    root: {
+    container: {
       padding: theme.spacing(1),
       minWidth: 300
     }
@@ -46,7 +46,7 @@ function CharacterActions(props: CharacterActionsProps) {
   for (let i in props.class) c.push(`${i} lvl ${props.class[i]}`);
 
   return (
-    <div className={classes.root}>
+    <div className={classes.container}>
       <Card>
         <CardHeader
           avatar={<FaceIcon />}
