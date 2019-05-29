@@ -19,7 +19,7 @@
         "noStrictGenericChecks": false,
         "noUnusedLocals": false,
         "noUnusedParameters": false,
-        // "skipLibCheck": true,
+        "skipLibCheck": true,
         // "composite": false,
         "strictBindCallApply": false,
         "strictFunctionTypes": false,
