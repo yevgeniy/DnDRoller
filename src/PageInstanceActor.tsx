@@ -81,7 +81,7 @@ const useActorStyles = makeStyles(theme => ({
       duration: theme.transitions.duration.shortest
     }),
     [theme.breakpoints.down("xs")]: {
-      padding: 0
+      padding: theme.spacing(1 / 2)
     }
   },
   expandOpen: {
