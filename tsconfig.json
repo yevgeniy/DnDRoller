@@ -14,4 +14,5 @@
     "noImplicitThis": false,
     "noImplicitAny": false,
     "noImplicitUseStrict": false,
+    "string": false
 }
