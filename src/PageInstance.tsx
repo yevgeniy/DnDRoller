@@ -35,6 +35,17 @@ const PageInstance = props => {
   const [instance] = useInstance(INSTANCE_ID);
   const [menuOpen, setMenuOpen] = useState(false);
   const [sort, setSort] = useState<"initiative" | "name">("initiative");
+  useEffect(() => {
+    const work = e => e.preventDefault();
+    document.addEventListener("touchmove", work);
+    document.body.style.touchAction = "none";
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.removeEventListener("touchmove", work);
+      document.body.style.touchAction = "";
+      document.body.style.overflow = "";
+    };
+  }, []);
   const buttonRef = useRef();
   const onShowSort = e => {
     setMenuOpen(true);
