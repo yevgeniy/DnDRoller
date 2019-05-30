@@ -8,10 +8,16 @@ import "../util/extends";
 let ID = 0;
 const mockinstance = [
   {
-    id: ++ID,
+    id: 1,
     name: "forest fight",
-    datetime: +new Date(),
+    created: +new Date() - 1000 * 60 * 60 * 24 * 3,
     actors: [1, 2]
+  },
+  {
+    id: 2,
+    name: "bar fight",
+    created: +new Date() + 2,
+    actors: [3, 4]
   }
 ];
 

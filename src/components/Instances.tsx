@@ -1,9 +1,9 @@
 import * as React from "react";
 import { useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
-import { SortActorsBy } from "../enums";
+import { SortInstancesBy } from "../enums";
 
-const useActorsStyles = makeStyles(theme => {
+const useStyles = makeStyles(theme => {
   return {
     card: {
       marginTop: theme.spacing(1),
@@ -14,12 +14,12 @@ const useActorsStyles = makeStyles(theme => {
   };
 });
 
-interface PageInstanceActorsProps {
+interface InstancesProps {
   children: React.ReactElement | React.ReactElement[];
-  sort: SortActorsBy;
+  sort: SortInstancesBy;
 }
-function PageInstanceActors({ children, ...props }: PageInstanceActorsProps) {
-  const classes = useActorsStyles(props);
+function Instances({ children, ...props }: InstancesProps) {
+  const classes = useStyles(props);
   const [sortedElms] = useSort(props.sort, children);
 
   return (
@@ -34,41 +34,45 @@ function PageInstanceActors({ children, ...props }: PageInstanceActorsProps) {
 }
 
 function useSort(
-  by: SortActorsBy,
+  by: SortInstancesBy,
   children: React.ReactElement | React.ReactElement[]
 ): [any[]] {
-  const [sortActors, setSortActors] = useState([]);
+  const [sort, setSort] = useState([]);
 
   switch (by) {
-    case "initiative":
-      sortActors.sort((a, b) => (a.initiative > b.initiative ? -1 : 1));
-      break;
     case "name":
-      sortActors.sort((a, b) => (a.name > b.name ? 1 : -1));
+      sort.sort((a, b) => (a.name > b.name ? 1 : -1));
+      break;
+    case "newest":
+      sort.sort((a, b) => (a.created > b.created ? -1 : 1));
+      break;
+    case "oldest":
+      sort.sort((a, b) => (a.created > b.created ? 1 : -1));
       break;
     default:
   }
 
   const elms = React.Children.map(children, v => {
     return React.cloneElement(v, {
-      setSortActor: a => {
-        const i = sortActors.findIndex(v => v.id == a.id);
-        if (i === -1) setSortActors([...sortActors, a]);
+      setSortInstance: a => {
+        const i = sort.findIndex(v => v.id === a.id);
+        if (i === -1) setSort([...sort, a]);
         else {
-          sortActors[i] = { ...a };
-          setSortActors([...sortActors]);
+          sort[i] = { ...a };
+          setSort([...sort]);
         }
       }
     });
   });
   const sortedelms = [];
 
-  sortActors.forEach(v => {
-    var id = elms.findIndex(z => z.props.id == v.id);
+  sort.forEach(v => {
+    var id = elms.findIndex(z => z.props.id === v.id);
     var elm = elms.splice(id, 1)[0];
     if (elm) sortedelms.push(elm);
   });
   sortedelms.push(...elms);
   return [sortedelms];
 }
-export default PageInstanceActors;
+
+export default Instances;

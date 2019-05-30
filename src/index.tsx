@@ -4,6 +4,8 @@ import * as serviceWorker from "./serviceWorker";
 import { Switch, Route, Link, BrowserRouter, Redirect } from "react-router-dom";
 import PageInstance from "./PageInstance";
 import PageHome from "./PageHome";
+import PageInstances from "./PageInstances";
+
 import {
   withStyles,
   StyleRules,
@@ -108,8 +110,9 @@ function App() {
       {/* <input id="fileSelector" onChange={onFileSelected} type="file" multiple /> */}
       <BrowserRouter>
         <Switch>
-          <Route path="/" component={PageHome} />
-          <Route path="/instance" component={PageInstance} />
+          <Route exact path="/" component={PageHome} />
+          <Route exact path="/instances" component={PageInstances} />
+          <Route exact path="/instance" component={PageInstance} />
         </Switch>
       </BrowserRouter>
     </>
@@ -125,6 +128,10 @@ const styles = theme => {
         [theme.breakpoints.down("xs")]: {
           fontSize: 12
         }
+      },
+      a: {
+        color: "inherit",
+        textDecoration: "none"
       }
     }
   };

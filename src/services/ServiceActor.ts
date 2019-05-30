@@ -4,7 +4,7 @@ import ServiceDB from "./ServiceDB";
 let ID = 0;
 const mockactors: ModelActor[] = [
   {
-    id: ++ID,
+    id: 1,
     class: { Priest: 3 },
     hp: 30,
     hpCurrent: 30,
@@ -14,13 +14,33 @@ const mockactors: ModelActor[] = [
     size: "midium"
   },
   {
-    id: ++ID,
+    id: 2,
     class: { Bard: 3 },
     hp: 20,
     hpCurrent: 20,
     initiative: 15,
     name: "Leshi Gathop",
     race: "dwarf",
+    size: "midium"
+  },
+  {
+    id: 3,
+    class: { Mage: 3 },
+    hp: 10,
+    hpCurrent: 30,
+    initiative: 5,
+    name: "Nimm Sehilo",
+    race: "human",
+    size: "midium"
+  },
+  {
+    id: 4,
+    class: { Ranger: 4 },
+    hp: 35,
+    hpCurrent: 20,
+    initiative: 15,
+    name: "Kal Withakay",
+    race: "Elf",
     size: "midium"
   }
 ];

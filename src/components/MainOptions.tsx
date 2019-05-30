@@ -14,6 +14,7 @@ import Games from "@material-ui/icons/Games";
 import Photo from "@material-ui/icons/Photo";
 import DirectionsRun from "@material-ui/icons/DirectionsRun";
 import Casino from "@material-ui/icons/Casino";
+import { Link } from "react-router-dom";
 
 function MainOptions() {
   return (
@@ -21,7 +22,7 @@ function MainOptions() {
       <List
         subheader={<ListSubheader component="div">Repositories</ListSubheader>}
       >
-        <ListItem button>
+        <ListItem button component={Link} to="/instances">
           <ListItemIcon>{<Games />}</ListItemIcon>
           <ListItemText primary="Instances" />
         </ListItem>

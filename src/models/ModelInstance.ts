@@ -3,6 +3,6 @@ import { ModelActor } from "./ModelActor";
 export interface ModelInstance {
   id: number;
   name: string;
-  datetime: number;
+  created: number;
   actors: number[];
 }

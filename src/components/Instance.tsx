@@ -1,5 +1,5 @@
 import * as React from "react";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import clsx from "clsx";
 import Card from "@material-ui/core/Card";
@@ -9,9 +9,12 @@ import Avatar from "@material-ui/core/Avatar";
 import IconButton from "@material-ui/core/IconButton";
 import Typography from "@material-ui/core/Typography";
 import red from "@material-ui/core/colors/red";
+import orange from "@material-ui/core/colors/orange";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
+import AccessTime from "@material-ui/icons/AccessTime";
 import FlashOn from "@material-ui/icons/FlashOn";
 import Divider from "@material-ui/core/Divider";
+import moment from "moment";
 
 import Chip from "@material-ui/core/Chip";
 import FaceIcon from "@material-ui/icons/Face";
@@ -21,11 +24,11 @@ import Collapse from "@material-ui/core/Collapse";
 import Drawer from "@material-ui/core/Drawer";
 
 import PageInstanceActions from "./PageInstanceActions";
-import { ModelActor } from "../models/ModelActor";
+import { ModelInstance } from "../models/ModelInstance";
 import { useService } from "../util/hooks";
-import ServiceActor from "../services/ServiceActor";
+import ServiceInstance from "../services/ServiceInstance";
 
-const useActorStyles = makeStyles(theme => ({
+const useStyles = makeStyles(theme => ({
   card: {},
   expand: {
     transform: "rotate(0deg)",
@@ -51,6 +54,8 @@ const useActorStyles = makeStyles(theme => ({
     marginTop: theme.spacing(1)
   },
   chip: {
+    color: orange[600],
+    borderColor: orange[600],
     margin: theme.spacing(1),
     minWidth: 70,
     justifyContent: "flex-start",
@@ -67,19 +72,18 @@ const useActorStyles = makeStyles(theme => ({
   }
 }));
 
-type PageInstanceActorProps = { [P in keyof ModelActor]?: ModelActor[P] } & {
+type InstanceProps = { [P in keyof ModelInstance]?: ModelInstance[P] } & {
   classes?: { card: string };
-  setSortActor?: (a: ModelActor) => void;
-  resetActor?: number;
+  setSortInstance?: (a: ModelInstance) => void;
 };
 
-function PageInstanceActor(props: PageInstanceActorProps) {
-  const classes = useActorStyles(props);
-  const [actor, updateActor] = useActor(props.id, props.resetActor);
+function PageInstanceActor(props: InstanceProps) {
+  const classes = useStyles(props);
+  const [instance, updateInstance] = useInstance(props.id);
   useEffect(() => {
-    if (!actor) return;
-    props.setSortActor(actor);
-  }, [actor]);
+    if (!instance) return;
+    props.setSortInstance(instance);
+  }, [instance]);
 
   const [expanded, setExpanded] = useState(false);
   const [openAction, setOpenAction] = useState(false);
@@ -93,10 +97,7 @@ function PageInstanceActor(props: PageInstanceActorProps) {
     setOpenAction(true);
   }
 
-  if (!actor) return null;
-
-  const c = [];
-  for (let i in actor.class) c.push(`${i}: ${actor.class[i]}`);
+  if (!instance) return null;
 
   return (
     <>
@@ -105,24 +106,16 @@ function PageInstanceActor(props: PageInstanceActorProps) {
           onClick={openActionPanel}
           avatar={
             <Avatar aria-label="Recipe" className={classes.avatar}>
-              {actor.name[0]}
+              {instance.name[0]}
             </Avatar>
           }
           action={
             <>
-              {actor.initiative ? (
-                <Chip
-                  icon={<FlashOn />}
-                  label={actor.initiative}
-                  className={classes.chip}
-                  color="primary"
-                  variant="outlined"
-                />
-              ) : null}
-
               <Chip
-                icon={<FaceIcon />}
-                label={`${actor.hpCurrent}/${actor.hp}`}
+                icon={<AccessTime />}
+                label={moment()
+                  .subtract(+new Date() - instance.created, "ms")
+                  .calendar()}
                 className={classes.chip}
                 color="secondary"
                 variant="outlined"
@@ -139,8 +132,7 @@ function PageInstanceActor(props: PageInstanceActorProps) {
               </IconButton>
             </>
           }
-          title={actor.name}
-          subheader={c.join(", ")}
+          title={instance.name}
         />
         <Collapse in={expanded} timeout="auto" unmountOnExit>
           <CardContent>
@@ -161,34 +153,28 @@ function PageInstanceActor(props: PageInstanceActorProps) {
         onClose={() => setOpenAction(false)}
       >
         <div>
-          <PageInstanceActions {...{ updateActor, setOpenAction, ...actor }} />
+          {/* <PageInstanceActions {...{ updateActor, setOpenAction, ...actor }} /> */}
+          hi
         </div>
       </Drawer>
     </>
   );
 }
 
-function useActor(id: number, resetActorToken?: number) {
-  const serviceActor = useService(ServiceActor);
-  const [actor, setActor] = useState(null);
+function useInstance(id: number) {
+  const serviceInstance = useService(ServiceInstance);
+  const [instance, setInstance] = useState(null);
 
   useEffect(() => {
-    if (!serviceActor) return;
-    serviceActor.get(id).then(setActor);
-  }, [serviceActor]);
+    if (!serviceInstance) return;
+    serviceInstance.get(id).then(setInstance);
+  }, [serviceInstance]);
 
-  useEffect(() => {
-    if (!resetActorToken) return;
-    if (!actor) return;
-
-    updateActor({ hp: actor.hpCurrent, initiative: null });
-  }, [resetActorToken]);
-
-  function updateActor(updateActor) {
-    setActor({ ...actor, ...updateActor });
+  function updateInstance(updateInstance) {
+    setInstance({ ...instance, ...updateInstance });
   }
 
-  return [actor, updateActor];
+  return [instance, updateInstance];
 }
 
 export default PageInstanceActor;
