@@ -8,7 +8,7 @@ import Chip from "@material-ui/core/Chip";
 import FaceIcon from "@material-ui/icons/Face";
 import Replay from "@material-ui/icons/Replay";
 import { Card, CardHeader, TextField, Fab } from "@material-ui/core";
-import { ModelActor } from "./models/ModelActor";
+import { ModelActor } from "../models/ModelActor";
 
 const useStyle = makeStyles(theme => {
   return {
@@ -27,13 +27,13 @@ const useStyle = makeStyles(theme => {
   };
 });
 
-type CharacterActionsProps = { [P in keyof ModelActor]: ModelActor[P] } & {
+type PageInstanceActionsProps = { [P in keyof ModelActor]: ModelActor[P] } & {
   /*update any prop of actor*/
   updateActor: (a: { [P in keyof ModelActor]?: ModelActor[P] }) => void;
   setOpenAction: (a: boolean) => void;
 };
 
-function CharacterActions(props: CharacterActionsProps) {
+function PageInstanceActions(props: PageInstanceActionsProps) {
   const classes = useStyle();
   const [demage, setDemage] = useState();
   const [initiative, setInitiative] = useState();
@@ -119,4 +119,4 @@ function CharacterActions(props: CharacterActionsProps) {
   );
 }
 
-export default CharacterActions;
+export default PageInstanceActions;

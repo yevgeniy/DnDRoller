@@ -3,6 +3,7 @@ import { render } from "react-dom";
 import * as serviceWorker from "./serviceWorker";
 import { Switch, Route, Link, BrowserRouter, Redirect } from "react-router-dom";
 import PageInstance from "./PageInstance";
+import PageHome from "./PageHome";
 import {
   withStyles,
   StyleRules,
@@ -104,10 +105,11 @@ function App() {
   };
   return (
     <>
-      <input id="fileSelector" onChange={onFileSelected} type="file" multiple />
+      {/* <input id="fileSelector" onChange={onFileSelected} type="file" multiple /> */}
       <BrowserRouter>
         <Switch>
-          <Route path="/" component={PageInstance} />
+          <Route path="/" component={PageHome} />
+          <Route path="/instance" component={PageInstance} />
         </Switch>
       </BrowserRouter>
     </>

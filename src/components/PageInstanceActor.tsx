@@ -3,74 +3,27 @@ import { useState, useEffect, useCallback } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import clsx from "clsx";
 import Card from "@material-ui/core/Card";
-import CardMedia from "@material-ui/core/CardMedia";
 import CardContent from "@material-ui/core/CardContent";
 import CardHeader from "@material-ui/core/CardHeader";
-import CardActions from "@material-ui/core/CardActions";
 import Avatar from "@material-ui/core/Avatar";
 import IconButton from "@material-ui/core/IconButton";
 import Typography from "@material-ui/core/Typography";
 import red from "@material-ui/core/colors/red";
-import green from "@material-ui/core/colors/green";
-import blue from "@material-ui/core/colors/blue";
-import FavoriteIcon from "@material-ui/icons/Favorite";
-import ShareIcon from "@material-ui/icons/Share";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import FlashOn from "@material-ui/icons/FlashOn";
-import MoreVertIcon from "@material-ui/icons/MoreVert";
 import Divider from "@material-ui/core/Divider";
 
 import Chip from "@material-ui/core/Chip";
 import FaceIcon from "@material-ui/icons/Face";
 
-import Button from "@material-ui/core/Button";
-import Fab from "@material-ui/core/Fab";
-import AddIcon from "@material-ui/icons/Add";
-import DeleteIcon from "@material-ui/icons/Delete";
-import NavigationIcon from "@material-ui/icons/Navigation";
-import ArrowDownwardIcon from "@material-ui/icons/ArrowDownward";
 import Collapse from "@material-ui/core/Collapse";
 
 import Drawer from "@material-ui/core/Drawer";
 
-import CharacterActions from "./CharacterActions";
-import { ModelActor } from "./models/ModelActor";
-import { useService } from "./util/hooks";
-import ServiceActor from "./services/ServiceActor";
-
-const useActorsStyles = makeStyles(theme => {
-  return {
-    card: {
-      marginTop: theme.spacing(1),
-      "&:first-child": {
-        marginTop: 0
-      }
-    }
-  };
-});
-
-type sortBy = "initiative" | "name";
-interface PageInstanceActorsProps {
-  children: React.ReactElement | React.ReactElement[];
-  sort: sortBy;
-}
-export function PageInstanceActors({
-  children,
-  ...props
-}: PageInstanceActorsProps) {
-  const classes = useActorsStyles(props);
-  const [sortedElms] = useSort(props.sort, children);
-
-  return (
-    <div>
-      {sortedElms.map(v =>
-        React.cloneElement(v, {
-          classes
-        })
-      )}
-    </div>
-  );
-}
+import PageInstanceActions from "./PageInstanceActions";
+import { ModelActor } from "../models/ModelActor";
+import { useService } from "../util/hooks";
+import ServiceActor from "../services/ServiceActor";
 
 const useActorStyles = makeStyles(theme => ({
   card: {},
@@ -208,7 +161,7 @@ export function PageInstanceActor(props: PageInstanceActorProps) {
         onClose={() => setOpenAction(false)}
       >
         <div>
-          <CharacterActions {...{ updateActor, setOpenAction, ...actor }} />
+          <PageInstanceActions {...{ updateActor, setOpenAction, ...actor }} />
         </div>
       </Drawer>
     </>
@@ -236,43 +189,4 @@ function useActor(id: number, resetActorToken?: number) {
   }
 
   return [actor, updateActor];
-}
-
-function useSort(
-  by: sortBy,
-  children: React.ReactElement | React.ReactElement[]
-): [any[]] {
-  const [sortActors, setSortActors] = useState([]);
-
-  switch (by) {
-    case "initiative":
-      sortActors.sort((a, b) => (a.initiative > b.initiative ? -1 : 1));
-      break;
-    case "name":
-      sortActors.sort((a, b) => (a.name > b.name ? 1 : -1));
-      break;
-    default:
-  }
-
-  const elms = React.Children.map(children, v => {
-    return React.cloneElement(v, {
-      setSortActor: a => {
-        const i = sortActors.findIndex(v => v.id == a.id);
-        if (i === -1) setSortActors([...sortActors, a]);
-        else {
-          sortActors[i] = { ...a };
-          setSortActors([...sortActors]);
-        }
-      }
-    });
-  });
-  const sortedelms = [];
-
-  sortActors.forEach(v => {
-    var id = elms.findIndex(z => z.props.id == v.id);
-    var elm = elms.splice(id, 1)[0];
-    if (elm) sortedelms.push(elm);
-  });
-  sortedelms.push(...elms);
-  return [sortedelms];
 }

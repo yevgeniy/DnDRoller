@@ -17,7 +17,9 @@ import DialogContent from "@material-ui/core/DialogContent";
 import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogTitle from "@material-ui/core/DialogTitle";
 
-import { PageInstanceActor, PageInstanceActors } from "./PageInstanceActor";
+import { PageInstanceActor } from "./components/PageInstanceActor";
+import { PageInstanceActors } from "./components/PageInstanceActors";
+import { SortBy } from "./enums";
 
 interface PageInstanceProps {
   id: number;
@@ -43,12 +45,12 @@ const PageInstance = props => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [resetDialogConfirOpen, setResetDialogConfirOpen] = useState(false);
   const [resetActors, setResetActors] = useState();
-  const [sort, setSort] = useState<"initiative" | "name">("initiative");
+  const [sort, setSort] = useState<SortBy>("initiative");
   const buttonRef = useRef();
   const onShowSort = e => {
     setMenuOpen(true);
   };
-  const onSetSort = (by: "initiative" | "name") => {
+  const onSetSort = (by: SortBy) => {
     return e => {
       setSort(by);
       setMenuOpen(false);
