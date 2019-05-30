@@ -84,20 +84,23 @@ function save(name, data) {
 }
 
 function App() {
-  const onFileSelected = e => {
-    [...e.target.files].forEach(file => {
-      var reader = new FileReader();
+  const onFileSelected = async e => {
+    await [...e.target.files].mapAsync(async file => {
+      return new Promise(res => {
+        var reader = new FileReader();
 
-      reader.onload = function() {
-        save(file.name, reader.result).then(r => {
-          //@ts-ignore
-          document.querySelector("#fileSelector").value = "";
-        });
-      };
+        reader.onload = function() {
+          save(file.name, reader.result).then(r => {
+            res();
+          });
+        };
 
-      console.log("reading");
-      reader.readAsArrayBuffer(file);
+        console.log("reading");
+        reader.readAsArrayBuffer(file);
+      });
     });
+    //@ts-ignore
+    document.querySelector("#fileSelector").value = "";
   };
   return (
     <>
