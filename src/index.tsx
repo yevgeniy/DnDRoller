@@ -23,18 +23,18 @@ const appsecret = "01elwm960iwsw9l";
 const accesstoken =
   "lt-wyxv0LCEAAAAAAAAJCPPTV-l2md4oFIA8gVCAeyOO9WkMH0qyTATQDGJNfE6y";
 
-fetch("https://api.dropboxapi.com/2/files/list_folder", {
-  method: "post",
-  headers: {
-    Authorization:
-      "Bearer lt-wyxv0LCEAAAAAAAAJCPPTV-l2md4oFIA8gVCAeyOO9WkMH0qyTATQDGJNfE6y",
-    "Content-Type": "application/json"
-  },
-  body:
-    '{"path": "/programming/art","recursive": false,"include_media_info": false,"include_deleted": false,"include_has_explicit_shared_members": false,"include_mounted_folders": true,"include_non_downloadable_files": true}'
-}).then(async response => {
-  console.log(await response.json());
-});
+// fetch("https://api.dropboxapi.com/2/files/list_folder", {
+//   method: "post",
+//   headers: {
+//     Authorization:
+//       "Bearer lt-wyxv0LCEAAAAAAAAJCPPTV-l2md4oFIA8gVCAeyOO9WkMH0qyTATQDGJNfE6y",
+//     "Content-Type": "application/json"
+//   },
+//   body:
+//     '{"path": "/programming/art","recursive": false,"include_media_info": false,"include_deleted": false,"include_has_explicit_shared_members": false,"include_mounted_folders": true,"include_non_downloadable_files": true}'
+// }).then(async response => {
+//   console.log(await response.json());
+// });
 
 // fetch("https://content.dropboxapi.com/2/files/get_thumbnail", {
 //   method: "post",
@@ -67,13 +67,44 @@ fetch("https://api.dropboxapi.com/2/files/list_folder", {
 //   //URL.revokeObjectURL(objectURL);
 // });
 
+function save(name, data) {
+  fetch(" https://content.dropboxapi.com/2/files/upload", {
+    method: "post",
+    headers: {
+      Authorization:
+        "Bearer lt-wyxv0LCEAAAAAAAAJCPPTV-l2md4oFIA8gVCAeyOO9WkMH0qyTATQDGJNfE6y",
+      "Dropbox-API-Arg": `{"path": "/Homework/math/${name}","mode": "overwrite","autorename": true,"mute": false,"strict_conflict": false}`,
+      "Content-Type": "application/octet-stream"
+    },
+    body: data
+  }).then(async response => {
+    var b = await response.json();
+    console.log(b);
+  });
+}
+
 function App() {
+  const onFileSelected = e => {
+    [...e.target.files].forEach(file => {
+      var reader = new FileReader();
+
+      reader.onload = function() {
+        save(file.name, reader.result);
+      };
+
+      console.log("reading");
+      reader.readAsArrayBuffer(file);
+    });
+  };
   return (
-    <BrowserRouter>
-      <Switch>
-        <Route path="/" component={PageInstance} />
-      </Switch>
-    </BrowserRouter>
+    <>
+      <input onChange={onFileSelected} type="file" multiple />
+      <BrowserRouter>
+        <Switch>
+          <Route path="/" component={PageInstance} />
+        </Switch>
+      </BrowserRouter>
+    </>
   );
 }
 
