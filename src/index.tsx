@@ -68,7 +68,7 @@ const accesstoken =
 // });
 
 function save(name, data) {
-  fetch(" https://content.dropboxapi.com/2/files/upload", {
+  return fetch(" https://content.dropboxapi.com/2/files/upload", {
     method: "post",
     headers: {
       Authorization:
@@ -89,7 +89,10 @@ function App() {
       var reader = new FileReader();
 
       reader.onload = function() {
-        save(file.name, reader.result);
+        save(file.name, reader.result).then(r => {
+          //@ts-ignore
+          document.querySelector("#fileSelector").value = "";
+        });
       };
 
       console.log("reading");
@@ -98,7 +101,7 @@ function App() {
   };
   return (
     <>
-      <input onChange={onFileSelected} type="file" multiple />
+      <input id="fileSelector" onChange={onFileSelected} type="file" multiple />
       <BrowserRouter>
         <Switch>
           <Route path="/" component={PageInstance} />
