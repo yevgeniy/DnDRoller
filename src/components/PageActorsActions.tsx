@@ -50,6 +50,10 @@ const useStyle = makeStyles(theme => {
     },
     selectEmpty: {
       marginTop: theme.spacing(2)
+    },
+    entry2: {
+      marginTop: theme.spacing(1),
+      width: "60%"
     }
   });
 });
@@ -67,10 +71,11 @@ function PageActorsActions(props: PageActorsActionsProps) {
   const [cls, setCls] = useState(props.class);
   const [race, setRace] = useState(props.race);
   const [size, setSize] = useState(props.size);
+  const [hpCurrent, setHpCurrent] = useState(props.hpCurrent);
 
   const onUpdateActor = (e: any) => {
     e.preventDefault();
-    props.updateActor({ name, hp, hpCurrent: hp, class: cls, race, size });
+    props.updateActor({ name, hp, class: cls, race, size });
     props.setOpenAction(false);
   };
   const onReset = e => {
@@ -79,6 +84,14 @@ function PageActorsActions(props: PageActorsActionsProps) {
     setCls(props.class);
     setRace(props.race);
     setSize(props.size);
+  };
+  const onResetHpCurrent = e => {
+    props.updateActor({ hpCurrent: hp });
+    props.setOpenAction(false);
+  };
+  const onSetHpCurrent = e => {
+    props.updateActor({ hpCurrent: hpCurrent });
+    props.setOpenAction(false);
   };
 
   const c: string[] = [];
@@ -171,6 +184,27 @@ function PageActorsActions(props: PageActorsActionsProps) {
           </Fab>
         </div>
       </form>
+      <Divider />
+      <TextField
+        className={classes.entry2}
+        label="Current Hp"
+        value={hpCurrent}
+        type="number"
+        onChange={e => setHpCurrent(+e.target.value)}
+        InputLabelProps={{
+          shrink: true
+        }}
+        margin="dense"
+        variant="filled"
+      />
+      <Fab
+        className={classes.reset}
+        color="secondary"
+        size="small"
+        onClick={onResetHpCurrent}
+      >
+        <Replay />
+      </Fab>
     </div>
   );
 }
