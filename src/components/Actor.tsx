@@ -23,10 +23,9 @@ import Collapse from "@material-ui/core/Collapse";
 
 import Drawer from "@material-ui/core/Drawer";
 
-import PageInstanceActions from "./PageInstanceActions";
-import { ModelInstance } from "../models/ModelInstance";
+import { ModelActor } from "../models/ModelActor";
 import { useService } from "../util/hooks";
-import ServiceInstance from "../services/ServiceInstance";
+import ServiceActor from "../services/ServiceActor";
 
 const useStyles = makeStyles(theme => ({
   card: {},
@@ -72,18 +71,18 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-type InstanceProps = { [P in keyof ModelInstance]?: ModelInstance[P] } & {
+type InstanceProps = { [P in keyof ModelActor]?: ModelActor[P] } & {
   classes?: { card: string };
-  setSortInstance?: (a: ModelInstance) => void;
+  setSortActor?: (a: ModelActor) => void;
 };
 
-function Instance(props: InstanceProps) {
+function Actor(props: InstanceProps) {
   const classes = useStyles(props);
-  const [instance, updateInstance] = useInstance(props.id);
+  const [actor, updateActor] = useActor(props.id);
   useEffect(() => {
-    if (!instance) return;
-    props.setSortInstance(instance);
-  }, [instance]);
+    if (!actor) return;
+    props.setSortActor(actor);
+  }, [actor]);
 
   const [expanded, setExpanded] = useState(false);
   const [openAction, setOpenAction] = useState(false);
@@ -97,7 +96,7 @@ function Instance(props: InstanceProps) {
     setOpenAction(true);
   }
 
-  if (!instance) return null;
+  if (!actor) return null;
 
   return (
     <>
@@ -106,16 +105,14 @@ function Instance(props: InstanceProps) {
           onClick={openActionPanel}
           avatar={
             <Avatar aria-label="Recipe" className={classes.avatar}>
-              {instance.name[0]}
+              {actor.name[0]}
             </Avatar>
           }
           action={
             <>
               <Chip
-                icon={<AccessTime />}
-                label={moment()
-                  .subtract(+new Date() - instance.created, "ms")
-                  .calendar()}
+                icon={<FaceIcon />}
+                label={actor.hp ? `${actor.hpCurrent}/${actor.hp}` : "--"}
                 className={classes.chip}
                 color="secondary"
                 variant="outlined"
@@ -132,7 +129,7 @@ function Instance(props: InstanceProps) {
               </IconButton>
             </>
           }
-          title={instance.name}
+          title={actor.name}
         />
         <Collapse in={expanded} timeout="auto" unmountOnExit>
           <CardContent>
@@ -161,20 +158,20 @@ function Instance(props: InstanceProps) {
   );
 }
 
-function useInstance(id: number) {
-  const serviceInstance = useService(ServiceInstance);
-  const [instance, setInstance] = useState(null);
+function useActor(id: number) {
+  const serviceActor = useService(ServiceActor);
+  const [actor, setActor] = useState(null);
 
   useEffect(() => {
-    if (!serviceInstance) return;
-    serviceInstance.get(id).then(setInstance);
-  }, [serviceInstance]);
+    if (!serviceActor) return;
+    serviceActor.get(id).then(setActor);
+  }, [serviceActor]);
 
-  function updateInstance(updateInstance) {
-    setInstance({ ...instance, ...updateInstance });
+  function updateActor(updateActor) {
+    setActor({ ...actor, ...updateActor });
   }
 
-  return [instance, updateInstance];
+  return [actor, updateActor];
 }
 
-export default Instance;
+export default Actor;

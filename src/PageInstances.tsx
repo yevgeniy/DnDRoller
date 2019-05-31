@@ -34,7 +34,7 @@ function PageInstances(props) {
   if (!instanceIds) return null;
   return (
     <Layout
-      title="Instance"
+      title="Instance Respository"
       control={
         <>
           <IconButton onClick={onAdd} color="inherit">
@@ -101,9 +101,7 @@ function useInstanceIds() {
   }, [serviceInstance]);
 
   const createInstance = async name => {
-    console.log(name);
     const newid = (await serviceInstance.createInstance(name)).id;
-    console.log(newid);
     setInstanceIds([...instanceIds, newid]);
   };
 

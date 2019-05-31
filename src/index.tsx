@@ -5,6 +5,7 @@ import { Switch, Route, Link, BrowserRouter, Redirect } from "react-router-dom";
 import PageInstance from "./PageInstance";
 import PageHome from "./PageHome";
 import PageInstances from "./PageInstances";
+import PageActors from "./PageActors";
 
 import {
   withStyles,
@@ -112,6 +113,7 @@ function App() {
         <Switch>
           <Route exact path="/" component={PageHome} />
           <Route exact path="/instances" component={PageInstances} />
+          <Route exact path="/actors" component={PageActors} />
           <Route exact path="/instance" component={PageInstance} />
         </Switch>
       </BrowserRouter>

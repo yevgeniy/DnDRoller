@@ -26,7 +26,7 @@ function MainOptions() {
           <ListItemIcon>{<Games />}</ListItemIcon>
           <ListItemText primary="Instances" />
         </ListItem>
-        <ListItem button>
+        <ListItem button component={Link} to="/actors">
           <ListItemIcon>{<DirectionsRun />}</ListItemIcon>
           <ListItemText primary="Actors" />
         </ListItem>
