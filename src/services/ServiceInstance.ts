@@ -45,6 +45,20 @@ class ServiceInstance {
     const instance = await this.record.get(id);
     return instance;
   }
+  async getAll(): Promise<ModelInstance[]> {
+    return await this.record.getAll();
+  }
+  async createInstance(name: string): Promise<ModelInstance> {
+    var newInstance = await this.record.save({
+      id: null,
+      name: name,
+      created: +new Date(),
+      actors: []
+    });
+    console.log("a", newInstance);
+
+    return newInstance;
+  }
 }
 
 let recordInst;
@@ -59,7 +73,6 @@ class Record {
     }
     return recordInst;
   }
-  async save(data: ModelInstance) {}
   async get(id: number): Promise<ModelInstance> {
     const all = await this.getAll();
     return all.find(v => v.id === id);
@@ -68,6 +81,19 @@ class Record {
     await new Promise(res => setTimeout(res, 100));
 
     return [...mockinstance.map(v => ({ ...v }))];
+  }
+  async save(instance: ModelInstance): Promise<ModelInstance> {
+    await new Promise(res => setTimeout(res, 100));
+
+    if (!instance.id) {
+      const max = Math.max(...mockinstance.map(v => v.id));
+      instance.id = max + 1;
+      mockinstance.push(instance);
+    } else {
+      var i = mockinstance.findIndex(v => v.id === instance.id);
+      mockinstance[i] = instance;
+    }
+    return { ...instance, actors: [...instance.actors] };
   }
 }
 
