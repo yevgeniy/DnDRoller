@@ -76,7 +76,7 @@ class ServiceActor {
       initiative: null,
       name: name,
       race: null,
-      size: "midium"
+      size: "medium"
     });
   }
 }
