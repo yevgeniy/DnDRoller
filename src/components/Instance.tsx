@@ -15,6 +15,7 @@ import AccessTime from "@material-ui/icons/AccessTime";
 import FlashOn from "@material-ui/icons/FlashOn";
 import Divider from "@material-ui/core/Divider";
 import moment from "moment";
+import PageInstancesActions from "./PageInstancesActions";
 
 import Chip from "@material-ui/core/Chip";
 import FaceIcon from "@material-ui/icons/Face";
@@ -153,8 +154,11 @@ function Instance(props: InstanceProps) {
         onClose={() => setOpenAction(false)}
       >
         <div>
-          {/* <PageInstanceActions {...{ updateActor, setOpenAction, ...actor }} /> */}
-          hi
+          <PageInstancesActions
+            updateInstance={updateInstance}
+            setOpenAction={setOpenAction}
+            {...instance}
+          />
         </div>
       </Drawer>
     </>
