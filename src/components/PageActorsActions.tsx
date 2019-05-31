@@ -70,8 +70,7 @@ function PageActorsActions(props: PageActorsActionsProps) {
 
   const onUpdateActor = (e: any) => {
     e.preventDefault();
-
-    props.updateActor({ name, hp, class: cls, race, size });
+    props.updateActor({ name, hp, hpCurrent: hp, class: cls, race, size });
     props.setOpenAction(false);
   };
   const onReset = e => {
@@ -92,13 +91,6 @@ function PageActorsActions(props: PageActorsActionsProps) {
           avatar={<FaceIcon />}
           title={props.name}
           subheader={c.join(", ")}
-          action={
-            <Chip
-              label={`${props.hpCurrent}/${props.hp}`}
-              color="secondary"
-              variant="outlined"
-            />
-          }
         />
       </Card>
 
@@ -155,14 +147,14 @@ function PageActorsActions(props: PageActorsActionsProps) {
           margin="dense"
           variant="filled"
         />
-        <ClassListInput classes={cls} />
+        <ClassListInput classes={cls} onUpdate={setCls} />
         <div>
           <Fab
             className={classes.reset}
             variant="extended"
             color="primary"
             size="small"
-            onClick={onReset}
+            type="submit"
           >
             <SaveAlt />
             Save

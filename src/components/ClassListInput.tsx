@@ -53,7 +53,7 @@ const useStyles = makeStyles(theme =>
 
 interface ClassListInputProps {
   classes: { [k: string]: number };
-  onUpdate?: (v: { [k: string]: number }) => void;
+  onUpdate: (v: { [k: string]: number }) => void;
 }
 function ClassListInput(props: ClassListInputProps) {
   const [clss, setClss] = useState(props.classes || {});
@@ -65,15 +65,32 @@ function ClassListInput(props: ClassListInputProps) {
   const [newClass, setNewClass] = useState();
   const [newLvl, setNewLvl] = useState();
 
+  const onAdd = e => {
+    if (!newClass || !newLvl) return;
+    setClss({ ...clss, [newClass]: newLvl });
+    props.onUpdate({ ...clss, [newClass]: newLvl });
+    setNewClass("");
+    setNewLvl("");
+  };
+  const onRemove = (name: string) => e => {
+    delete clss[name];
+    setClss({ ...clss });
+    props.onUpdate({ ...clss });
+  };
+
   let c = [];
-  for (let i in clss) c.push(`${i} lvl: ${clss[i]}`);
+  for (let i in clss) c.push({ key: i, value: clss[i] });
 
   return (
     <div className={classes.root}>
-      {c.map(v => (
-        <div key={v}>
-          {v}
-          <IconButton className={classes.removeIcon} size="small">
+      {c.map((v, i) => (
+        <div key={v.key}>
+          {`${v.key} lvl: ${v.value}`}
+          <IconButton
+            className={classes.removeIcon}
+            size="small"
+            onClick={onRemove(v.key)}
+          >
             <RemoveCircle />
           </IconButton>
         </div>
@@ -106,7 +123,7 @@ function ClassListInput(props: ClassListInputProps) {
         />
       </div>
       <div>
-        <Button variant="contained" size="small">
+        <Button variant="contained" size="small" onClick={onAdd}>
           <Add />
           Add Class
         </Button>
