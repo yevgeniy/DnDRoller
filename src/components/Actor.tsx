@@ -27,6 +27,7 @@ import { ModelActor } from "../models/ModelActor";
 import { useService } from "../util/hooks";
 import ServiceActor from "../services/ServiceActor";
 
+import PageActorActions from "./PageActorsActions";
 const useStyles = makeStyles(theme => ({
   card: {},
   expand: {
@@ -53,7 +54,7 @@ const useStyles = makeStyles(theme => ({
     marginTop: theme.spacing(1)
   },
   chip: {
-    color: orange[600],
+    color: red[600],
     borderColor: orange[600],
     margin: theme.spacing(1),
     minWidth: 70,
@@ -97,6 +98,8 @@ function Actor(props: InstanceProps) {
   }
 
   if (!actor) return null;
+  const c = [];
+  for (let i in actor.class) c.push(`${i} lvl ${actor.class[i]}`);
 
   return (
     <>
@@ -108,6 +111,7 @@ function Actor(props: InstanceProps) {
               {actor.name[0]}
             </Avatar>
           }
+          subheader={c.join(", ")}
           action={
             <>
               <Chip
@@ -150,8 +154,11 @@ function Actor(props: InstanceProps) {
         onClose={() => setOpenAction(false)}
       >
         <div>
-          {/* <PageInstanceActions {...{ updateActor, setOpenAction, ...actor }} /> */}
-          hi
+          <PageActorActions
+            updateActor={updateActor}
+            setOpenAction={setOpenAction}
+            {...actor}
+          />
         </div>
       </Drawer>
     </>
