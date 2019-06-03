@@ -30,11 +30,14 @@ import FaceIcon from "@material-ui/icons/Face";
 import Collapse from "@material-ui/core/Collapse";
 
 import Drawer from "@material-ui/core/Drawer";
+import Dialog from "@material-ui/core/Dialog";
 
 import PageInstanceActions from "./PageInstanceActions";
 import { ModelInstance } from "../models/ModelInstance";
 import { useService, useActor } from "../util/hooks";
 import ServiceInstance from "../services/ServiceInstance";
+
+import PageActorAdd from "../PageActorAdd";
 
 import {
   List,
@@ -147,6 +150,7 @@ function Instance(props: InstanceProps) {
   const [expanded, setExpanded] = useState(false);
   const [openAction, setOpenAction] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
+  const [selectActors, setSelectActors] = useState(false);
   useEffect(() => {
     if (!confirmDelete) return;
     setTimeout(() => setConfirmDelete(false), 1500);
@@ -167,6 +171,10 @@ function Instance(props: InstanceProps) {
   const deleteInstance = e => {
     if (!instance) return;
     props.deleteInstance(props.id);
+  };
+  const onAddActors = a => {
+    updateInstance({ actors: [...a] });
+    setSelectActors(false);
   };
 
   if (!instance) return null;
@@ -248,10 +256,11 @@ function Instance(props: InstanceProps) {
                     variant="contained"
                     color="secondary"
                     button="true"
+                    onClick={e => setSelectActors(true)}
                     className={classes.addActorButton}
                   >
                     <DirectionsRun />
-                    <Link to="/addactors">Add Actors</Link>
+                    Update Actors
                   </Button>
                 </div>
                 <div>
@@ -284,6 +293,13 @@ function Instance(props: InstanceProps) {
           />
         </div>
       </Drawer>
+      <Dialog
+        fullScreen
+        open={selectActors}
+        onClose={e => setSelectActors(false)}
+      >
+        <PageActorAdd onDone={onAddActors} selected={instance.actors} />
+      </Dialog>
     </>
   );
 }

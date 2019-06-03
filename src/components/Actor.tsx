@@ -76,16 +76,20 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-type InstanceProps = { [P in keyof ModelActor]?: ModelActor[P] } & {
+type ActorProps = { [P in keyof ModelActor]?: ModelActor[P] } & {
   classes?: { card: string };
   setSortActor?: (a: ModelActor) => void;
-  selection?: boolean;
   setSelected?: (f: boolean) => void;
+  selected?: boolean;
 };
 
-function Actor(props: InstanceProps) {
+function Actor(props: ActorProps) {
   const classes = useStyles(props);
   const [actor, updateActor] = useActor(props.id);
+  const [selected, setSelected] = useState(props.selected);
+  useEffect(() => {
+    props.setSelected(selected);
+  }, [selected]);
   useEffect(() => {
     if (!actor) return;
     props.setSortActor(actor);
@@ -112,12 +116,14 @@ function Actor(props: InstanceProps) {
       <>
         <Card className={classes.card}>
           <CardHeader
-            onClick={e => (props.selection ? null : openActionPanel(e))}
+            onClick={e =>
+              props.setSelected ? setSelected(!selected) : openActionPanel(e)
+            }
             avatar={
               <>
-                {props.selection ? (
+                {props.setSelected ? (
                   <Checkbox
-                    onChange={e => props.setSelected(e.target.checked)}
+                    checked={selected}
                     inputProps={{
                       "aria-label": "primary checkbox"
                     }}

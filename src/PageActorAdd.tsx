@@ -16,11 +16,15 @@ import DialogContent from "@material-ui/core/DialogContent";
 import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogTitle from "@material-ui/core/DialogTitle";
 
-function PageActorAdd(props) {
+interface PageActorAddProps {
+  onDone: (actors: number[]) => void;
+  selected: number[];
+}
+function PageActorAdd(props: PageActorAddProps) {
   const [actorIds, createActor] = useActorIds();
   const [openNewActorDialog, setOpenNewActorDialog] = useState(false);
   const [newActorName, setNewActorName] = useState("");
-  const [selected, setSelected] = useState([]);
+  const [selected, setSelected] = useState(props.selected);
   const onAdd = e => {
     setNewActorName("");
     setOpenNewActorDialog(true);
@@ -34,6 +38,11 @@ function PageActorAdd(props) {
   };
   const onDone = e => {
     console.log(selected);
+    props.onDone(selected);
+  };
+  const onSetSelected = id => f => {
+    if (f) setSelected([...selected, id]);
+    else setSelected([...selected.filter(v => v !== id)]);
   };
   if (!actorIds) return null;
   return (
@@ -50,9 +59,14 @@ function PageActorAdd(props) {
         </>
       }
     >
-      <Actors sort="name" setSelected={setSelected} selection>
+      <Actors sort="name">
         {actorIds.map(v => (
-          <Actor key={v} id={v} />
+          <Actor
+            key={v}
+            id={v}
+            setSelected={onSetSelected(v)}
+            selected={props.selected.some(z => v === z)}
+          />
         ))}
       </Actors>
       <Dialog

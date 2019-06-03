@@ -6,7 +6,6 @@ import PageInstance from "./PageInstance";
 import PageHome from "./PageHome";
 import PageInstances from "./PageInstances";
 import PageActors from "./PageActors";
-import PageActorAdd from "./PageActorAdd";
 
 import {
   withStyles,
@@ -116,7 +115,6 @@ function App() {
           <Route exact path="/instances" component={PageInstances} />
           <Route exact path="/actors" component={PageActors} />
           <Route exact path="/instance" component={PageInstance} />
-          <Route exact path="/addactors" component={PageActorAdd} />
         </Switch>
       </BrowserRouter>
     </>
