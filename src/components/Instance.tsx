@@ -1,6 +1,7 @@
 import * as React from "react";
 import { useState, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
+import { Link } from "react-router-dom";
 import clsx from "clsx";
 import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
@@ -250,7 +251,7 @@ function Instance(props: InstanceProps) {
                     className={classes.addActorButton}
                   >
                     <DirectionsRun />
-                    Add Actor
+                    <Link to="/addactors">Add Actors</Link>
                   </Button>
                 </div>
                 <div>

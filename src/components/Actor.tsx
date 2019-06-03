@@ -17,11 +17,15 @@ import Divider from "@material-ui/core/Divider";
 import moment from "moment";
 
 import Chip from "@material-ui/core/Chip";
+import Button from "@material-ui/core/Button";
+
 import FaceIcon from "@material-ui/icons/Face";
 
 import Collapse from "@material-ui/core/Collapse";
 
 import Drawer from "@material-ui/core/Drawer";
+
+import Checkbox from "@material-ui/core/Checkbox";
 
 import { ModelActor } from "../models/ModelActor";
 import { useActor } from "../util/hooks";
@@ -75,6 +79,8 @@ const useStyles = makeStyles(theme => ({
 type InstanceProps = { [P in keyof ModelActor]?: ModelActor[P] } & {
   classes?: { card: string };
   setSortActor?: (a: ModelActor) => void;
+  selection?: boolean;
+  setSelected?: (f: boolean) => void;
 };
 
 function Actor(props: InstanceProps) {
@@ -101,69 +107,87 @@ function Actor(props: InstanceProps) {
   const c = [];
   for (let i in actor.class) c.push(`${i} lvl ${actor.class[i]}`);
 
-  return (
-    <>
-      <Card className={classes.card}>
-        <CardHeader
-          onClick={openActionPanel}
-          avatar={
-            <Avatar aria-label="Recipe" className={classes.avatar}>
-              {actor.name[0]}
-            </Avatar>
-          }
-          subheader={c.join(", ")}
-          action={
-            <>
-              <Chip
-                icon={<FaceIcon />}
-                label={actor.hp ? `${actor.hpCurrent}/${actor.hp}` : "--"}
-                className={classes.chip}
-                color="secondary"
-                variant="outlined"
-              />
-              <IconButton
-                className={clsx(classes.expand, {
-                  [classes.expandOpen]: expanded
-                })}
-                onClick={handleExpandClick}
-                aria-expanded={expanded}
-                aria-label="Show more"
-              >
-                <ExpandMoreIcon />
-              </IconButton>
-            </>
-          }
-          title={actor.name}
-        />
-        <Collapse in={expanded} timeout="auto" unmountOnExit>
-          <CardContent>
-            <Divider />
-            <div className={classes.content}>
-              <Typography paragraph>Method:</Typography>
-              <Typography paragraph>
-                Heat 1/2 cup of the broth in a pot until simmering, add saffron
-                and set aside for 10 minutes.
-              </Typography>
-            </div>
-          </CardContent>
-        </Collapse>
-      </Card>
-      <Drawer
-        open={openAction}
-        anchor="right"
-        onClose={() => setOpenAction(false)}
-      >
-        <div>
-          <PageActorActions
-            updateActor={updateActor}
-            setOpenAction={setOpenAction}
-            {...actor}
+  const renderView = () => {
+    return (
+      <>
+        <Card className={classes.card}>
+          <CardHeader
+            onClick={e => (props.selection ? null : openActionPanel(e))}
+            avatar={
+              <>
+                {props.selection ? (
+                  <Checkbox
+                    onChange={e => props.setSelected(e.target.checked)}
+                    inputProps={{
+                      "aria-label": "primary checkbox"
+                    }}
+                  />
+                ) : (
+                  <Avatar aria-label="Recipe" className={classes.avatar}>
+                    {actor.name[0]}
+                  </Avatar>
+                )}
+              </>
+            }
+            subheader={c.join(", ")}
+            action={
+              <>
+                <Chip
+                  icon={<FaceIcon />}
+                  label={actor.hp ? `${actor.hpCurrent}/${actor.hp}` : "--"}
+                  className={classes.chip}
+                  color="secondary"
+                  variant="outlined"
+                />
+                <IconButton
+                  className={clsx(classes.expand, {
+                    [classes.expandOpen]: expanded
+                  })}
+                  onClick={handleExpandClick}
+                  aria-expanded={expanded}
+                  aria-label="Show more"
+                >
+                  <ExpandMoreIcon />
+                </IconButton>
+              </>
+            }
+            title={
+              <a type="link" href="#" onClick={openActionPanel}>
+                {actor.name}
+              </a>
+            }
           />
-        </div>
-      </Drawer>
-    </>
-  );
-}
+          <Collapse in={expanded} timeout="auto" unmountOnExit>
+            <CardContent>
+              <Divider />
+              <div className={classes.content}>
+                <Typography paragraph>Method:</Typography>
+                <Typography paragraph>
+                  Heat 1/2 cup of the broth in a pot until simmering, add
+                  saffron and set aside for 10 minutes.
+                </Typography>
+              </div>
+            </CardContent>
+          </Collapse>
+        </Card>
+        <Drawer
+          open={openAction}
+          anchor="right"
+          onClose={() => setOpenAction(false)}
+        >
+          <div>
+            <PageActorActions
+              updateActor={updateActor}
+              setOpenAction={setOpenAction}
+              {...actor}
+            />
+          </div>
+        </Drawer>
+      </>
+    );
+  };
 
+  return renderView();
+}
 
 export default Actor;

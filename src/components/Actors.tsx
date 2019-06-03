@@ -1,5 +1,5 @@
 import * as React from "react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { SortActorsBy } from "../enums";
 
@@ -17,16 +17,30 @@ const useStyles = makeStyles(theme => {
 interface ActorsProps {
   children: React.ReactElement | React.ReactElement[];
   sort: SortActorsBy;
+  selection: boolean;
+  setSelected?: (f: number[]) => void;
 }
 function Actors({ children, ...props }: ActorsProps) {
   const classes = useStyles(props);
   const [sortedElms] = useSort(props.sort, children);
+  const [selected, setSel] = useState([]);
+
+  const setSelected = id => e => {
+    let i = selected.findIndex(v => v === id);
+    if (i === -1) setSel([...selected, id]);
+    else setSel([...selected.filter(v => v !== id)]);
+  };
+  useEffect(() => {
+    props.setSelected(selected);
+  }, [selected]);
 
   return (
     <div>
       {sortedElms.map(v =>
         React.cloneElement(v, {
-          classes
+          classes,
+          selection: props.selection,
+          setSelected: setSelected(v.props.id)
         })
       )}
     </div>
