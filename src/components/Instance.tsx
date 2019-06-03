@@ -293,13 +293,13 @@ function Instance(props: InstanceProps) {
           />
         </div>
       </Drawer>
-      <Dialog
-        fullScreen
+      <Drawer
+        anchor="top"
         open={selectActors}
         onClose={e => setSelectActors(false)}
       >
         <PageActorAdd onDone={onAddActors} selected={instance.actors} />
-      </Dialog>
+      </Drawer>
     </>
   );
 }

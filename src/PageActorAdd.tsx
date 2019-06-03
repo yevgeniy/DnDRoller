@@ -41,8 +41,10 @@ function PageActorAdd(props: PageActorAddProps) {
     props.onDone(selected);
   };
   const onSetSelected = id => f => {
-    if (f) setSelected([...selected, id]);
+    console.log("a", id, f, selected);
+    if (f && selected.indexOf(id) === -1) setSelected([...selected, id]);
     else setSelected([...selected.filter(v => v !== id)]);
+    console.log("b", id, f, selected);
   };
   if (!actorIds) return null;
   return (
@@ -65,7 +67,7 @@ function PageActorAdd(props: PageActorAddProps) {
             key={v}
             id={v}
             setSelected={onSetSelected(v)}
-            selected={props.selected.some(z => v === z)}
+            selected={selected.some(z => v === z)}
           />
         ))}
       </Actors>
