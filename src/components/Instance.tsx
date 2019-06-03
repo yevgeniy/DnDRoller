@@ -9,11 +9,17 @@ import Avatar from "@material-ui/core/Avatar";
 import IconButton from "@material-ui/core/IconButton";
 import Typography from "@material-ui/core/Typography";
 import red from "@material-ui/core/colors/red";
+import green from "@material-ui/core/colors/green";
 import orange from "@material-ui/core/colors/orange";
+import blue from "@material-ui/core/colors/blue";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
+import RemoveCircle from "@material-ui/icons/RemoveCircle";
+import Delete from "@material-ui/icons/Delete";
 import AccessTime from "@material-ui/icons/AccessTime";
 import FlashOn from "@material-ui/icons/FlashOn";
 import Divider from "@material-ui/core/Divider";
+import Button from "@material-ui/core/Button";
+import DirectionsRun from "@material-ui/icons/DirectionsRun";
 import moment from "moment";
 import PageInstancesActions from "./PageInstancesActions";
 
@@ -26,8 +32,13 @@ import Drawer from "@material-ui/core/Drawer";
 
 import PageInstanceActions from "./PageInstanceActions";
 import { ModelInstance } from "../models/ModelInstance";
-import { useService } from "../util/hooks";
+import { useService, useActor } from "../util/hooks";
 import ServiceInstance from "../services/ServiceInstance";
+
+import {List,ListItem,ListItemText,ListSubheader,ListItemAvatar
+  , ListItemSecondaryAction
+  , Paper}
+ from '@material-ui/core';
 
 const useStyles = makeStyles(theme => ({
   card: {},
@@ -51,8 +62,23 @@ const useStyles = makeStyles(theme => ({
       height: 30
     }
   },
-  content: {
-    marginTop: theme.spacing(1)
+  actorAvatar: {
+    backgroundColor: blue[500],
+  },
+  removeActor: {
+    '& svg': {
+      color:red[600],
+    }
+  },
+  instanceControls: {
+    padding:theme.spacing(1),
+  },
+  cardContent: {
+    marginTop: theme.spacing(1),
+    display:'flex',
+    '& > *': {
+      flex:1,
+    }
   },
   chip: {
     color: orange[600],
@@ -70,6 +96,22 @@ const useStyles = makeStyles(theme => ({
   },
   extendedIcon: {
     marginRight: theme.spacing(1)
+  },
+  addActorButton: {
+    background:green[600],
+    marginLeft:theme.spacing(1),
+    marginTop:theme.spacing(1),
+    '& svg': {
+      marginRight:theme.spacing(1)
+    }
+  },
+  deleteInstanceButton: {
+    background:orange[600],
+    marginTop:theme.spacing(1),
+    marginLeft:theme.spacing(1),
+    '& svg': {
+      marginRight:theme.spacing(1)
+    }
   }
 }));
 
@@ -138,12 +180,35 @@ function Instance(props: InstanceProps) {
         <Collapse in={expanded} timeout="auto" unmountOnExit>
           <CardContent>
             <Divider />
-            <div className={classes.content}>
-              <Typography paragraph>Method:</Typography>
-              <Typography paragraph>
-                Heat 1/2 cup of the broth in a pot until simmering, add saffron
-                and set aside for 10 minutes.
-              </Typography>
+            <div className={classes.cardContent}>
+              <div>
+                <Paper>
+                  <List
+                  subheader={<ListSubheader component="div">Actors</ListSubheader>}
+                  >
+                  {
+                    instance.actors.map(v=><ActorEntry kye={v} id={v} />)
+                    }
+                  </List>
+                </Paper>
+              </div>
+              <div>
+                <div>
+                  <Button variant="contained" color="secondary"
+                    button className={classes.deleteInstanceButton}>
+                    <Delete/>
+                    Delete Instance
+                  </Button>
+                </div>
+                <div>
+                  <Button variant="contained" color="secondary"
+                    button className={classes.addActorButton}>
+                    <DirectionsRun/>
+                    Add Actor
+                  </Button>
+                </div>
+              </div>
+
             </div>
           </CardContent>
         </Collapse>
@@ -163,6 +228,44 @@ function Instance(props: InstanceProps) {
       </Drawer>
     </>
   );
+};
+
+interface ActorEntryProps{
+  id:number,
+};
+const ActorEntry=(props:ActorEntryProps)=> {
+  const classes=useStyles();
+  const [actor] = useActor(props.id);
+
+  if (!actor)return null;
+
+  let c=[];
+  for (let i in actor.class) {
+    c.push(`${i} lvl: ${actor.class[i]}`)
+  }
+
+  return (
+    <ListItem >
+      <ListItemAvatar>
+        <Avatar className={clsx(classes.avatar,classes.actorAvatar)}>
+          {actor.name[0]}
+        </Avatar>
+      </ListItemAvatar>
+      <ListItemText
+        primary={actor.name}
+        secondary={
+          <>
+            {c.join(', ')}
+          </>
+        }
+      />
+      <ListItemSecondaryAction>
+        <IconButton className={classes.removeActor} edge="end" aria-label="Comments">
+          <RemoveCircle />
+        </IconButton>
+      </ListItemSecondaryAction>
+    </ListItem>
+  )
 }
 
 function useInstance(id: number) {

@@ -24,7 +24,7 @@ import Collapse from "@material-ui/core/Collapse";
 import Drawer from "@material-ui/core/Drawer";
 
 import { ModelActor } from "../models/ModelActor";
-import { useService } from "../util/hooks";
+import { useActor } from "../util/hooks";
 import ServiceActor from "../services/ServiceActor";
 
 import PageActorActions from "./PageActorsActions";
@@ -165,20 +165,5 @@ function Actor(props: InstanceProps) {
   );
 }
 
-function useActor(id: number) {
-  const serviceActor = useService(ServiceActor);
-  const [actor, setActor] = useState(null);
-
-  useEffect(() => {
-    if (!serviceActor) return;
-    serviceActor.get(id).then(setActor);
-  }, [serviceActor]);
-
-  function updateActor(updateActor) {
-    setActor({ ...actor, ...updateActor });
-  }
-
-  return [actor, updateActor];
-}
 
 export default Actor;
