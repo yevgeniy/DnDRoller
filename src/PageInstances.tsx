@@ -17,7 +17,7 @@ import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogTitle from "@material-ui/core/DialogTitle";
 
 function PageInstances(props) {
-  const [instanceIds, createInstance] = useInstanceIds();
+  const [instanceIds, createInstance, deleteInstance] = useInstanceIds();
   const [openNewInstanceDialog, setOpenNewInstanceDialog] = useState(false);
   const [newInstanceName, setNewInstanceName] = useState("");
   const onAdd = e => {
@@ -45,7 +45,7 @@ function PageInstances(props) {
     >
       <Instances sort="name">
         {instanceIds.map(v => (
-          <Instance key={v} id={v} />
+          <Instance key={v} id={v} deleteInstance={deleteInstance} />
         ))}
       </Instances>
       <Dialog
@@ -104,6 +104,10 @@ function useInstanceIds() {
     const newid = (await serviceInstance.createInstance(name)).id;
     setInstanceIds([...instanceIds, newid]);
   };
+  const deleteInstance = async id => {
+    await serviceInstance.deleteInstance(id);
+    setInstanceIds([...instanceIds.filter(v => v !== id)]);
+  };
 
-  return [instanceIds, createInstance];
+  return [instanceIds, createInstance, deleteInstance];
 }

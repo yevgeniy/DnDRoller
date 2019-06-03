@@ -35,10 +35,15 @@ import { ModelInstance } from "../models/ModelInstance";
 import { useService, useActor } from "../util/hooks";
 import ServiceInstance from "../services/ServiceInstance";
 
-import {List,ListItem,ListItemText,ListSubheader,ListItemAvatar
-  , ListItemSecondaryAction
-  , Paper}
- from '@material-ui/core';
+import {
+  List,
+  ListItem,
+  ListItemText,
+  ListSubheader,
+  ListItemAvatar,
+  ListItemSecondaryAction,
+  Paper
+} from "@material-ui/core";
 
 const useStyles = makeStyles(theme => ({
   card: {},
@@ -63,21 +68,21 @@ const useStyles = makeStyles(theme => ({
     }
   },
   actorAvatar: {
-    backgroundColor: blue[500],
+    backgroundColor: blue[500]
   },
   removeActor: {
-    '& svg': {
-      color:red[600],
+    "& svg": {
+      color: red[600]
     }
   },
   instanceControls: {
-    padding:theme.spacing(1),
+    padding: theme.spacing(1)
   },
   cardContent: {
     marginTop: theme.spacing(1),
-    display:'flex',
-    '& > *': {
-      flex:1,
+    display: "flex",
+    "& > *": {
+      flex: 1
     }
   },
   chip: {
@@ -98,19 +103,27 @@ const useStyles = makeStyles(theme => ({
     marginRight: theme.spacing(1)
   },
   addActorButton: {
-    background:green[600],
-    marginLeft:theme.spacing(1),
-    marginTop:theme.spacing(1),
-    '& svg': {
-      marginRight:theme.spacing(1)
+    background: green[600],
+    marginLeft: theme.spacing(1),
+    marginTop: theme.spacing(1),
+    "& svg": {
+      marginRight: theme.spacing(1)
+    }
+  },
+  deleteActorStart: {
+    background: red[600],
+    marginLeft: theme.spacing(1),
+    marginTop: theme.spacing(1),
+    "& svg": {
+      marginRight: theme.spacing(1)
     }
   },
   deleteInstanceButton: {
-    background:orange[600],
-    marginTop:theme.spacing(1),
-    marginLeft:theme.spacing(1),
-    '& svg': {
-      marginRight:theme.spacing(1)
+    background: orange[600],
+    marginTop: theme.spacing(1),
+    marginLeft: theme.spacing(1),
+    "& svg": {
+      marginRight: theme.spacing(1)
     }
   }
 }));
@@ -118,11 +131,13 @@ const useStyles = makeStyles(theme => ({
 type InstanceProps = { [P in keyof ModelInstance]?: ModelInstance[P] } & {
   classes?: { card: string };
   setSortInstance?: (a: ModelInstance) => void;
+  deleteInstance: (i: number) => void;
 };
 
 function Instance(props: InstanceProps) {
   const classes = useStyles(props);
   const [instance, updateInstance] = useInstance(props.id);
+  const [deleteActors, setDeleteActors] = useState(false);
   useEffect(() => {
     if (!instance) return;
     props.setSortInstance(instance);
@@ -130,15 +145,28 @@ function Instance(props: InstanceProps) {
 
   const [expanded, setExpanded] = useState(false);
   const [openAction, setOpenAction] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(false);
+  useEffect(() => {
+    if (!confirmDelete) return;
+    setTimeout(() => setConfirmDelete(false), 1500);
+  }, [confirmDelete]);
 
-  function handleExpandClick(e) {
+  const handleExpandClick = e => {
     e.stopPropagation();
     setExpanded(!expanded);
-  }
-  function openActionPanel(e) {
+  };
+  const openActionPanel = e => {
     e.stopPropagation();
     setOpenAction(true);
-  }
+  };
+  const removeActor = id => {
+    if (!instance) return;
+    updateInstance({ actors: instance.actors.filter(v => v !== id) });
+  };
+  const deleteInstance = e => {
+    if (!instance) return;
+    props.deleteInstance(props.id);
+  };
 
   if (!instance) return null;
 
@@ -184,31 +212,60 @@ function Instance(props: InstanceProps) {
               <div>
                 <Paper>
                   <List
-                  subheader={<ListSubheader component="div">Actors</ListSubheader>}
-                  >
-                  {
-                    instance.actors.map(v=><ActorEntry kye={v} id={v} />)
+                    subheader={
+                      <ListSubheader component="div">Actors</ListSubheader>
                     }
+                  >
+                    {instance.actors.map(v => (
+                      <ActorEntry
+                        key={v}
+                        id={v}
+                        removeActor={removeActor}
+                        deleteActors={deleteActors}
+                      />
+                    ))}
                   </List>
                 </Paper>
               </div>
               <div>
                 <div>
-                  <Button variant="contained" color="secondary"
-                    button className={classes.deleteInstanceButton}>
-                    <Delete/>
-                    Delete Instance
+                  <Button
+                    variant="contained"
+                    color="secondary"
+                    onClick={e =>
+                      confirmDelete ? deleteInstance(e) : setConfirmDelete(true)
+                    }
+                    button="true"
+                    className={classes.deleteInstanceButton}
+                  >
+                    <Delete />
+                    {confirmDelete ? "...again to confirm" : "Delete Instance"}
                   </Button>
                 </div>
                 <div>
-                  <Button variant="contained" color="secondary"
-                    button className={classes.addActorButton}>
-                    <DirectionsRun/>
+                  <Button
+                    variant="contained"
+                    color="secondary"
+                    button="true"
+                    className={classes.addActorButton}
+                  >
+                    <DirectionsRun />
                     Add Actor
                   </Button>
                 </div>
+                <div>
+                  <Button
+                    variant="contained"
+                    color="secondary"
+                    button="secondary"
+                    onClick={e => setDeleteActors(!deleteActors)}
+                    className={classes.deleteActorStart}
+                  >
+                    <DirectionsRun />
+                    {deleteActors ? "...cancel" : "Delete Actors"}
+                  </Button>
+                </div>
               </div>
-
             </div>
           </CardContent>
         </Collapse>
@@ -228,45 +285,47 @@ function Instance(props: InstanceProps) {
       </Drawer>
     </>
   );
-};
+}
 
-interface ActorEntryProps{
-  id:number,
-};
-const ActorEntry=(props:ActorEntryProps)=> {
-  const classes=useStyles();
+interface ActorEntryProps {
+  id: number;
+  removeActor: (a: number) => void;
+  deleteActors: boolean;
+}
+const ActorEntry = (props: ActorEntryProps) => {
+  const classes = useStyles();
   const [actor] = useActor(props.id);
 
-  if (!actor)return null;
+  if (!actor) return null;
 
-  let c=[];
+  let c = [];
   for (let i in actor.class) {
-    c.push(`${i} lvl: ${actor.class[i]}`)
+    c.push(`${i} lvl: ${actor.class[i]}`);
   }
 
   return (
-    <ListItem >
+    <ListItem>
       <ListItemAvatar>
-        <Avatar className={clsx(classes.avatar,classes.actorAvatar)}>
+        <Avatar className={clsx(classes.avatar, classes.actorAvatar)}>
           {actor.name[0]}
         </Avatar>
       </ListItemAvatar>
-      <ListItemText
-        primary={actor.name}
-        secondary={
-          <>
-            {c.join(', ')}
-          </>
-        }
-      />
-      <ListItemSecondaryAction>
-        <IconButton className={classes.removeActor} edge="end" aria-label="Comments">
-          <RemoveCircle />
-        </IconButton>
-      </ListItemSecondaryAction>
+      <ListItemText primary={actor.name} secondary={<>{c.join(", ")}</>} />
+      {props.deleteActors ? (
+        <ListItemSecondaryAction>
+          <IconButton
+            onClick={e => props.removeActor(props.id)}
+            className={classes.removeActor}
+            edge="end"
+            aria-label="Comments"
+          >
+            <RemoveCircle />
+          </IconButton>
+        </ListItemSecondaryAction>
+      ) : null}
     </ListItem>
-  )
-}
+  );
+};
 
 function useInstance(id: number) {
   const serviceInstance = useService(ServiceInstance);

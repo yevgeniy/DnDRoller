@@ -59,6 +59,9 @@ class ServiceInstance {
 
     return newInstance;
   }
+  async deleteInstance(id: number): Promise<void> {
+    await this.record.delete(id);
+  }
 }
 
 let recordInst;
@@ -94,6 +97,9 @@ class Record {
       mockinstance[i] = instance;
     }
     return { ...instance, actors: [...instance.actors] };
+  }
+  async delete(id: number): Promise<void> {
+    await new Promise(res => setTimeout(res, 100));
   }
 }
 
