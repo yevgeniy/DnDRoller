@@ -26,8 +26,7 @@ function Actors({ children, ...props }: ActorsProps) {
     <div>
       {sortedElms.map(v =>
         React.cloneElement(v, {
-          classes,
-          selection: props.selection
+          classes
         })
       )}
     </div>
