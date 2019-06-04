@@ -9,6 +9,9 @@ import FaceIcon from "@material-ui/icons/Face";
 import Replay from "@material-ui/icons/Replay";
 import { Card, CardHeader, TextField, Fab } from "@material-ui/core";
 import { ModelActor } from "../models/ModelActor";
+import blue from "@material-ui/core/colors/blue";
+import ReplyAll from "@material-ui/icons/ReplyAll";
+import { Link } from "react-router-dom";
 
 const useStyle = makeStyles(theme => {
   return {
@@ -23,6 +26,14 @@ const useStyle = makeStyles(theme => {
       width: "60%",
       marginTop: 0,
       marginRight: theme.spacing(1)
+    },
+    gotoButton: {
+      background: blue[600],
+      color: theme.palette.common.white,
+      marginLeft: theme.spacing(1),
+      "& svg": {
+        transform: "scaleX(-1)"
+      }
     }
   };
 });
@@ -70,11 +81,20 @@ function PageInstanceActions(props: PageInstanceActionsProps) {
           title={props.name}
           subheader={c.join(", ")}
           action={
-            <Chip
-              label={`${props.hpCurrent}/${props.hp}`}
-              color="secondary"
-              variant="outlined"
-            />
+            <>
+              <Fab
+                className={classes.gotoButton}
+                component={Link}
+                to={{
+                  pathname: "/actors",
+                  state: {
+                    discover: props.id
+                  }
+                }}
+              >
+                <ReplyAll />
+              </Fab>
+            </>
           }
         />
       </Card>

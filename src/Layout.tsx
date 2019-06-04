@@ -103,6 +103,7 @@ function useScrollMemory() {
   //@ts-ignore
   router = router || {
     history: {
+      action: "",
       replace: function() {}
     },
     location: {
@@ -157,6 +158,8 @@ function useScrollMemory() {
   }, []);
 
   useEffect(() => {
+    if (router.history.action !== "POP") return;
+
     document.removeEventListener("scroll", onScroll);
     document.querySelector("html").scrollTop = scroll;
     setTimeout(() => document.addEventListener("scroll", onScroll), 500);

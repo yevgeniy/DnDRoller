@@ -2,9 +2,6 @@ import * as React from "react";
 import { useState } from "react";
 import { makeStyles, createStyles } from "@material-ui/core/styles";
 import Divider from "@material-ui/core/Divider";
-import Typography from "@material-ui/core/Typography";
-import Chip from "@material-ui/core/Chip";
-import FaceIcon from "@material-ui/icons/Face";
 import Replay from "@material-ui/icons/Replay";
 import SaveAlt from "@material-ui/icons/SaveAlt";
 import { Card, CardHeader, TextField, Fab } from "@material-ui/core";
@@ -15,19 +12,6 @@ import ReplyAll from "@material-ui/icons/ReplyAll";
 import { Link } from "react-router-dom";
 
 import green from "@material-ui/core/colors/green";
-
-import Input from "@material-ui/core/Input";
-import OutlinedInput from "@material-ui/core/OutlinedInput";
-import FilledInput from "@material-ui/core/FilledInput";
-import InputLabel from "@material-ui/core/InputLabel";
-import MenuItem from "@material-ui/core/MenuItem";
-import FormHelperText from "@material-ui/core/FormHelperText";
-import FormControl from "@material-ui/core/FormControl";
-import Select from "@material-ui/core/Select";
-
-import { ActorSize } from "../enums";
-import AutoFill from "./AutoFill";
-import ClassListInput from "./ClassListInput";
 
 const useStyle = makeStyles(theme => {
   return createStyles({

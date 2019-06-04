@@ -1,5 +1,5 @@
 import * as React from "react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import clsx from "clsx";
 import Card from "@material-ui/core/Card";
@@ -81,18 +81,21 @@ type ActorProps = { [P in keyof ModelActor]?: ModelActor[P] } & {
   setSortActor?: (a: ModelActor) => void;
   setSelected?: (f: boolean) => void;
   selected?: boolean;
+  discover?: number;
 };
 
 function Actor(props: ActorProps) {
   const classes = useStyles(props);
   const [actor, updateActor] = useActor(props.id);
+
+  const [expanded, setExpanded] = useState(false);
+  const [openAction, setOpenAction] = useState(false);
+  const elmRef = useDiscover(props.discover, props.id, setExpanded);
+
   useEffect(() => {
     if (!actor) return;
     props.setSortActor(actor);
   }, [actor]);
-
-  const [expanded, setExpanded] = useState(false);
-  const [openAction, setOpenAction] = useState(false);
 
   function handleExpandClick(e) {
     e.stopPropagation();
@@ -110,7 +113,7 @@ function Actor(props: ActorProps) {
   const renderView = () => {
     return (
       <>
-        <Card className={classes.card}>
+        <Card className={classes.card} ref={elmRef}>
           <CardHeader
             onClick={e =>
               props.setSelected
@@ -192,6 +195,30 @@ function Actor(props: ActorProps) {
   };
 
   return renderView();
+}
+
+function useDiscover(
+  discover: number,
+  id: number,
+  setExpanded: (f: boolean) => void
+) {
+  const ref = useRef();
+  const [discovered, setDiscovered] = useState(false);
+
+  useEffect(() => {
+    if (discover !== id) return;
+    setExpanded(true);
+  }, []);
+  useEffect(() => {
+    if (discovered) return;
+    if (discover !== id) return;
+    if (!ref.current) return;
+    //@ts-ignore
+    ref.current.scrollIntoView();
+    setDiscovered(true);
+  });
+
+  return ref;
 }
 
 export default Actor;

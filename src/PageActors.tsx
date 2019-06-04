@@ -16,12 +16,28 @@ import DialogContent from "@material-ui/core/DialogContent";
 import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogTitle from "@material-ui/core/DialogTitle";
 
-import { RouterContextView } from "./util/routerContext";
+import {
+  RouterContextView,
+  RouterViewContextState
+} from "./util/routerContext";
+import { RouteComponentProps } from "react-router-dom";
 
-function PageActors(props) {
+interface PageActorLocationState {
+  discover?: number;
+}
+
+function PageActors(
+  props: RouteComponentProps<
+    {},
+    {},
+    RouterViewContextState & PageActorLocationState
+  >
+) {
+  props.location.state = props.location.state || {};
   const [actorIds, createActor] = useActorIds();
   const [openNewActorDialog, setOpenNewActorDialog] = useState(false);
   const [newActorName, setNewActorName] = useState("");
+
   const onAdd = e => {
     setNewActorName("");
     setOpenNewActorDialog(true);
@@ -48,7 +64,7 @@ function PageActors(props) {
       >
         <Actors sort="name">
           {actorIds.map(v => (
-            <Actor key={v} id={v} />
+            <Actor key={v} id={v} discover={props.location.state.discover} />
           ))}
         </Actors>
         <Dialog
