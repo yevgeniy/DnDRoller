@@ -2,8 +2,8 @@ import * as React from "react";
 import { RouteComponentProps } from "react-router-dom";
 
 interface RouterViewContextState {
-  menuOpen?: number;
-  drawerOpen?: number;
+  menuOpen?: { [id: number]: boolean };
+  drawerOpen?: { [id: number]: boolean };
   scrollTop?: number;
 }
 

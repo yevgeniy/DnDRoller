@@ -1,5 +1,5 @@
 import * as React from "react";
-import { useState, useEffect, useContext } from "react";
+import { useState, useEffect, useContext, useCallback } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { RouteComponentProps } from "react-router-dom";
 import AppBar from "@material-ui/core/AppBar";
@@ -110,11 +110,17 @@ function useScrollMemory() {
     }
   };
   router.location.state = router.location.state || {};
+
   const [scroll, setScroll] = useState(router.location.state.scrollTop);
   let [scrollHeight, setScrollHeight] = useState(
     document.querySelector("html").scrollHeight
   );
   const [scrollSet, setScrollSet] = useState(false);
+  const onScroll = useCallback(() => {
+    let s = document.querySelector("html").scrollTop;
+    setScroll(s);
+    setScrollSet(true);
+  }, []);
   useEffect(() => {
     if (!router) return;
     let t = setTimeout(() => {
@@ -127,16 +133,12 @@ function useScrollMemory() {
       clearTimeout(t);
     };
   }, [scroll]);
+
   useEffect(() => {
     if (!router) return;
-    function w(e) {
-      let s = document.querySelector("html").scrollTop;
-      setScroll(s);
-      setScrollSet(true);
-    }
-    document.addEventListener("scroll", w);
+    document.addEventListener("scroll", onScroll);
     return () => {
-      document.removeEventListener("scroll", w);
+      document.removeEventListener("scroll", onScroll);
     };
   }, []);
 
@@ -155,6 +157,8 @@ function useScrollMemory() {
   }, []);
 
   useEffect(() => {
+    document.removeEventListener("scroll", onScroll);
     document.querySelector("html").scrollTop = scroll;
+    setTimeout(() => document.addEventListener("scroll", onScroll), 500);
   }, [scrollHeight]);
 }

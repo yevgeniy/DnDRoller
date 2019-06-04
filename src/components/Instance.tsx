@@ -386,19 +386,19 @@ function useInstance(id: number) {
 function useRouterMemories(id: number) {
   const router = useContext(RouterContextView);
   router.location.state = router.location.state || {};
+  router.location.state.menuOpen = router.location.state.menuOpen || {};
+  router.location.state.drawerOpen = router.location.state.drawerOpen || {};
 
-  const [expanded, setExpanded] = useState(
-    router.location.state.menuOpen === id
-  );
+  const [expanded, setExpanded] = useState(router.location.state.menuOpen[id]);
   const [openAction, setOpenAction] = useState(
-    router.location.state.drawerOpen === id
+    router.location.state.drawerOpen[id]
   );
 
   useEffect(() => {
     router.history.replace(router.location.pathname, {
       ...(router.location.state || {}),
-      menuOpen: expanded ? id : router.location.state.menuOpen,
-      drawerOpen: openAction ? id : router.location.state.drawerOpen
+      menuOpen: { ...router.location.state.menuOpen, [id]: expanded },
+      drawerOpen: { ...router.location.state.drawerOpen, [id]: openAction }
     });
   }, [expanded, openAction]);
 
