@@ -45,7 +45,7 @@ interface LayoutProps {
 export default (props: LayoutProps) => {
   const classes = useStyles();
   const [mainMenuOpen, setMainMenuOpen] = useState(false);
-  useScroll(props.router);
+  useScrollMemory();
 
   return (
     <div className={classes.container}>
@@ -98,7 +98,7 @@ function MainMenu({ setMainMenuOpen }: MainMenuProps) {
   );
 }
 
-function useScroll() {
+function useScrollMemory() {
   let router = useContext(RouterContextView);
   //@ts-ignore
   router = router || {
@@ -114,6 +114,7 @@ function useScroll() {
   let [scrollHeight, setScrollHeight] = useState(
     document.querySelector("html").scrollHeight
   );
+  const [scrollSet, setScrollSet] = useState(false);
   useEffect(() => {
     if (!router) return;
     let t = setTimeout(() => {
@@ -131,7 +132,7 @@ function useScroll() {
     function w(e) {
       let s = document.querySelector("html").scrollTop;
       setScroll(s);
-      setScrollHeight = function() {};
+      setScrollSet(true);
     }
     document.addEventListener("scroll", w);
     return () => {
@@ -141,7 +142,9 @@ function useScroll() {
 
   useEffect(() => {
     let t = setInterval(
-      () => setScrollHeight(document.querySelector("html").scrollHeight),
+      () =>
+        scrollSet === false &&
+        setScrollHeight(document.querySelector("html").scrollHeight),
       100
     );
     let t1 = setTimeout(() => clearInterval(t), 5000);
