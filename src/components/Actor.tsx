@@ -41,7 +41,7 @@ const useStyles = makeStyles(theme => ({
       duration: theme.transitions.duration.shortest
     }),
     [theme.breakpoints.down("xs")]: {
-      padding: theme.spacing(1 / 2)
+      padding: theme.spacing(2)
     }
   },
   expandOpen: {

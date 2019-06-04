@@ -61,7 +61,7 @@ const useStyles = makeStyles(theme =>
         duration: theme.transitions.duration.shortest
       }),
       [theme.breakpoints.down("xs")]: {
-        padding: theme.spacing(1 / 2)
+        padding: theme.spacing(2)
       }
     },
     expandOpen: {
@@ -152,12 +152,8 @@ function Instance(props: InstanceProps) {
   const [instance, updateInstance] = useInstance(props.id);
   const [deleteActors, setDeleteActors] = useState(false);
 
-  const {
-    expanded,
-    setExpanded,
-    openAction,
-    setOpenAction
-  } = useRouterMemories(props.id);
+  const [openAction, setOpenAction] = useState(false);
+  const { expanded, setExpanded } = useRouterMemories(props.id);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [selectActors, setSelectActors] = useState(false);
 
@@ -387,26 +383,19 @@ function useRouterMemories(id: number) {
   const router = useContext(RouterContextView);
   router.location.state = router.location.state || {};
   router.location.state.menuOpen = router.location.state.menuOpen || {};
-  router.location.state.drawerOpen = router.location.state.drawerOpen || {};
 
   const [expanded, setExpanded] = useState(router.location.state.menuOpen[id]);
-  const [openAction, setOpenAction] = useState(
-    router.location.state.drawerOpen[id]
-  );
 
   useEffect(() => {
     router.history.replace(router.location.pathname, {
       ...(router.location.state || {}),
-      menuOpen: { ...router.location.state.menuOpen, [id]: expanded },
-      drawerOpen: { ...router.location.state.drawerOpen, [id]: openAction }
+      menuOpen: { ...router.location.state.menuOpen, [id]: expanded }
     });
-  }, [expanded, openAction]);
+  }, [expanded]);
 
   return {
     expanded,
-    setExpanded,
-    openAction,
-    setOpenAction
+    setExpanded
   };
 }
 

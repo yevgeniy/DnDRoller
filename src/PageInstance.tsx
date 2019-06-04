@@ -20,16 +20,26 @@ import DialogTitle from "@material-ui/core/DialogTitle";
 import PageInstanceActor from "./components/PageInstanceActor";
 import PageInstanceActors from "./components/PageInstanceActors";
 import { SortActorsBy } from "./enums";
+import { RouteComponentProps } from "react-router-dom";
 
-import { RouterContextView } from "./util/routerContext";
+import {
+  RouterContextView,
+  RouterViewContextState
+} from "./util/routerContext";
 
-interface PageInstanceProps {
+interface PageInstanceLocationState {
   id: number;
 }
 
-const INSTANCE_ID = 1;
-const PageInstance = props => {
-  const [instance] = useInstance(INSTANCE_ID);
+const PageInstance = (
+  props: RouteComponentProps<
+    {},
+    {},
+    PageInstanceLocationState & RouterViewContextState
+  >
+) => {
+  console.log(props);
+  const [instance] = useInstance(props.location.state.id);
   const [menuOpen, setMenuOpen] = useState(false);
   const [resetDialogConfirOpen, setResetDialogConfirOpen] = useState(false);
   const [resetActors, setResetActors] = useState();

@@ -11,6 +11,10 @@ import { Card, CardHeader, TextField, Fab } from "@material-ui/core";
 import { ModelInstance } from "../models/ModelInstance";
 import moment from "moment";
 import AccessTime from "@material-ui/icons/AccessTime";
+import ReplyAll from "@material-ui/icons/ReplyAll";
+import { Link } from "react-router-dom";
+
+import green from "@material-ui/core/colors/green";
 
 import Input from "@material-ui/core/Input";
 import OutlinedInput from "@material-ui/core/OutlinedInput";
@@ -56,6 +60,14 @@ const useStyle = makeStyles(theme => {
     entry2: {
       marginTop: theme.spacing(1),
       width: "60%"
+    },
+    gotoButton: {
+      background: green[600],
+      color: theme.palette.common.white,
+      marginLeft: theme.spacing(1),
+      "& svg": {
+        transform: "scaleX(-1)"
+      }
     }
   });
 });
@@ -92,6 +104,22 @@ function PageInstancesActions(props: PageInstancesActionsProps) {
           subheader={moment()
             .subtract(+new Date() - props.created, "ms")
             .calendar()}
+          action={
+            <>
+              <Fab
+                className={classes.gotoButton}
+                component={Link}
+                to={{
+                  pathname: "/instance",
+                  state: {
+                    id: props.id
+                  }
+                }}
+              >
+                <ReplyAll />
+              </Fab>
+            </>
+          }
         />
       </Card>
 

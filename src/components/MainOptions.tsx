@@ -1,4 +1,5 @@
 import * as React from "react";
+import { useContext } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 
 import List from "@material-ui/core/List";
@@ -11,14 +12,32 @@ import InboxIcon from "@material-ui/icons/MoveToInbox";
 import MailIcon from "@material-ui/icons/Mail";
 import Settings from "@material-ui/icons/Settings";
 import Games from "@material-ui/icons/Games";
+import Reply from "@material-ui/icons/Reply";
 import Photo from "@material-ui/icons/Photo";
 import DirectionsRun from "@material-ui/icons/DirectionsRun";
 import Casino from "@material-ui/icons/Casino";
 import { Link } from "react-router-dom";
 
+import { RouterContextView } from "../util/routerContext";
+
 function MainOptions() {
+  const router = useContext(RouterContextView);
   return (
     <>
+      {router && router.history.length > 1 ? (
+        <List>
+          <ListItem
+            button
+            onClick={() => {
+              router.history.goBack();
+            }}
+          >
+            <ListItemIcon>{<Reply />}</ListItemIcon>
+            <ListItemText primary="Back" />
+          </ListItem>
+        </List>
+      ) : null}
+
       <List
         subheader={<ListSubheader component="div">Repositories</ListSubheader>}
       >
