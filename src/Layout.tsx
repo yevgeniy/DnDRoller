@@ -1,5 +1,5 @@
 import * as React from "react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { RouteComponentProps } from "react-router-dom";
 import AppBar from "@material-ui/core/AppBar";
@@ -43,7 +43,7 @@ interface LayoutProps {
   children: React.ReactNode;
   title: React.ReactNode;
   control: React.ReactNode;
-  router?: RouteComponentProps<null, null, RouterPropsScroll>;
+  router: RouteComponentProps<null, null, RouterPropsScroll>;
 }
 export default (props: LayoutProps) => {
   const classes = useStyles();
@@ -102,35 +102,35 @@ function MainMenu({ setMainMenuOpen }: MainMenuProps) {
 }
 
 function useScroll(router: RouteComponentProps<null, null, RouterPropsScroll>) {
-  console.log(router);
-  const [scrollTop, setScrollTop] = useState(
-    router && router.location.state && router.location.state.scrollTop
-  );
+  //@ts-ignore
+  const [scroll, setScroll] = useState((router.location.state || {}).scrollTop);
   useEffect(() => {
-    //@ts-ignore
-    window.__scrollhistory__ = window.__scrollhistory__ || [];
+    let t = setTimeout(() => {
+      router.history.replace(router.location.pathname, {
+        ...(router.location.state || {}),
+        scrollTop: scroll
+      });
+    }, 100);
     return () => {
-      //@ts-ignore
-      window.__scrollhistory__.push(scrollTop);
+      clearTimeout(t);
     };
-  }, []);
+  }, [scroll]);
 
   useEffect(() => {
-    if (!router) return;
-    document.querySelector("html").scrollTop =
-      router && router.location.state && router.location.state.scrollTop;
-  }, []);
-  useEffect(() => {
-    if (!router) return;
     function w(e) {
-      if (!router) return;
       let s = document.querySelector("html").scrollTop;
-      setScrollTop(s);
+      setScroll(s);
     }
 
     document.addEventListener("scroll", w);
     return () => {
       document.removeEventListener("scroll", w);
     };
+  }, []);
+
+  useEffect(() => {
+    setTimeout(() => {
+      document.querySelector("html").scrollTop = scroll;
+    }, 100);
   }, []);
 }
