@@ -21,22 +21,10 @@ import PageInstanceActor from "./components/PageInstanceActor";
 import PageInstanceActors from "./components/PageInstanceActors";
 import { SortActorsBy } from "./enums";
 
+import { RouterContextView } from "./util/routerContext";
+
 interface PageInstanceProps {
   id: number;
-}
-
-function useInstance(id) {
-  const serviceInstance: ServiceInstance = useService(ServiceInstance);
-  const [instance, setInstance] = useState(null);
-
-  useEffect(() => {
-    if (!serviceInstance) return;
-    serviceInstance.get(id).then(v => {
-      setInstance(v);
-    });
-  }, [serviceInstance]);
-
-  return [instance];
 }
 
 const INSTANCE_ID = 1;
@@ -66,55 +54,71 @@ const PageInstance = props => {
   if (!instance) return null;
 
   return (
-    <Layout
-      title="Instance"
-      router={props}
-      control={
-        <>
-          <IconButton onClick={onReset} color="inherit" ref={buttonRef}>
-            <Replay />
-          </IconButton>
-          <IconButton onClick={onShowSort} color="inherit" ref={buttonRef}>
-            <Sort />
-          </IconButton>
-        </>
-      }
-    >
-      <PageInstanceActors sort={sort}>
-        {instance.actors.map(v => (
-          <PageInstanceActor key={v} id={v} resetActor={resetActors} />
-        ))}
-      </PageInstanceActors>
-      <Menu
-        id="simple-menu"
-        anchorEl={buttonRef.current}
-        open={Boolean(menuOpen)}
-        onClose={() => setMenuOpen(false)}
+    <RouterContextView.Provider value={props}>
+      <Layout
+        title="Instance"
+        router={props}
+        control={
+          <>
+            <IconButton onClick={onReset} color="inherit" ref={buttonRef}>
+              <Replay />
+            </IconButton>
+            <IconButton onClick={onShowSort} color="inherit" ref={buttonRef}>
+              <Sort />
+            </IconButton>
+          </>
+        }
       >
-        <MenuItem onClick={onSetSort("name")}>Name</MenuItem>
-        <MenuItem onClick={onSetSort("initiative")}>Initiative</MenuItem>
-      </Menu>
-      <Dialog
-        open={resetDialogConfirOpen}
-        onClose={e => setResetDialogConfirOpen(false)}
-      >
-        <DialogTitle id="alert-dialog-title">
-          Reset All Instance Actors?
-        </DialogTitle>
-        <DialogActions>
-          <Button onClick={onHandleResetYes} color="primary" autoFocus>
-            Yes
-          </Button>
-          <Button
-            onClick={e => setResetDialogConfirOpen(false)}
-            color="primary"
-          >
-            No
-          </Button>
-        </DialogActions>
-      </Dialog>
-    </Layout>
+        <PageInstanceActors sort={sort}>
+          {instance.actors.map(v => (
+            <PageInstanceActor key={v} id={v} resetActor={resetActors} />
+          ))}
+        </PageInstanceActors>
+        <Menu
+          id="simple-menu"
+          anchorEl={buttonRef.current}
+          open={Boolean(menuOpen)}
+          onClose={() => setMenuOpen(false)}
+        >
+          <MenuItem onClick={onSetSort("name")}>Name</MenuItem>
+          <MenuItem onClick={onSetSort("initiative")}>Initiative</MenuItem>
+        </Menu>
+        <Dialog
+          open={resetDialogConfirOpen}
+          onClose={e => setResetDialogConfirOpen(false)}
+        >
+          <DialogTitle id="alert-dialog-title">
+            Reset All Instance Actors?
+          </DialogTitle>
+          <DialogActions>
+            <Button onClick={onHandleResetYes} color="primary" autoFocus>
+              Yes
+            </Button>
+            <Button
+              onClick={e => setResetDialogConfirOpen(false)}
+              color="primary"
+            >
+              No
+            </Button>
+          </DialogActions>
+        </Dialog>
+      </Layout>
+    </RouterContextView.Provider>
   );
 };
+
+function useInstance(id) {
+  const serviceInstance: ServiceInstance = useService(ServiceInstance);
+  const [instance, setInstance] = useState(null);
+
+  useEffect(() => {
+    if (!serviceInstance) return;
+    serviceInstance.get(id).then(v => {
+      setInstance(v);
+    });
+  }, [serviceInstance]);
+
+  return [instance];
+}
 
 export default PageInstance;

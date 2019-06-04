@@ -16,6 +16,8 @@ import DialogContent from "@material-ui/core/DialogContent";
 import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogTitle from "@material-ui/core/DialogTitle";
 
+import { RouterContextView } from "./util/routerContext";
+
 function PageActors(props) {
   const [actorIds, createActor] = useActorIds();
   const [openNewActorDialog, setOpenNewActorDialog] = useState(false);
@@ -33,54 +35,55 @@ function PageActors(props) {
   };
   if (!actorIds) return null;
   return (
-    <Layout
-      router={props}
-      title="Actor Repository"
-      control={
-        <>
-          <IconButton onClick={onAdd} color="inherit">
-            <Add />
-          </IconButton>
-        </>
-      }
-    >
-      <Actors sort="name">
-        {actorIds.map(v => (
-          <Actor key={v} id={v} />
-        ))}
-      </Actors>
-      <Dialog
-        open={openNewActorDialog}
-        onClose={e => setOpenNewActorDialog(false)}
-        aria-labelledby="form-dialog-title"
+    <RouterContextView.Provider value={props}>
+      <Layout
+        title="Actor Repository"
+        control={
+          <>
+            <IconButton onClick={onAdd} color="inherit">
+              <Add />
+            </IconButton>
+          </>
+        }
       >
-        <DialogTitle id="form-dialog-title">New Actor</DialogTitle>
-        <DialogContent>
-          <DialogContentText>
-            Enter new actor name. You will be able to set other actor variables
-            afterwards.
-          </DialogContentText>
-          <form onSubmit={onNewActorName}>
-            <TextField
-              autoFocus
-              margin="dense"
-              id="name"
-              label="Actor Name"
-              fullWidth
-              onChange={e => setNewActorName(e.target.value)}
-            />
-          </form>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={onNewActorName} color="primary">
-            Submit
-          </Button>
-          <Button onClick={e => setOpenNewActorDialog(false)} color="primary">
-            Cancel
-          </Button>
-        </DialogActions>
-      </Dialog>
-    </Layout>
+        <Actors sort="name">
+          {actorIds.map(v => (
+            <Actor key={v} id={v} />
+          ))}
+        </Actors>
+        <Dialog
+          open={openNewActorDialog}
+          onClose={e => setOpenNewActorDialog(false)}
+          aria-labelledby="form-dialog-title"
+        >
+          <DialogTitle id="form-dialog-title">New Actor</DialogTitle>
+          <DialogContent>
+            <DialogContentText>
+              Enter new actor name. You will be able to set other actor
+              variables afterwards.
+            </DialogContentText>
+            <form onSubmit={onNewActorName}>
+              <TextField
+                autoFocus
+                margin="dense"
+                id="name"
+                label="Actor Name"
+                fullWidth
+                onChange={e => setNewActorName(e.target.value)}
+              />
+            </form>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={onNewActorName} color="primary">
+              Submit
+            </Button>
+            <Button onClick={e => setOpenNewActorDialog(false)} color="primary">
+              Cancel
+            </Button>
+          </DialogActions>
+        </Dialog>
+      </Layout>
+    </RouterContextView.Provider>
   );
 }
 

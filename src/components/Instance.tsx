@@ -1,6 +1,6 @@
 import * as React from "react";
-import { useState, useEffect } from "react";
-import { makeStyles } from "@material-ui/core/styles";
+import { useState, useEffect, useContext } from "react";
+import { makeStyles, createStyles } from "@material-ui/core/styles";
 import { Link } from "react-router-dom";
 import clsx from "clsx";
 import Card from "@material-ui/core/Card";
@@ -39,6 +39,8 @@ import ServiceInstance from "../services/ServiceInstance";
 
 import PageActorAdd from "../PageActorAdd";
 
+import { RouterContextView } from "../util/routerContext";
+
 import {
   List,
   ListItem,
@@ -49,88 +51,95 @@ import {
   Paper
 } from "@material-ui/core";
 
-const useStyles = makeStyles(theme => ({
-  card: {},
-  expand: {
-    transform: "rotate(0deg)",
-    marginLeft: "auto",
-    transition: theme.transitions.create("transform", {
-      duration: theme.transitions.duration.shortest
-    }),
-    [theme.breakpoints.down("xs")]: {
-      padding: theme.spacing(1 / 2)
-    }
-  },
-  expandOpen: {
-    transform: "rotate(180deg)"
-  },
-  avatar: {
-    backgroundColor: red[500],
-    [theme.breakpoints.down("xs")]: {
-      width: 30,
-      height: 30
-    }
-  },
-  actorAvatar: {
-    backgroundColor: blue[500]
-  },
-  removeActor: {
-    "& svg": {
-      color: red[600]
-    }
-  },
-  instanceControls: {
-    padding: theme.spacing(1)
-  },
-  cardContent: {
-    marginTop: theme.spacing(1),
-    display: "flex",
-    "& > *": {
-      flex: 1
-    }
-  },
-  chip: {
-    color: orange[600],
-    borderColor: orange[600],
-    margin: theme.spacing(1),
-    minWidth: 70,
-    justifyContent: "flex-start",
-    [theme.breakpoints.down("xs")]: {
-      minWidth: "auto",
-      margin: theme.spacing(1 / 2)
-    }
-  },
-  margin: {
-    margin: theme.spacing(1)
-  },
-  extendedIcon: {
-    marginRight: theme.spacing(1)
-  },
-  addActorButton: {
-    background: green[600],
-    marginLeft: theme.spacing(1),
-    marginTop: theme.spacing(1),
-    "& svg": {
+const useStyles = makeStyles(theme =>
+  createStyles({
+    card: {},
+    expand: {
+      transform: "rotate(0deg)",
+      marginLeft: "auto",
+      transition: theme.transitions.create("transform", {
+        duration: theme.transitions.duration.shortest
+      }),
+      [theme.breakpoints.down("xs")]: {
+        padding: theme.spacing(1 / 2)
+      }
+    },
+    expandOpen: {
+      transform: "rotate(180deg)"
+    },
+    avatar: {
+      backgroundColor: red[500],
+      [theme.breakpoints.down("xs")]: {
+        width: 30,
+        height: 30
+      }
+    },
+    actorAvatar: {
+      backgroundColor: blue[500]
+    },
+    removeActor: {
+      "& svg": {
+        color: red[600]
+      }
+    },
+    instanceControls: {
+      padding: theme.spacing(1)
+    },
+    cardContent: {
+      marginTop: theme.spacing(1),
+      display: "flex",
+      flexWrap: "wrap",
+      "& > *": {
+        flex: 1,
+        [theme.breakpoints.down("xs")]: {
+          flexBasis: "100%",
+          flexShrink: 0,
+          marginTop: theme.spacing(1)
+        }
+      }
+    },
+    chip: {
+      color: orange[600],
+      borderColor: orange[600],
+      margin: theme.spacing(1),
+      minWidth: 70,
+      justifyContent: "flex-start",
+      [theme.breakpoints.down("xs")]: {
+        minWidth: "auto",
+        margin: theme.spacing(1 / 2)
+      }
+    },
+    margin: {
+      margin: theme.spacing(1)
+    },
+    extendedIcon: {
       marginRight: theme.spacing(1)
+    },
+    addActorButton: {
+      background: green[600],
+      marginLeft: theme.spacing(1),
+      marginTop: theme.spacing(1),
+      "& svg": {
+        marginRight: theme.spacing(1)
+      }
+    },
+    deleteActorStart: {
+      background: red[600],
+      marginLeft: theme.spacing(1),
+      marginTop: theme.spacing(1),
+      "& svg": {
+        marginRight: theme.spacing(1)
+      }
+    },
+    deleteInstanceButton: {
+      background: orange[600],
+      marginLeft: theme.spacing(1),
+      "& svg": {
+        marginRight: theme.spacing(1)
+      }
     }
-  },
-  deleteActorStart: {
-    background: red[600],
-    marginLeft: theme.spacing(1),
-    marginTop: theme.spacing(1),
-    "& svg": {
-      marginRight: theme.spacing(1)
-    }
-  },
-  deleteInstanceButton: {
-    background: orange[600],
-    marginTop: theme.spacing(1),
-    marginLeft: theme.spacing(1),
-    "& svg": {
-      marginRight: theme.spacing(1)
-    }
-  }
-}));
+  })
+);
 
 type InstanceProps = { [P in keyof ModelInstance]?: ModelInstance[P] } & {
   classes?: { card: string };
@@ -142,15 +151,20 @@ function Instance(props: InstanceProps) {
   const classes = useStyles(props);
   const [instance, updateInstance] = useInstance(props.id);
   const [deleteActors, setDeleteActors] = useState(false);
+
+  const {
+    expanded,
+    setExpanded,
+    openAction,
+    setOpenAction
+  } = useRouterMemories(props.id);
+  const [confirmDelete, setConfirmDelete] = useState(false);
+  const [selectActors, setSelectActors] = useState(false);
+
   useEffect(() => {
     if (!instance) return;
     props.setSortInstance(instance);
   }, [instance]);
-
-  const [expanded, setExpanded] = useState(false);
-  const [openAction, setOpenAction] = useState(false);
-  const [confirmDelete, setConfirmDelete] = useState(false);
-  const [selectActors, setSelectActors] = useState(false);
   useEffect(() => {
     if (!confirmDelete) return;
     setTimeout(() => setConfirmDelete(false), 1500);
@@ -219,24 +233,6 @@ function Instance(props: InstanceProps) {
             <Divider />
             <div className={classes.cardContent}>
               <div>
-                <Paper>
-                  <List
-                    subheader={
-                      <ListSubheader component="div">Actors</ListSubheader>
-                    }
-                  >
-                    {instance.actors.map(v => (
-                      <ActorEntry
-                        key={v}
-                        id={v}
-                        removeActor={removeActor}
-                        deleteActors={deleteActors}
-                      />
-                    ))}
-                  </List>
-                </Paper>
-              </div>
-              <div>
                 <div>
                   <Button
                     variant="contained"
@@ -275,6 +271,24 @@ function Instance(props: InstanceProps) {
                     {deleteActors ? "...cancel" : "Delete Actors"}
                   </Button>
                 </div>
+              </div>
+              <div>
+                <Paper>
+                  <List
+                    subheader={
+                      <ListSubheader component="div">Actors</ListSubheader>
+                    }
+                  >
+                    {instance.actors.map(v => (
+                      <ActorEntry
+                        key={v}
+                        id={v}
+                        removeActor={removeActor}
+                        deleteActors={deleteActors}
+                      />
+                    ))}
+                  </List>
+                </Paper>
               </div>
             </div>
           </CardContent>
@@ -360,13 +374,40 @@ function useInstance(id: number) {
   useEffect(() => {
     if (!serviceInstance) return;
     serviceInstance.get(id).then(setInstance);
-  }, [serviceInstance]);
+  }, [serviceInstance, id]);
 
   function updateInstance(updateInstance) {
     setInstance({ ...instance, ...updateInstance });
   }
 
   return [instance, updateInstance];
+}
+
+function useRouterMemories(id: number) {
+  const router = useContext(RouterContextView);
+  router.location.state = router.location.state || {};
+
+  const [expanded, setExpanded] = useState(
+    router.location.state.menuOpen === id
+  );
+  const [openAction, setOpenAction] = useState(
+    router.location.state.drawerOpen === id
+  );
+
+  useEffect(() => {
+    router.history.replace(router.location.pathname, {
+      ...(router.location.state || {}),
+      menuOpen: expanded ? id : router.location.state.menuOpen,
+      drawerOpen: openAction ? id : router.location.state.drawerOpen
+    });
+  }, [expanded, openAction]);
+
+  return {
+    expanded,
+    setExpanded,
+    openAction,
+    setOpenAction
+  };
 }
 
 export default Instance;

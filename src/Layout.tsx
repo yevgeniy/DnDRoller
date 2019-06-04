@@ -1,5 +1,5 @@
 import * as React from "react";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useContext } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { RouteComponentProps } from "react-router-dom";
 import AppBar from "@material-ui/core/AppBar";
@@ -20,6 +20,7 @@ import InboxIcon from "@material-ui/icons/MoveToInbox";
 import MailIcon from "@material-ui/icons/Mail";
 
 import MainOptions from "./components/MainOptions";
+import { RouterContextView } from "./util/routerContext";
 
 const useStyles = makeStyles(theme => ({
   container: {
@@ -36,14 +37,10 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-interface RouterPropsScroll {
-  scrollTop: number;
-}
 interface LayoutProps {
   children: React.ReactNode;
   title: React.ReactNode;
   control: React.ReactNode;
-  router: RouteComponentProps<null, null, RouterPropsScroll>;
 }
 export default (props: LayoutProps) => {
   const classes = useStyles();
@@ -101,10 +98,24 @@ function MainMenu({ setMainMenuOpen }: MainMenuProps) {
   );
 }
 
-function useScroll(router: RouteComponentProps<null, null, RouterPropsScroll>) {
+function useScroll() {
+  let router = useContext(RouterContextView);
   //@ts-ignore
-  const [scroll, setScroll] = useState((router.location.state || {}).scrollTop);
+  router = router || {
+    history: {
+      replace: function() {}
+    },
+    location: {
+      state: null
+    }
+  };
+  router.location.state = router.location.state || {};
+  const [scroll, setScroll] = useState(router.location.state.scrollTop);
+  let [scrollHeight, setScrollHeight] = useState(
+    document.querySelector("html").scrollHeight
+  );
   useEffect(() => {
+    if (!router) return;
     let t = setTimeout(() => {
       router.history.replace(router.location.pathname, {
         ...(router.location.state || {}),
@@ -115,13 +126,13 @@ function useScroll(router: RouteComponentProps<null, null, RouterPropsScroll>) {
       clearTimeout(t);
     };
   }, [scroll]);
-
   useEffect(() => {
+    if (!router) return;
     function w(e) {
       let s = document.querySelector("html").scrollTop;
       setScroll(s);
+      setScrollHeight = function() {};
     }
-
     document.addEventListener("scroll", w);
     return () => {
       document.removeEventListener("scroll", w);
@@ -129,8 +140,18 @@ function useScroll(router: RouteComponentProps<null, null, RouterPropsScroll>) {
   }, []);
 
   useEffect(() => {
-    setTimeout(() => {
-      document.querySelector("html").scrollTop = scroll;
-    }, 100);
+    let t = setInterval(
+      () => setScrollHeight(document.querySelector("html").scrollHeight),
+      100
+    );
+    let t1 = setTimeout(() => clearInterval(t), 5000);
+    return () => {
+      clearInterval(t);
+      clearInterval(t1);
+    };
   }, []);
+
+  useEffect(() => {
+    document.querySelector("html").scrollTop = scroll;
+  }, [scrollHeight]);
 }
