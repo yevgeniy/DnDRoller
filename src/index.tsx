@@ -1,7 +1,14 @@
 import * as React from "react";
 import { render } from "react-dom";
 import * as serviceWorker from "./serviceWorker";
-import { Switch, Route, Link, BrowserRouter, Redirect } from "react-router-dom";
+import {
+  Switch,
+  Route,
+  Link,
+  BrowserRouter,
+  Redirect,
+  BrowserRouterProps
+} from "react-router-dom";
 import PageInstance from "./PageInstance";
 import PageHome from "./PageHome";
 import PageInstances from "./PageInstances";

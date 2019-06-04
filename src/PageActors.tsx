@@ -34,6 +34,7 @@ function PageActors(props) {
   if (!actorIds) return null;
   return (
     <Layout
+      router={props}
       title="Actor Repository"
       control={
         <>

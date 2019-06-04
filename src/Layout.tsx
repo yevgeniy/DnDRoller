@@ -1,6 +1,7 @@
 import * as React from "react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
+import { RouteComponentProps } from "react-router-dom";
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
@@ -20,12 +21,6 @@ import MailIcon from "@material-ui/icons/Mail";
 
 import MainOptions from "./components/MainOptions";
 
-interface LayoutProps {
-  children: React.ReactNode;
-  title: React.ReactNode;
-  control: React.ReactNode;
-}
-
 const useStyles = makeStyles(theme => ({
   container: {
     flexGrow: 1
@@ -41,9 +36,19 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
+interface RouterPropsScroll {
+  scrollTop: number;
+}
+interface LayoutProps {
+  children: React.ReactNode;
+  title: React.ReactNode;
+  control: React.ReactNode;
+  router?: RouteComponentProps<null, null, RouterPropsScroll>;
+}
 export default (props: LayoutProps) => {
   const classes = useStyles();
   const [mainMenuOpen, setMainMenuOpen] = useState(false);
+  useScroll(props.router);
 
   return (
     <div className={classes.container}>
@@ -94,4 +99,38 @@ function MainMenu({ setMainMenuOpen }: MainMenuProps) {
       <MainOptions />
     </div>
   );
+}
+
+function useScroll(router: RouteComponentProps<null, null, RouterPropsScroll>) {
+  console.log(router);
+  const [scrollTop, setScrollTop] = useState(
+    router && router.location.state && router.location.state.scrollTop
+  );
+  useEffect(() => {
+    //@ts-ignore
+    window.__scrollhistory__ = window.__scrollhistory__ || [];
+    return () => {
+      //@ts-ignore
+      window.__scrollhistory__.push(scrollTop);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!router) return;
+    document.querySelector("html").scrollTop =
+      router && router.location.state && router.location.state.scrollTop;
+  }, []);
+  useEffect(() => {
+    if (!router) return;
+    function w(e) {
+      if (!router) return;
+      let s = document.querySelector("html").scrollTop;
+      setScrollTop(s);
+    }
+
+    document.addEventListener("scroll", w);
+    return () => {
+      document.removeEventListener("scroll", w);
+    };
+  }, []);
 }

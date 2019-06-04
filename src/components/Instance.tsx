@@ -321,7 +321,16 @@ const ActorEntry = (props: ActorEntryProps) => {
   }
 
   return (
-    <ListItem>
+    <ListItem
+      button
+      component={Link}
+      to={{
+        pathname: "/actors",
+        state: {
+          discover: props.id
+        }
+      }}
+    >
       <ListItemAvatar>
         <Avatar className={clsx(classes.avatar, classes.actorAvatar)}>
           {actor.name[0]}

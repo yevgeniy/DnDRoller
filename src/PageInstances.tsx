@@ -34,6 +34,7 @@ function PageInstances(props) {
   if (!instanceIds) return null;
   return (
     <Layout
+      router={props}
       title="Instance Respository"
       control={
         <>

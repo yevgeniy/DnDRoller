@@ -68,6 +68,7 @@ const PageInstance = props => {
   return (
     <Layout
       title="Instance"
+      router={props}
       control={
         <>
           <IconButton onClick={onReset} color="inherit" ref={buttonRef}>
