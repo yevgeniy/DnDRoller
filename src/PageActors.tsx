@@ -6,6 +6,7 @@ import { IconButton } from "@material-ui/core";
 import Actor from "./components/Actor";
 import Actors from "./components/Actors";
 import ServiceActor from "./services/ServiceActor";
+import ServiceInstance from "./services/ServiceInstance";
 import { useService } from "./util/hooks";
 
 import Button from "@material-ui/core/Button";
@@ -34,7 +35,7 @@ function PageActors(
   >
 ) {
   props.location.state = props.location.state || {};
-  const [actorIds, createActor] = useActorIds();
+  const [actorIds, createActor, deleteActor] = useActorIds();
   const [openNewActorDialog, setOpenNewActorDialog] = useState(false);
   const [newActorName, setNewActorName] = useState("");
 
@@ -64,7 +65,12 @@ function PageActors(
       >
         <Actors sort="name">
           {actorIds.map(v => (
-            <Actor key={v} id={v} discover={props.location.state.discover} />
+            <Actor
+              key={v}
+              id={v}
+              deleteActor={deleteActor}
+              discover={props.location.state.discover}
+            />
           ))}
         </Actors>
         <Dialog
@@ -107,20 +113,31 @@ export default PageActors;
 
 function useActorIds() {
   const serviceActor = useService(ServiceActor);
+  const serviceInstance = useService(ServiceInstance);
   const [actorIds, setActorIds] = useState();
 
   useEffect(() => {
     if (!serviceActor) return;
+    if (!serviceInstance) return;
 
     serviceActor.getAll().then(res => {
       setActorIds(res.map(v => v.id));
     });
-  }, [serviceActor]);
+  }, [serviceActor, serviceInstance]);
 
-  const createActor = async name => {
+  async function createActor(name) {
     const newid = (await serviceActor.createActor(name)).id;
     setActorIds([...actorIds, newid]);
-  };
+  }
+  async function deleteActor(id: number) {
+    var instances = await serviceInstance.getForActor(id);
+    instances.forEach(instance => {
+      instance.actors = instance.actors.filter(v => v !== id);
+      serviceInstance.save(instance);
+    });
+    await serviceActor.deleteActor(id);
+    setActorIds([...actorIds.filter(v => v !== id)]);
+  }
 
-  return [actorIds, createActor];
+  return [actorIds, createActor, deleteActor];
 }

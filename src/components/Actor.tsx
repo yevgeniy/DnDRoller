@@ -140,6 +140,7 @@ type ActorProps = { [P in keyof ModelActor]?: ModelActor[P] } & {
   classes?: { card: string };
   setSortActor?: (a: ModelActor) => void;
   setSelected?: (f: boolean) => void;
+  deleteActor: (i: number) => void;
   selected?: boolean;
   discover?: number;
 };
@@ -177,7 +178,10 @@ function Actor(props: ActorProps) {
     e.stopPropagation();
     setOpenAction(true);
   }
-  function deleteActor(e) {}
+  function deleteActor(e) {
+    console.log(props.id);
+    props.deleteActor(props.id);
+  }
   function removeInstance(instanceId: number) {
     detatchInstance(instanceId);
   }

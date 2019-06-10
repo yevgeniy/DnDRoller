@@ -2,7 +2,7 @@ import { ModelActor } from "../models/ModelActor";
 import ServiceDB from "./ServiceDB";
 
 let ID = 0;
-const mockactors: ModelActor[] = [
+let mockactors: ModelActor[] = [
   {
     id: 1,
     class: { Priest: 3 },
@@ -79,6 +79,11 @@ class ServiceActor {
       size: "medium"
     });
   }
+  async deleteActor(id: number): Promise<void> {
+    await this.record.delete(id);
+
+    mockactors = mockactors.filter(v => v.id !== id);
+  }
 }
 
 let recordInst;
@@ -108,6 +113,9 @@ class Record {
   async getAll(): Promise<ModelActor[]> {
     await new Promise(res => setTimeout(res, 100));
     return [...mockactors];
+  }
+  async delete(id: number): Promise<void> {
+    await new Promise(res => setTimeout(res, 100));
   }
 }
 
