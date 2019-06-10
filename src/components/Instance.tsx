@@ -34,7 +34,7 @@ import Dialog from "@material-ui/core/Dialog";
 
 import PageInstanceActions from "./PageInstanceActions";
 import { ModelInstance } from "../models/ModelInstance";
-import { useService, useActor } from "../util/hooks";
+import { useService, useActor, useInstance } from "../util/hooks";
 import ServiceInstance from "../services/ServiceInstance";
 
 import PageActorAdd from "../PageActorAdd";
@@ -362,22 +362,6 @@ const ActorEntry = (props: ActorEntryProps) => {
     </ListItem>
   );
 };
-
-function useInstance(id: number) {
-  const serviceInstance = useService(ServiceInstance);
-  const [instance, setInstance] = useState(null);
-
-  useEffect(() => {
-    if (!serviceInstance) return;
-    serviceInstance.get(id).then(setInstance);
-  }, [serviceInstance, id]);
-
-  function updateInstance(updateInstance) {
-    setInstance({ ...instance, ...updateInstance });
-  }
-
-  return [instance, updateInstance];
-}
 
 function useRouterMemories(id: number) {
   const router = useContext(RouterContextView);

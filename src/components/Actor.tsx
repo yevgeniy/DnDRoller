@@ -1,20 +1,35 @@
 import * as React from "react";
 import { useState, useEffect, useRef } from "react";
-import { makeStyles } from "@material-ui/core/styles";
+import { makeStyles, createStyles } from "@material-ui/core/styles";
 import clsx from "clsx";
 import Card from "@material-ui/core/Card";
+import Games from "@material-ui/icons/Games";
 import CardContent from "@material-ui/core/CardContent";
 import CardHeader from "@material-ui/core/CardHeader";
 import Avatar from "@material-ui/core/Avatar";
 import IconButton from "@material-ui/core/IconButton";
 import Typography from "@material-ui/core/Typography";
 import red from "@material-ui/core/colors/red";
+import green from "@material-ui/core/colors/green";
 import orange from "@material-ui/core/colors/orange";
+import blue from "@material-ui/core/colors/blue";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import AccessTime from "@material-ui/icons/AccessTime";
 import FlashOn from "@material-ui/icons/FlashOn";
 import Divider from "@material-ui/core/Divider";
 import moment from "moment";
+import Delete from "@material-ui/icons/Delete";
+import RemoveCircle from "@material-ui/icons/RemoveCircle";
+import { Link } from "react-router-dom";
+import {
+  List,
+  ListItem,
+  ListItemText,
+  ListSubheader,
+  ListItemAvatar,
+  ListItemSecondaryAction,
+  Paper
+} from "@material-ui/core";
 
 import Chip from "@material-ui/core/Chip";
 import Button from "@material-ui/core/Button";
@@ -28,53 +43,98 @@ import Drawer from "@material-ui/core/Drawer";
 import Checkbox from "@material-ui/core/Checkbox";
 
 import { ModelActor } from "../models/ModelActor";
-import { useActor } from "../util/hooks";
-import ServiceActor from "../services/ServiceActor";
+import { useInstance, useActor, useInstanceIdsForActor } from "../util/hooks";
 
 import PageActorActions from "./PageActorsActions";
-const useStyles = makeStyles(theme => ({
-  card: {},
-  expand: {
-    transform: "rotate(0deg)",
-    marginLeft: "auto",
-    transition: theme.transitions.create("transform", {
-      duration: theme.transitions.duration.shortest
-    }),
-    [theme.breakpoints.down("xs")]: {
-      padding: theme.spacing(2)
+const useStyles = makeStyles(theme =>
+  createStyles({
+    card: {},
+    cardContent: {
+      marginTop: theme.spacing(1),
+      display: "flex",
+      flexWrap: "wrap",
+      "& > *": {
+        flex: 1,
+        [theme.breakpoints.down("xs")]: {
+          flexBasis: "100%",
+          flexShrink: 0,
+          marginTop: theme.spacing(1)
+        }
+      }
+    },
+    removeInstance: {
+      "& svg": {
+        color: red[600]
+      }
+    },
+    addInstanceButton: {
+      background: green[600],
+      marginLeft: theme.spacing(1),
+      marginTop: theme.spacing(1),
+      "& svg": {
+        marginRight: theme.spacing(1)
+      }
+    },
+    removeFromInstanceStart: {
+      background: red[600],
+      marginLeft: theme.spacing(1),
+      marginTop: theme.spacing(1),
+      "& svg": {
+        marginRight: theme.spacing(1)
+      }
+    },
+    deleteActorButton: {
+      background: orange[600],
+      marginLeft: theme.spacing(1),
+      "& svg": {
+        marginRight: theme.spacing(1)
+      }
+    },
+    expand: {
+      transform: "rotate(0deg)",
+      marginLeft: "auto",
+      transition: theme.transitions.create("transform", {
+        duration: theme.transitions.duration.shortest
+      }),
+      [theme.breakpoints.down("xs")]: {
+        padding: theme.spacing(2)
+      }
+    },
+    expandOpen: {
+      transform: "rotate(180deg)"
+    },
+    avatar: {
+      backgroundColor: red[500],
+      [theme.breakpoints.down("xs")]: {
+        width: 30,
+        height: 30
+      }
+    },
+    instanceAvatar: {
+      backgroundColor: blue[500]
+    },
+    content: {
+      marginTop: theme.spacing(1)
+    },
+    chip: {
+      color: red[600],
+      borderColor: orange[600],
+      margin: theme.spacing(1),
+      minWidth: 70,
+      justifyContent: "flex-start",
+      [theme.breakpoints.down("xs")]: {
+        minWidth: "auto",
+        margin: theme.spacing(1 / 2)
+      }
+    },
+    margin: {
+      margin: theme.spacing(1)
+    },
+    extendedIcon: {
+      marginRight: theme.spacing(1)
     }
-  },
-  expandOpen: {
-    transform: "rotate(180deg)"
-  },
-  avatar: {
-    backgroundColor: red[500],
-    [theme.breakpoints.down("xs")]: {
-      width: 30,
-      height: 30
-    }
-  },
-  content: {
-    marginTop: theme.spacing(1)
-  },
-  chip: {
-    color: red[600],
-    borderColor: orange[600],
-    margin: theme.spacing(1),
-    minWidth: 70,
-    justifyContent: "flex-start",
-    [theme.breakpoints.down("xs")]: {
-      minWidth: "auto",
-      margin: theme.spacing(1 / 2)
-    }
-  },
-  margin: {
-    margin: theme.spacing(1)
-  },
-  extendedIcon: {
-    marginRight: theme.spacing(1)
-  }
-}));
+  })
+);
 
 type ActorProps = { [P in keyof ModelActor]?: ModelActor[P] } & {
   classes?: { card: string };
@@ -87,6 +147,14 @@ type ActorProps = { [P in keyof ModelActor]?: ModelActor[P] } & {
 function Actor(props: ActorProps) {
   const classes = useStyles(props);
   const [actor, updateActor] = useActor(props.id);
+  const [confirmDelete, setConfirmDelete] = useState(false);
+  const [selectActors, setSelectInstances] = useState(false);
+  const [deleteInstances, setDeleteInstances] = useState(false);
+  const [
+    instanceIds,
+    attatchInstance,
+    detatchInstance
+  ] = useInstanceIdsForActor(props.id);
 
   const [expanded, setExpanded] = useState(false);
   const [openAction, setOpenAction] = useState(false);
@@ -96,6 +164,10 @@ function Actor(props: ActorProps) {
     if (!actor) return;
     props.setSortActor(actor);
   }, [actor]);
+  useEffect(() => {
+    if (!confirmDelete) return;
+    setTimeout(() => setConfirmDelete(false), 1500);
+  }, [confirmDelete]);
 
   function handleExpandClick(e) {
     e.stopPropagation();
@@ -104,6 +176,10 @@ function Actor(props: ActorProps) {
   function openActionPanel(e) {
     e.stopPropagation();
     setOpenAction(true);
+  }
+  function deleteActor(e) {}
+  function removeInstance(instanceId: number) {
+    detatchInstance(instanceId);
   }
 
   if (!actor) return null;
@@ -167,12 +243,65 @@ function Actor(props: ActorProps) {
           <Collapse in={expanded} timeout="auto" unmountOnExit>
             <CardContent>
               <Divider />
-              <div className={classes.content}>
-                <Typography paragraph>Method:</Typography>
-                <Typography paragraph>
-                  Heat 1/2 cup of the broth in a pot until simmering, add
-                  saffron and set aside for 10 minutes.
-                </Typography>
+              <div className={classes.cardContent}>
+                <div>
+                  <div>
+                    <Button
+                      variant="contained"
+                      color="secondary"
+                      onClick={e =>
+                        confirmDelete ? deleteActor(e) : setConfirmDelete(true)
+                      }
+                      button="true"
+                      className={classes.deleteActorButton}
+                    >
+                      <Delete />
+                      {confirmDelete ? "...again to confirm" : "Delete Actor"}
+                    </Button>
+                  </div>
+                  <div>
+                    <Button
+                      variant="contained"
+                      color="secondary"
+                      button="true"
+                      onClick={e => setSelectInstances(true)}
+                      className={classes.addInstanceButton}
+                    >
+                      <Games />
+                      Update Instances
+                    </Button>
+                  </div>
+                  <div>
+                    <Button
+                      variant="contained"
+                      color="secondary"
+                      button="secondary"
+                      onClick={e => setDeleteInstances(!deleteInstances)}
+                      className={classes.removeFromInstanceStart}
+                    >
+                      <Games />
+                      {deleteInstances ? "...cancel" : "Delete Instances"}
+                    </Button>
+                  </div>
+                </div>
+                <div>
+                  <Paper>
+                    <List
+                      subheader={
+                        <ListSubheader component="div">Instances</ListSubheader>
+                      }
+                    >
+                      {(instanceIds || []).map(v => (
+                        <InstanceEntry
+                          key={v}
+                          id={v}
+                          removeInstance={removeInstance}
+                          deleteInstances={deleteInstances}
+                        />
+                      ))}
+                    </List>
+                  </Paper>
+                </div>
               </div>
             </CardContent>
           </Collapse>
@@ -220,5 +349,51 @@ function useDiscover(
 
   return ref;
 }
+
+interface ActorEntryProps {
+  id: number;
+  removeInstance: (a: number) => void;
+  deleteInstances: boolean;
+}
+const InstanceEntry = (props: ActorEntryProps) => {
+  const classes = useStyles();
+  const [instance] = useInstance(props.id);
+
+  if (!instance) return null;
+
+  let c = [];
+
+  return (
+    <ListItem
+      button
+      component={Link}
+      to={{
+        pathname: "/instances",
+        state: {
+          discover: props.id
+        }
+      }}
+    >
+      <ListItemAvatar>
+        <Avatar className={clsx(classes.avatar, classes.instanceAvatar)}>
+          {instance.name[0]}
+        </Avatar>
+      </ListItemAvatar>
+      <ListItemText primary={instance.name} />
+      {props.deleteInstances ? (
+        <ListItemSecondaryAction>
+          <IconButton
+            onClick={e => props.removeInstance(props.id)}
+            className={classes.removeInstance}
+            edge="end"
+            aria-label="Comments"
+          >
+            <RemoveCircle />
+          </IconButton>
+        </ListItemSecondaryAction>
+      ) : null}
+    </ListItem>
+  );
+};
 
 export default Actor;

@@ -28,7 +28,7 @@ import {
 } from "./util/routerContext";
 
 interface PageInstanceLocationState {
-  id: number;
+  id?: number;
 }
 
 const PageInstance = (
@@ -38,7 +38,7 @@ const PageInstance = (
     PageInstanceLocationState & RouterViewContextState
   >
 ) => {
-  console.log(props);
+  props.location.state = props.location.state || {};
   const [instance] = useInstance(props.location.state.id);
   const [menuOpen, setMenuOpen] = useState(false);
   const [resetDialogConfirOpen, setResetDialogConfirOpen] = useState(false);

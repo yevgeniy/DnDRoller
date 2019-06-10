@@ -45,6 +45,16 @@ class ServiceInstance {
     const instance = await this.record.get(id);
     return instance;
   }
+  async getForActor(id: number): Promise<ModelInstance[]> {
+    /*
+        db.players.find( { $where: function() {
+          return (hex_md5(this.name) == "9b53e667f30cd329dca1ec9e6a83e994")
+        } } );
+    */
+    return await this.record
+      .getAll()
+      .then(v => v.filter(z => z.actors.some(a => a === id)));
+  }
   async getAll(): Promise<ModelInstance[]> {
     return await this.record.getAll();
   }
@@ -61,6 +71,9 @@ class ServiceInstance {
   }
   async deleteInstance(id: number): Promise<void> {
     await this.record.delete(id);
+  }
+  async save(instance: ModelInstance): Promise<ModelInstance> {
+    return await this.record.save(instance);
   }
 }
 

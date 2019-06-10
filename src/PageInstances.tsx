@@ -5,8 +5,7 @@ import Add from "@material-ui/icons/Add";
 import { IconButton } from "@material-ui/core";
 import Instance from "./components/Instance";
 import Instances from "./components/Instances";
-import ServiceInstance from "./services/ServiceInstance";
-import { useService } from "./util/hooks";
+import { useInstanceIds } from "./util/hooks";
 
 import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
@@ -93,27 +92,3 @@ function PageInstances(props) {
 }
 
 export default PageInstances;
-
-function useInstanceIds() {
-  const serviceInstance = useService(ServiceInstance);
-  const [instanceIds, setInstanceIds] = useState();
-
-  useEffect(() => {
-    if (!serviceInstance) return;
-
-    serviceInstance.getAll().then(res => {
-      setInstanceIds(res.map(v => v.id));
-    });
-  }, [serviceInstance]);
-
-  const createInstance = async name => {
-    const newid = (await serviceInstance.createInstance(name)).id;
-    setInstanceIds([...instanceIds, newid]);
-  };
-  const deleteInstance = async id => {
-    await serviceInstance.deleteInstance(id);
-    setInstanceIds([...instanceIds.filter(v => v !== id)]);
-  };
-
-  return [instanceIds, createInstance, deleteInstance];
-}
