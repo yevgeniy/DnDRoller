@@ -57,8 +57,7 @@ const useStyles = makeStyles(theme =>
         flex: 1,
         [theme.breakpoints.down("xs")]: {
           flexBasis: "100%",
-          flexShrink: 0,
-          marginTop: theme.spacing(1)
+          flexShrink: 0
         }
       }
     },
@@ -132,6 +131,15 @@ const useStyles = makeStyles(theme =>
     },
     extendedIcon: {
       marginRight: theme.spacing(1)
+    },
+    deleteContainer: {
+      display: "flex",
+      justifyContent: "flex-end"
+    },
+    instancesControls: {
+      display: "flex",
+      justifyContent: "flex-start",
+      marginTop: theme.spacing(1)
     }
   })
 );
@@ -249,7 +257,7 @@ function Actor(props: ActorProps) {
               <Divider />
               <div className={classes.cardContent}>
                 <div>
-                  <div>
+                  <div className={classes.deleteContainer}>
                     <Button
                       variant="contained"
                       color="secondary"
@@ -263,7 +271,7 @@ function Actor(props: ActorProps) {
                       {confirmDelete ? "...again to confirm" : "Delete Actor"}
                     </Button>
                   </div>
-                  <div>
+                  <div className={classes.instancesControls}>
                     <Button
                       variant="contained"
                       color="secondary"
@@ -274,8 +282,6 @@ function Actor(props: ActorProps) {
                       <Games />
                       Update Instances
                     </Button>
-                  </div>
-                  <div>
                     <Button
                       variant="contained"
                       color="secondary"
