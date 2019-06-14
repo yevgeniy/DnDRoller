@@ -39,7 +39,7 @@ const PageInstance = (
   >
 ) => {
   props.location.state = props.location.state || {};
-  const [instance] = useInstance(props.location.state.id);
+  const [instance, removeActor] = useInstance(props.location.state.id);
   const [menuOpen, setMenuOpen] = useState(false);
   const [resetDialogConfirOpen, setResetDialogConfirOpen] = useState(false);
   const [resetActors, setResetActors] = useState();
@@ -66,7 +66,7 @@ const PageInstance = (
   return (
     <RouterContextView.Provider value={props}>
       <Layout
-        title="Instance"
+        title={`Instance: ${instance.name}`}
         router={props}
         control={
           <>
@@ -81,7 +81,12 @@ const PageInstance = (
       >
         <PageInstanceActors sort={sort}>
           {instance.actors.map(v => (
-            <PageInstanceActor key={v} id={v} resetActor={resetActors} />
+            <PageInstanceActor
+              key={v}
+              id={v}
+              resetActor={resetActors}
+              removeActor={removeActor}
+            />
           ))}
         </PageInstanceActors>
         <Menu
@@ -128,7 +133,15 @@ function useInstance(id) {
     });
   }, [serviceInstance]);
 
-  return [instance];
+  function removeActor(actorId) {
+    serviceInstance.removeActor(instance.id, actorId).then(() => {
+      setInstance({
+        ...instance,
+        actors: instance.actors.filter(v => v !== actorId)
+      });
+    });
+  }
+  return [instance, removeActor];
 }
 
 export default PageInstance;

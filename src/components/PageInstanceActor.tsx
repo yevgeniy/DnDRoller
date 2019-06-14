@@ -9,14 +9,18 @@ import Avatar from "@material-ui/core/Avatar";
 import IconButton from "@material-ui/core/IconButton";
 import Typography from "@material-ui/core/Typography";
 import red from "@material-ui/core/colors/red";
+import orange from "@material-ui/core/colors/orange";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import FlashOn from "@material-ui/icons/FlashOn";
+import Delete from "@material-ui/icons/Delete";
+
 import Divider from "@material-ui/core/Divider";
 
 import Chip from "@material-ui/core/Chip";
 import FaceIcon from "@material-ui/icons/Face";
 
 import Collapse from "@material-ui/core/Collapse";
+import Button from "@material-ui/core/Button";
 
 import Drawer from "@material-ui/core/Drawer";
 
@@ -48,7 +52,9 @@ const useActorStyles = makeStyles(theme => ({
     }
   },
   content: {
-    marginTop: theme.spacing(1)
+    marginTop: theme.spacing(1),
+    display: "flex",
+    justifyContent: "space-between"
   },
   chip: {
     margin: theme.spacing(1),
@@ -64,6 +70,14 @@ const useActorStyles = makeStyles(theme => ({
   },
   extendedIcon: {
     marginRight: theme.spacing(1)
+  },
+  actorControls: {},
+  removeButton: {
+    background: orange[600],
+    marginLeft: theme.spacing(1),
+    "& svg": {
+      marginRight: theme.spacing(1)
+    }
   }
 }));
 
@@ -71,11 +85,18 @@ type PageInstanceActorProps = { [P in keyof ModelActor]?: ModelActor[P] } & {
   classes?: { card: string };
   setSortActor?: (a: ModelActor) => void;
   resetActor?: number;
+  removeActor?: (id: number) => void;
 };
 
 function PageInstanceActor(props: PageInstanceActorProps) {
   const classes = useActorStyles(props);
   const [actor, updateActor] = useActor(props.id, props.resetActor);
+  const [confirmRemove, setConfirmRemove] = useState(false);
+  useEffect(() => {
+    if (!confirmRemove) return;
+    setTimeout(() => setConfirmRemove(false), 1500);
+  }, [confirmRemove]);
+
   useEffect(() => {
     if (!actor) return;
     props.setSortActor(actor);
@@ -84,6 +105,9 @@ function PageInstanceActor(props: PageInstanceActorProps) {
   const [expanded, setExpanded] = useState(false);
   const [openAction, setOpenAction] = useState(false);
 
+  function removeActor(e) {
+    props.removeActor(props.id);
+  }
   function handleExpandClick(e) {
     e.stopPropagation();
     setExpanded(!expanded);
@@ -146,11 +170,27 @@ function PageInstanceActor(props: PageInstanceActorProps) {
           <CardContent>
             <Divider />
             <div className={classes.content}>
-              <Typography paragraph>Method:</Typography>
-              <Typography paragraph>
-                Heat 1/2 cup of the broth in a pot until simmering, add saffron
-                and set aside for 10 minutes.
-              </Typography>
+              <div>
+                <Typography variant="h5">{actor.race}</Typography>
+                <Typography variant="caption">{actor.size}</Typography>
+              </div>
+
+              <div className={classes.actorControls}>
+                <Button
+                  variant="contained"
+                  color="secondary"
+                  onClick={e =>
+                    confirmRemove ? removeActor(e) : setConfirmRemove(true)
+                  }
+                  button="true"
+                  className={classes.removeButton}
+                >
+                  <Delete />
+                  {confirmRemove
+                    ? "...again to confirm"
+                    : "Remove from Instance"}
+                </Button>
+              </div>
             </div>
           </CardContent>
         </Collapse>

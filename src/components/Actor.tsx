@@ -284,7 +284,7 @@ function Actor(props: ActorProps) {
                       className={classes.removeFromInstanceStart}
                     >
                       <Games />
-                      {deleteInstances ? "...cancel" : "Delete Instances"}
+                      {deleteInstances ? "...cancel" : "Remove from Instances"}
                     </Button>
                   </div>
                 </div>

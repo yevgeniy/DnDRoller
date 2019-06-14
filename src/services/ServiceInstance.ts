@@ -75,6 +75,12 @@ class ServiceInstance {
   async save(instance: ModelInstance): Promise<ModelInstance> {
     return await this.record.save(instance);
   }
+  async removeActor(id: number, actorId: number): Promise<ModelInstance> {
+    let instance = await this.record.get(id);
+    instance.actors = instance.actors.filter(v => v !== actorId);
+    await this.record.save(instance);
+    return instance;
+  }
 }
 
 let recordInst;
