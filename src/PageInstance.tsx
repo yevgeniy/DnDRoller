@@ -2,7 +2,7 @@ import * as React from "react";
 import { useEffect, useRef, useState, useMemo, useCallback } from "react";
 import Layout from "./Layout";
 import ServiceInstance from "./services/ServiceInstance";
-import { IconButton, Button, Drawer } from "@material-ui/core";
+import { IconButton, Button, Drawer, TextField } from "@material-ui/core";
 import Sort from "@material-ui/icons/Sort";
 import Replay from "@material-ui/icons/Replay";
 import { useInstance } from "./util/hooks";
@@ -41,7 +41,7 @@ const PageInstance = (
   >
 ) => {
   props.location.state = props.location.state || {};
-  const [instance, updateInstance] = useInstance(
+  const [instance, updateInstance, createInstance] = useInstance(
     props.location.state.id || "empty",
     props.history
   );
@@ -50,6 +50,8 @@ const PageInstance = (
   const [resetActors, setResetActors] = useState();
   const [sort, setSort] = useState<SortActorsBy>("initiative");
   const [selectActors, setSelectActors] = useState(false);
+  const [openNewInstanceDialog, setOpenNewInstanceDialog] = useState(false);
+  const [newInstanceName, setNewInstanceName] = useState("");
   const buttonRef = useRef();
   const onShowSort = e => {
     setMenuOpen(true);
@@ -75,12 +77,31 @@ const PageInstance = (
   const removeActor = actorId => {
     updateInstance({ actors: instance.actors.filter(v => v !== actorId) });
   };
+  const onSave = e => {
+    setNewInstanceName("");
+    setOpenNewInstanceDialog(true);
+  };
+  const onNewInstanceName = e => {
+    e.preventDefault();
+    if (!newInstanceName) return;
+    createInstance(newInstanceName, instance);
+    setNewInstanceName("");
+    setOpenNewInstanceDialog(false);
+  };
   if (!instance) return null;
 
   return (
     <RouterContextView.Provider value={props}>
       <Layout
-        title={`Instance: ${instance.name}`}
+        title={
+          instance.id ? (
+            `Instance: ${instance.name}`
+          ) : (
+            <Button variant="contained" color="default" onClick={onSave}>
+              Save
+            </Button>
+          )
+        }
         router={props}
         control={
           <>
@@ -141,6 +162,40 @@ const PageInstance = (
         >
           <PageActorAdd onDone={onAddActors} selected={instance.actors} />
         </Drawer>
+        <Dialog
+          open={openNewInstanceDialog}
+          onClose={e => setOpenNewInstanceDialog(false)}
+          aria-labelledby="form-dialog-title"
+        >
+          <DialogTitle id="form-dialog-title">New Instance</DialogTitle>
+          <DialogContent>
+            <DialogContentText>
+              Enter new instance name. You will be able to set other instance
+              variables afterwards.
+            </DialogContentText>
+            <form onSubmit={onNewInstanceName}>
+              <TextField
+                autoFocus
+                margin="dense"
+                id="name"
+                label="Instance Name"
+                fullWidth
+                onChange={e => setNewInstanceName(e.target.value)}
+              />
+            </form>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={onNewInstanceName} color="primary">
+              Submit
+            </Button>
+            <Button
+              onClick={e => setOpenNewInstanceDialog(false)}
+              color="primary"
+            >
+              Cancel
+            </Button>
+          </DialogActions>
+        </Dialog>
       </Layout>
     </RouterContextView.Provider>
   );

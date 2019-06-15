@@ -3,6 +3,7 @@ import { useState, useEffect, useMemo } from "react";
 import ServiceActor from "../services/ServiceActor";
 import ServiceInstance from "../services/ServiceInstance";
 import { ModelActor } from "../models/ModelActor";
+import { ModelInstance } from "../models/ModelInstance";
 
 export function useService(S) {
   const [service, setService] = useState(null);
@@ -42,8 +43,27 @@ export function useInstance(id: number | "empty", history: any) {
         });
     setInstance(newInstance);
   }
+  /*save adhock instance in a db*/
+  async function createInstance(name: string, data: ModelInstance = null) {
+    let newInstance = await serviceInstance.createInstance(name);
+    if (data)
+      newInstance = await serviceInstance.save({
+        ...data,
+        id: newInstance.id,
+        name: newInstance.name
+      });
+    /*history should load instance from db now*/
+    history &&
+      history.replace(history.location.pathname, {
+        ...(history.location.state || {}),
+        id: newInstance.id,
+        instance: null
+      });
 
-  return [instance, updateInstance];
+    setInstance(newInstance);
+  }
+
+  return [instance, updateInstance, createInstance];
 }
 export function useActor(id: number): [ModelActor, (f: ModelActor) => void] {
   const serviceActor = useService(ServiceActor);
