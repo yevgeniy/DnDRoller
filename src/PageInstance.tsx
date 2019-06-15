@@ -5,7 +5,7 @@ import ServiceInstance from "./services/ServiceInstance";
 import { IconButton, Button, Drawer } from "@material-ui/core";
 import Sort from "@material-ui/icons/Sort";
 import Replay from "@material-ui/icons/Replay";
-import { useService } from "./util/hooks";
+import { useInstance } from "./util/hooks";
 import { ModelActor } from "./models/ModelActor";
 
 import Menu from "@material-ui/core/Menu";
@@ -41,7 +41,7 @@ const PageInstance = (
   >
 ) => {
   props.location.state = props.location.state || {};
-  const [instance, removeActor] = useInstance(props.location.state.id);
+  const [instance, updateInstance] = useInstance(props.location.state.id);
   const [menuOpen, setMenuOpen] = useState(false);
   const [resetDialogConfirOpen, setResetDialogConfirOpen] = useState(false);
   const [resetActors, setResetActors] = useState();
@@ -53,7 +53,7 @@ const PageInstance = (
   };
   const onAddActors = a => {
     console.log(a);
-    //updateInstance({ actors: [...a] });
+    updateInstance({ actors: [...a] });
     setSelectActors(false);
   };
   const onSetSort = (by: SortActorsBy) => {
@@ -68,6 +68,9 @@ const PageInstance = (
   const onHandleResetYes = e => {
     setResetActors(+new Date());
     setResetDialogConfirOpen(false);
+  };
+  const removeActor = actorId => {
+    updateInstance({ actors: instance.actors.filter(v => v !== actorId) });
   };
   if (!instance) return null;
 
@@ -139,27 +142,5 @@ const PageInstance = (
     </RouterContextView.Provider>
   );
 };
-
-function useInstance(id) {
-  const serviceInstance: ServiceInstance = useService(ServiceInstance);
-  const [instance, setInstance] = useState(null);
-
-  useEffect(() => {
-    if (!serviceInstance) return;
-    serviceInstance.get(id).then(v => {
-      setInstance(v);
-    });
-  }, [serviceInstance]);
-
-  function removeActor(actorId) {
-    serviceInstance.removeActor(instance.id, actorId).then(() => {
-      setInstance({
-        ...instance,
-        actors: instance.actors.filter(v => v !== actorId)
-      });
-    });
-  }
-  return [instance, removeActor];
-}
 
 export default PageInstance;
