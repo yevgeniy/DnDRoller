@@ -5,4 +5,5 @@ export interface ModelInstance {
   name: string;
   created: number;
   actors: number[];
+  images?: number[];
 }

@@ -26,6 +26,7 @@ import PageInstancesActions from "./PageInstancesActions";
 
 import Chip from "@material-ui/core/Chip";
 import FaceIcon from "@material-ui/icons/Face";
+import Checkbox from "@material-ui/core/Checkbox";
 
 import Collapse from "@material-ui/core/Collapse";
 
@@ -144,7 +145,9 @@ const useStyles = makeStyles(theme =>
 type InstanceProps = { [P in keyof ModelInstance]?: ModelInstance[P] } & {
   classes?: { card: string };
   setSortInstance?: (a: ModelInstance) => void;
-  deleteInstance: (i: number) => void;
+  deleteInstance?: (i: number) => void;
+  setSelected?: (f: boolean) => void;
+  selected?: boolean;
 };
 
 function Instance(props: InstanceProps) {
@@ -193,11 +196,26 @@ function Instance(props: InstanceProps) {
     <>
       <Card className={classes.card}>
         <CardHeader
-          onClick={openActionPanel}
+          onClick={e =>
+            props.setSelected
+              ? props.setSelected(!props.selected)
+              : openActionPanel(e)
+          }
           avatar={
-            <Avatar aria-label="Recipe" className={classes.avatar}>
-              {instance.name[0]}
-            </Avatar>
+            <>
+              {props.setSelected ? (
+                <Checkbox
+                  checked={props.selected}
+                  inputProps={{
+                    "aria-label": "primary checkbox"
+                  }}
+                />
+              ) : (
+                <Avatar aria-label="Recipe" className={classes.avatar}>
+                  {instance.name[0]}
+                </Avatar>
+              )}
+            </>
           }
           action={
             <>

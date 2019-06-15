@@ -2,7 +2,7 @@ import * as React from "react";
 import { useEffect, useRef, useState, useMemo, useCallback } from "react";
 import Layout from "./Layout";
 import ServiceInstance from "./services/ServiceInstance";
-import { IconButton, Button } from "@material-ui/core";
+import { IconButton, Button, Drawer } from "@material-ui/core";
 import Sort from "@material-ui/icons/Sort";
 import Replay from "@material-ui/icons/Replay";
 import { useService } from "./util/hooks";
@@ -10,6 +10,7 @@ import { ModelActor } from "./models/ModelActor";
 
 import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
+import Add from "@material-ui/icons/Add";
 
 import Dialog from "@material-ui/core/Dialog";
 import DialogActions from "@material-ui/core/DialogActions";
@@ -21,6 +22,7 @@ import PageInstanceActor from "./components/PageInstanceActor";
 import PageInstanceActors from "./components/PageInstanceActors";
 import { SortActorsBy } from "./enums";
 import { RouteComponentProps } from "react-router-dom";
+import PageActorAdd from "./PageActorAdd";
 
 import {
   RouterContextView,
@@ -44,9 +46,15 @@ const PageInstance = (
   const [resetDialogConfirOpen, setResetDialogConfirOpen] = useState(false);
   const [resetActors, setResetActors] = useState();
   const [sort, setSort] = useState<SortActorsBy>("initiative");
+  const [selectActors, setSelectActors] = useState(false);
   const buttonRef = useRef();
   const onShowSort = e => {
     setMenuOpen(true);
+  };
+  const onAddActors = a => {
+    console.log(a);
+    //updateInstance({ actors: [...a] });
+    setSelectActors(false);
   };
   const onSetSort = (by: SortActorsBy) => {
     return e => {
@@ -70,7 +78,10 @@ const PageInstance = (
         router={props}
         control={
           <>
-            <IconButton onClick={onReset} color="inherit" ref={buttonRef}>
+            <IconButton onClick={e => setSelectActors(true)} color="inherit">
+              <Add />
+            </IconButton>
+            <IconButton onClick={onReset} color="inherit">
               <Replay />
             </IconButton>
             <IconButton onClick={onShowSort} color="inherit" ref={buttonRef}>
@@ -117,6 +128,13 @@ const PageInstance = (
             </Button>
           </DialogActions>
         </Dialog>
+        <Drawer
+          anchor="top"
+          open={selectActors}
+          onClose={e => setSelectActors(false)}
+        >
+          <PageActorAdd onDone={onAddActors} selected={instance.actors} />
+        </Drawer>
       </Layout>
     </RouterContextView.Provider>
   );

@@ -46,6 +46,8 @@ import { ModelActor } from "../models/ModelActor";
 import { useInstance, useActor, useInstanceIdsForActor } from "../util/hooks";
 
 import PageActorActions from "./PageActorsActions";
+import PageInstanceAttach from "../PageInstanceAttach";
+
 const useStyles = makeStyles(theme =>
   createStyles({
     card: {},
@@ -157,7 +159,7 @@ function Actor(props: ActorProps) {
   const classes = useStyles(props);
   const [actor, updateActor] = useActor(props.id);
   const [confirmDelete, setConfirmDelete] = useState(false);
-  const [selectActors, setSelectInstances] = useState(false);
+  const [attachInstances, setAttachInstances] = useState(false);
   const [deleteInstances, setDeleteInstances] = useState(false);
   const [
     instanceIds,
@@ -192,6 +194,17 @@ function Actor(props: ActorProps) {
   }
   function removeInstance(instanceId: number) {
     detatchInstance(instanceId);
+  }
+  async function onAttachInstances(ids: number[]) {
+    for (let x = 0; x < instanceIds.length; x++) {
+      let id = instanceIds[x];
+      if (ids.indexOf(id) === -1) await detatchInstance(id);
+    }
+    for (let x = 0; x < ids.length; x++) {
+      let id = ids[x];
+      await attatchInstance(id);
+    }
+    setAttachInstances(false);
   }
 
   if (!actor) return null;
@@ -276,7 +289,7 @@ function Actor(props: ActorProps) {
                       variant="contained"
                       color="secondary"
                       button="true"
-                      onClick={e => setSelectInstances(true)}
+                      onClick={e => setAttachInstances(true)}
                       className={classes.addInstanceButton}
                     >
                       <Games />
@@ -328,6 +341,16 @@ function Actor(props: ActorProps) {
               {...actor}
             />
           </div>
+        </Drawer>
+        <Drawer
+          anchor="top"
+          open={attachInstances}
+          onClose={e => setAttachInstances(false)}
+        >
+          <PageInstanceAttach
+            onDone={onAttachInstances}
+            selected={instanceIds}
+          />
         </Drawer>
       </>
     );

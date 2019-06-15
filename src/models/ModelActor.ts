@@ -8,4 +8,5 @@ export interface ModelActor {
   class: { [k: string]: number };
   race: string;
   size: ActorSize;
+  images?: number[];
 }

@@ -11,13 +11,15 @@ const mockinstance = [
     id: 1,
     name: "forest fight",
     created: +new Date() - 1000 * 60 * 60 * 24 * 3,
-    actors: [1, 2]
+    actors: [1, 2],
+    images: []
   },
   {
     id: 2,
     name: "bar fight",
     created: +new Date() + 2,
-    actors: [3, 4]
+    actors: [3, 4],
+    images: []
   }
 ];
 

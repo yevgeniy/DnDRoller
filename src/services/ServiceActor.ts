@@ -11,7 +11,8 @@ let mockactors: ModelActor[] = [
     initiative: 5,
     name: "Arhail Melil'Il",
     race: "human",
-    size: "medium"
+    size: "medium",
+    images: []
   },
   {
     id: 2,
@@ -21,7 +22,8 @@ let mockactors: ModelActor[] = [
     initiative: 15,
     name: "Leshi Gathop",
     race: "dwarf",
-    size: "medium"
+    size: "medium",
+    images: []
   },
   {
     id: 3,
@@ -31,7 +33,8 @@ let mockactors: ModelActor[] = [
     initiative: 5,
     name: "Nimm Sehilo",
     race: "human",
-    size: "medium"
+    size: "medium",
+    images: []
   },
   {
     id: 4,
@@ -41,7 +44,8 @@ let mockactors: ModelActor[] = [
     initiative: 15,
     name: "Kal Withakay",
     race: "Elf",
-    size: "medium"
+    size: "medium",
+    images: []
   }
 ];
 
