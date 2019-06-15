@@ -11,11 +11,12 @@ import ListSubheader from "@material-ui/core/ListSubheader";
 import InboxIcon from "@material-ui/icons/MoveToInbox";
 import MailIcon from "@material-ui/icons/Mail";
 import Settings from "@material-ui/icons/Settings";
-import Games from "@material-ui/icons/Games";
+import Extension from "@material-ui/icons/Extension";
 import Reply from "@material-ui/icons/Reply";
 import Photo from "@material-ui/icons/Photo";
 import DirectionsRun from "@material-ui/icons/DirectionsRun";
 import Casino from "@material-ui/icons/Casino";
+import SmokingRooms from "@material-ui/icons/SmokingRooms";
 import { Link } from "react-router-dom";
 
 import { RouterContextView } from "../util/routerContext";
@@ -42,7 +43,7 @@ function MainOptions() {
         subheader={<ListSubheader component="div">Repositories</ListSubheader>}
       >
         <ListItem button component={Link} to="/instances">
-          <ListItemIcon>{<Games />}</ListItemIcon>
+          <ListItemIcon>{<Extension />}</ListItemIcon>
           <ListItemText primary="Instances" />
         </ListItem>
         <ListItem button component={Link} to="/actors">
@@ -59,6 +60,10 @@ function MainOptions() {
         <ListItem button>
           <ListItemIcon>{<Casino />}</ListItemIcon>
           <ListItemText primary="Roller" />
+        </ListItem>
+        <ListItem button component={Link} to="/instance">
+          <ListItemIcon>{<SmokingRooms />}</ListItemIcon>
+          <ListItemText primary="Quick Instance" />
         </ListItem>
       </List>
       <Divider />

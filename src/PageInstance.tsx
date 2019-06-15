@@ -41,7 +41,10 @@ const PageInstance = (
   >
 ) => {
   props.location.state = props.location.state || {};
-  const [instance, updateInstance] = useInstance(props.location.state.id);
+  const [instance, updateInstance] = useInstance(
+    props.location.state.id || "empty",
+    props.history
+  );
   const [menuOpen, setMenuOpen] = useState(false);
   const [resetDialogConfirOpen, setResetDialogConfirOpen] = useState(false);
   const [resetActors, setResetActors] = useState();

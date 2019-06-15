@@ -11,17 +11,37 @@ export function useService(S) {
   }, []);
   return service;
 }
-export function useInstance(id: number) {
+export function useInstance(id: number | "empty", history: any) {
   const serviceInstance = useService(ServiceInstance);
   const [instance, setInstance] = useState(null);
 
   useEffect(() => {
     if (!serviceInstance) return;
-    serviceInstance.get(id).then(setInstance);
+    if (id === "empty")
+      setInstance(
+        history.location.state.instance || {
+          id: 0,
+          name: "",
+          create: +new Date(),
+          actors: [],
+          images: []
+        }
+      );
+    else serviceInstance.get(id).then(setInstance);
   }, [serviceInstance, id]);
 
-  function updateInstance(updateInstance) {
-    setInstance({ ...instance, ...updateInstance });
+  async function updateInstance(updateInstance) {
+    const newInstance = { ...instance, ...updateInstance };
+    /*if instance has an id save it in db*/
+    console.log(history.location);
+    if (newInstance.id) await serviceInstance.save(newInstance);
+    else
+      history &&
+        history.replace(history.location.pathname, {
+          ...(history.location.state || {}),
+          instance: newInstance
+        });
+    setInstance(newInstance);
   }
 
   return [instance, updateInstance];

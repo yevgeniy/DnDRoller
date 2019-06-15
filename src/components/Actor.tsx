@@ -3,7 +3,7 @@ import { useState, useEffect, useRef } from "react";
 import { makeStyles, createStyles } from "@material-ui/core/styles";
 import clsx from "clsx";
 import Card from "@material-ui/core/Card";
-import Games from "@material-ui/icons/Games";
+import Extension from "@material-ui/icons/Extension";
 import CardContent from "@material-ui/core/CardContent";
 import CardHeader from "@material-ui/core/CardHeader";
 import Avatar from "@material-ui/core/Avatar";
@@ -292,7 +292,7 @@ function Actor(props: ActorProps) {
                       onClick={e => setAttachInstances(true)}
                       className={classes.addInstanceButton}
                     >
-                      <Games />
+                      <Extension />
                       Update Instances
                     </Button>
                     <Button
@@ -302,7 +302,7 @@ function Actor(props: ActorProps) {
                       onClick={e => setDeleteInstances(!deleteInstances)}
                       className={classes.removeFromInstanceStart}
                     >
-                      <Games />
+                      <Extension />
                       {deleteInstances ? "...cancel" : "Remove from Instances"}
                     </Button>
                   </div>
