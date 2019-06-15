@@ -33,9 +33,8 @@ export function useInstance(id: number | "empty", history: any) {
   async function updateInstance(updateInstance) {
     const newInstance = { ...instance, ...updateInstance };
     /*if instance has an id save it in db*/
-    console.log(history.location);
     if (newInstance.id) await serviceInstance.save(newInstance);
-    else
+    /*else save it in history if use backs up*/ else
       history &&
         history.replace(history.location.pathname, {
           ...(history.location.state || {}),
