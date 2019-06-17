@@ -88,7 +88,9 @@ class ServiceInstance {
 let recordInst;
 class Record {
   db: ServiceDB = null;
-  constructor({ db }) {}
+  constructor({ db }) {
+    this.db=db;
+  }
   static async init(): Promise<Record> {
     if (!recordInst) {
       recordInst = new Record({
