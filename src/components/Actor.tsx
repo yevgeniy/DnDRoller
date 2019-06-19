@@ -111,6 +111,12 @@ const useStyles = makeStyles(theme =>
         height: 30
       }
     },
+    avatarName: {
+      textTransform: "none",
+      padding: 0,
+      background: 0,
+      minWidth: "auto"
+    },
     instanceAvatar: {
       backgroundColor: blue[500]
     },
@@ -260,9 +266,9 @@ function Actor(props: ActorProps) {
               </>
             }
             title={
-              <a type="link" href="#" onClick={openActionPanel}>
+              <Button className={classes.avatarName} onClick={openActionPanel}>
                 {actor.name}
-              </a>
+              </Button>
             }
           />
           <Collapse in={expanded} timeout="auto" unmountOnExit>

@@ -50,7 +50,7 @@ function MainOptions() {
           <ListItemIcon>{<DirectionsRun />}</ListItemIcon>
           <ListItemText primary="Actors" />
         </ListItem>
-        <ListItem button>
+        <ListItem button component={Link} to="/images">
           <ListItemIcon>{<Photo />}</ListItemIcon>
           <ListItemText primary="Images" />
         </ListItem>
