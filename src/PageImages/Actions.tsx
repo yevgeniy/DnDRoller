@@ -5,7 +5,7 @@ import Divider from "@material-ui/core/Divider";
 import Replay from "@material-ui/icons/Replay";
 import SaveAlt from "@material-ui/icons/SaveAlt";
 import Photo from "@material-ui/icons/Photo";
-import { Card, CardHeader, TextField, Fab } from "@material-ui/core";
+import { Devider, Card, CardHeader, TextField, Fab } from "@material-ui/core";
 import { ModelImage } from "../models/ModelImage";
 import KeywordListInput from "../components/KeywordListInput";
 
@@ -37,6 +37,9 @@ const useStyle = makeStyles(theme => {
     formControl: {
       margin: theme.spacing(0, 0, 1, 0),
       minWidth: 120
+    },
+    divider: {
+      margin: theme.spacing(2)
     }
   });
 });
@@ -90,6 +93,8 @@ const Actions = (props: ActorProps) => {
         </Fab>
       </form>
       <KeywordListInput keywords={props.keywords} onUpdate={onUpdateKeyWords} />
+      <Divider className={classes.divider} />
+      <input accept="image/*" id="contained-button-file" multiple type="file" />
     </div>
   );
 };
