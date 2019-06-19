@@ -2,7 +2,9 @@ import * as React from "react";
 import { useState, useEffect, useMemo } from "react";
 import ServiceActor from "../services/ServiceActor";
 import ServiceInstance from "../services/ServiceInstance";
+import ServiceImage from "../services/ServiceImage";
 import { ModelActor } from "../models/ModelActor";
+import { ModelImage } from "../models/ModelImage";
 import { ModelInstance } from "../models/ModelInstance";
 
 export function useService(S) {
@@ -74,11 +76,31 @@ export function useActor(id: number): [ModelActor, (f: ModelActor) => void] {
         serviceActor.get(id).then(setActor);
     }, [serviceActor]);
 
-    function updateActor(updateActor) {
-        setActor({ ...actor, ...updateActor });
+    async function updateActor(updateActor) {
+        const newActor = { ...actor, ...updateActor };
+        console.log(newActor);
+        await serviceActor.save(newActor);
+        setActor(newActor);
     }
 
     return [actor, updateActor];
+}
+export function useImage(id: number): [ModelImage, (f: ModelImage) => void] {
+    const serviceImage = useService(ServiceImage);
+    const [image, setImage] = useState(null);
+
+    useEffect(() => {
+        if (!serviceImage) return;
+        serviceImage.get(id).then(setImage);
+    }, [serviceImage]);
+
+    async function updateImage(updateImage) {
+        const newImage = { ...image, ...updateImage };
+        await serviceImage.save(newImage);
+        setImage(newImage);
+    }
+
+    return [image, updateImage];
 }
 export function useInstanceIds() {
     const serviceInstance = useService(ServiceInstance);
@@ -102,6 +124,29 @@ export function useInstanceIds() {
     };
 
     return [instanceIds, createInstance, deleteInstance];
+}
+export function useImageIds() {
+    const serviceImage = useService(ServiceImage);
+    const [imageIds, setImageIds] = useState();
+
+    useEffect(() => {
+        if (!serviceImage) return;
+
+        serviceImage.getAll().then(res => {
+            setImageIds(res.map(v => v.id));
+        });
+    }, [serviceImage]);
+
+    const createImage = async name => {
+        const newid = (await serviceImage.createImage(name)).id;
+        setImageIds([...imageIds, newid]);
+    };
+    const deleteImage = async id => {
+        await serviceImage.deleteImage(id);
+        setImageIds([...imageIds.filter(v => v !== id)]);
+    };
+
+    return [imageIds, createImage, deleteImage];
 }
 export function useInstanceIdsForActor(id: number) {
     const serviceInstance = useService(ServiceInstance);
@@ -133,4 +178,70 @@ export function useInstanceIdsForActor(id: number) {
     };
 
     return [instanceIds, attachInstance, detatchInstance];
+}
+export function useInstanceIdsForImage(id: number) {
+    const serviceInstance = useService(ServiceInstance);
+    const [instanceIds, setInstanceIds] = useState();
+
+    useEffect(() => {
+        if (!serviceInstance) return;
+
+        serviceInstance.getForImage(id).then(res => {
+            setInstanceIds(res.map(v => v.id));
+        });
+    }, [serviceInstance]);
+
+    const attachInstance = async (instanceId: number) => {
+        const instance = await serviceInstance.get(instanceId);
+        if ((instance.images || []).indexOf(id) === -1) {
+            const imgs = instance.images || (instance.images = []);
+            imgs.push(id);
+            await serviceInstance.save(instance);
+            setInstanceIds([...instanceIds, instanceId]);
+        }
+    };
+    const detatchInstance = async (instanceId: number) => {
+        const instance = await serviceInstance.get(instanceId);
+        if ((instance.images || []).indexOf(id) > -1) {
+            instance.images = instance.images.filter(v => v !== id);
+            if (instance.images.length === 0) instance.images = null;
+            await serviceInstance.save(instance);
+            setInstanceIds([...instanceIds.filter(v => v !== instanceId)]);
+        }
+    };
+
+    return [instanceIds, attachInstance, detatchInstance];
+}
+export function useActorIdsForImage(id: number) {
+    const serviceActor = useService(ServiceActor);
+    const [actorIds, setActorIds] = useState();
+
+    useEffect(() => {
+        if (!serviceActor) return;
+
+        serviceActor.getForImage(id).then(res => {
+            setActorIds(res.map(v => v.id));
+        });
+    }, [serviceActor]);
+
+    const attachActor = async (actorId: number) => {
+        const actor = await serviceActor.get(actorId);
+        if ((actor.images || []).indexOf(id) === -1) {
+            const imgs = actor.images || (actor.images = []);
+            imgs.push(id);
+            await serviceActor.save(actor);
+            setActorIds([...actorIds, actorId]);
+        }
+    };
+    const detatchActor = async (actorId: number) => {
+        const actor = await serviceActor.get(actorId);
+        if ((actor.images || []).indexOf(id) > -1) {
+            actor.images = actor.images.filter(v => v !== id);
+            if (actor.images.length === 0) actor.images = null;
+            await serviceActor.save(actor);
+            setActorIds([...actorIds.filter(v => v !== actorId)]);
+        }
+    };
+
+    return [actorIds, attachActor, detatchActor];
 }

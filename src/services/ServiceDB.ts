@@ -44,10 +44,11 @@
 
 const APP = "dnd_app_data";
 const IMAGES = "images";
-const USER_REPOSITORY = "userRepository.json";
+const ACTOR_REPOSITORY = "actorRepository.json";
 const INSTANCE_REPOSITORY = "instanceRepository.json";
 const IMAGE_REPOSITORY = "imageRepository.json";
 
+type file = "actor" | "image" | "instance";
 let instance = null;
 class ServiceDB {
     constructor() {}
@@ -58,6 +59,63 @@ class ServiceDB {
             instance = new ServiceDB();
         }
         return instance;
+    }
+    async read(file: file): Promise<string> {
+        let path = "";
+        switch (file) {
+            case "image":
+                path = `/${APP}/${IMAGE_REPOSITORY}`;
+                break;
+            case "actor":
+                path = `/${APP}/${ACTOR_REPOSITORY}`;
+                break;
+            case "instance":
+                path = `/${APP}/${INSTANCE_REPOSITORY}`;
+                break;
+        }
+        var res = await fetch(
+            "https://content.dropboxapi.com/2/files/download",
+            {
+                method: "post",
+                headers: {
+                    Authorization:
+                        "Bearer lt-wyxv0LCEAAAAAAAAJCPPTV-l2md4oFIA8gVCAeyOO9WkMH0qyTATQDGJNfE6y",
+                    "Dropbox-API-Arg": `{"path": "${path}"}`
+                }
+            }
+        );
+        return await res.text();
+    }
+    async save(file: file, data: string): Promise<void> {
+        let path = "";
+        switch (file) {
+            case "image":
+                path = `/${APP}/${IMAGE_REPOSITORY}`;
+                break;
+            case "actor":
+                path = `/${APP}/${ACTOR_REPOSITORY}`;
+                break;
+            case "instance":
+                path = `/${APP}/${INSTANCE_REPOSITORY}`;
+                break;
+        }
+        return new Promise(res => {
+            var reader = new FileReader();
+            reader.onload = async function() {
+                await fetch("https://content.dropboxapi.com/2/files/upload", {
+                    method: "post",
+                    headers: {
+                        Authorization:
+                            "Bearer lt-wyxv0LCEAAAAAAAAJCPPTV-l2md4oFIA8gVCAeyOO9WkMH0qyTATQDGJNfE6y",
+                        "Dropbox-API-Arg": `{"path": "${path}","mode": "overwrite","autorename": true,"mute": false,"strict_conflict": false}`,
+                        "Content-Type": "application/octet-stream"
+                    },
+                    body: reader.result
+                });
+                res();
+            };
+            reader.readAsArrayBuffer(new Blob([data]));
+        });
     }
 }
 
@@ -125,7 +183,7 @@ async function checkImageDir(resjson) {
     }
 }
 async function checkUserRepository(resjson) {
-    if (resjson.entries.some(v => v.name === USER_REPOSITORY) === false) {
+    if (resjson.entries.some(v => v.name === ACTOR_REPOSITORY) === false) {
         return new Promise(res => {
             var reader = new FileReader();
             reader.onload = async function() {
@@ -134,7 +192,7 @@ async function checkUserRepository(resjson) {
                     headers: {
                         Authorization:
                             "Bearer lt-wyxv0LCEAAAAAAAAJCPPTV-l2md4oFIA8gVCAeyOO9WkMH0qyTATQDGJNfE6y",
-                        "Dropbox-API-Arg": `{"path": "/${APP}/${USER_REPOSITORY}","mode": "overwrite","autorename": true,"mute": false,"strict_conflict": false}`,
+                        "Dropbox-API-Arg": `{"path": "/${APP}/${ACTOR_REPOSITORY}","mode": "overwrite","autorename": true,"mute": false,"strict_conflict": false}`,
                         "Content-Type": "application/octet-stream"
                     },
                     body: reader.result
