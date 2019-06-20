@@ -92,6 +92,12 @@ const useStyles = makeStyles(theme =>
                 marginRight: theme.spacing(1)
             }
         },
+        media: {
+            height: 0,
+            paddingTop: "25.25%",
+            backgroundSize: "contain",
+            backgroundColor: "gray"
+        },
         expand: {
             transform: "rotate(0deg)",
             marginLeft: "auto",
@@ -167,7 +173,7 @@ type ImageProps = { [P in keyof ModelImage]?: ModelImage[P] } & {
 
 function Image(props: ImageProps) {
     const classes = useStyles(props);
-    const [image, updateImage, upload] = useImage(props.id);
+    const [image, updateImage, upload, url] = useImage(props.id);
     const [confirmDelete, setConfirmDelete] = useState(false);
     const [attachInstances, setAttachInstances] = useState(false);
     const [attachActors, setAttachActors] = useState(false);
@@ -238,6 +244,7 @@ function Image(props: ImageProps) {
 
     if (!image) return null;
 
+    console.log(image.name, url);
     const renderView = () => {
         return (
             <>
@@ -293,10 +300,14 @@ function Image(props: ImageProps) {
                         }
                         subheader={(image.keywords || []).sort().join(", ")}
                     />
-                    <CardMedia
-                        image="http://lorempixel.com/100/100/fashion"
-                        title={image.name}
-                    />
+                    {url ? (
+                        <CardMedia
+                            className={classes.media}
+                            image={url}
+                            title={image.name}
+                        />
+                    ) : null}
+
                     <Collapse in={expanded} timeout="auto" unmountOnExit>
                         {/* <ImageContent /> */}
                     </Collapse>

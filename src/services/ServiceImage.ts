@@ -29,6 +29,9 @@ class ServiceImage {
         let res = await this.record.getAll();
         return res.find(v => v.id === id);
     }
+    async getUrl(file: string): Promise<string> {
+        return this.record.getUrl(file);
+    }
     async getAll(): Promise<ModelImage[]> {
         return await this.record.getAll();
     }
@@ -80,6 +83,9 @@ class Record {
     async upload(name: string, data: string | ArrayBuffer): Promise<void> {
         await this.db.upload(name, data);
     }
+    async getUrl(file: string): Promise<string> {
+        return this.db.getUrl(file);
+    }
     async deleteImg(name: string): Promise<void> {
         await this.db.deleteImg(name);
     }
@@ -101,10 +107,10 @@ class Record {
             cacheImages = JSON.parse(await this.db.read("image"));
             cacheKeywords = cacheImages
                 .map(v => v.keywords || [])
-                .reduce((p, c) => [
-                    ...p,
-                    ...p.filter(v => p.indexOf(v) === -1)
-                ]);
+                .reduce(
+                    (p, c) => [...p, ...p.filter(v => p.indexOf(v) === -1)],
+                    []
+                );
         }
         return [...cacheImages];
     }

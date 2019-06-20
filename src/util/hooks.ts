@@ -88,13 +88,25 @@ export function useActor(id: number): [ModelActor, (f: ModelActor) => void] {
 export function useImage(id: number) {
     const serviceImage = useService(ServiceImage);
     const [image, setImage] = useState(null);
+    const [url, setUrl] = useState(null);
 
     useEffect(() => {
         if (!serviceImage) return;
         serviceImage.get(id).then(setImage);
     }, [serviceImage]);
+    useEffect(() => {
+        console.log("a", image);
+        if (!serviceImage) return;
+        if (!image) return;
+        if (!image.file && url) {
+            setUrl(null);
+        } else if (image.file) {
+            serviceImage.getUrl(image.file).then(url => setUrl(url));
+        }
+    }, [image && image.file, serviceImage]);
 
     async function updateImage(updateImage) {
+        console.log("b", image);
         const newImage = { ...image, ...updateImage };
         await serviceImage.save(newImage);
         setImage(newImage);
@@ -104,7 +116,7 @@ export function useImage(id: number) {
         setImage({ ...newimage });
     }
 
-    return [image, updateImage, upload];
+    return [image, updateImage, upload, url];
 }
 export function useInstanceIds() {
     const serviceInstance = useService(ServiceInstance);
@@ -129,6 +141,7 @@ export function useInstanceIds() {
 
     return [instanceIds, createInstance, deleteInstance];
 }
+
 export function useImageIds() {
     const serviceImage = useService(ServiceImage);
     const [imageIds, setImageIds] = useState();
@@ -141,9 +154,12 @@ export function useImageIds() {
         });
     }, [serviceImage]);
 
-    const createImage = async name => {
+    const createImage = async (name: string, file: File = null) => {
         const newid = (await serviceImage.createImage(name)).id;
-        setImageIds([...imageIds, newid]);
+        if (file) await serviceImage.upload(newid, file);
+        serviceImage.getAll().then(res => {
+            setImageIds(res.map(v => v.id));
+        });
     };
     const deleteImage = async id => {
         await serviceImage.deleteImage(id);

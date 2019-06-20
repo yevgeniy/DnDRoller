@@ -27,21 +27,6 @@
 //   //URL.revokeObjectURL(objectURL);
 // });
 
-// fetch("https://api.dropboxapi.com/2/files/get_temporary_link", {
-//   method: "post",
-//   headers: {
-//     Authorization:
-//       "Bearer lt-wyxv0LCEAAAAAAAAJCPPTV-l2md4oFIA8gVCAeyOO9WkMH0qyTATQDGJNfE6y",
-//     "Content-Type": "application/json"
-//   },
-//   body: '{"path": "/programming/art/so_cute_2_by_charmeurindien-dc2xin2.jpg"}'
-// }).then(async response => {
-//   var b = await response.json();
-
-//   document.querySelector("#foo").src = b.link;
-//   //URL.revokeObjectURL(objectURL);
-// });
-
 const APP = "dnd_app_data";
 const IMAGES = "images";
 const ACTOR_REPOSITORY = "actorRepository.json";
@@ -59,6 +44,23 @@ class ServiceDB {
             instance = new ServiceDB();
         }
         return instance;
+    }
+    async getUrl(file: string): Promise<string> {
+        const path = `/${APP}/${IMAGES}/${file}`;
+        const res = await fetch(
+            "https://api.dropboxapi.com/2/files/get_temporary_link",
+            {
+                method: "post",
+                headers: {
+                    Authorization:
+                        "Bearer lt-wyxv0LCEAAAAAAAAJCPPTV-l2md4oFIA8gVCAeyOO9WkMH0qyTATQDGJNfE6y",
+                    "Content-Type": "application/json"
+                },
+                body: `{"path": "${path}"}`
+            }
+        );
+        const data = await res.json();
+        return data.link;
     }
     async read(file: file): Promise<string> {
         let path = "";
