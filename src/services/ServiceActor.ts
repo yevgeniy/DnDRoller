@@ -1,22 +1,26 @@
 import { ModelActor } from "../models/ModelActor";
 import ServiceDB from "./ServiceDB";
+import ServiceInstance from "./ServiceInstance";
 
 let ID = 0;
 let cacheActors: ModelActor[] = null;
 
-let inst: ServiceActor = null;
+let inst: Promise<ServiceActor> = null;
 class ServiceActor {
     record: Record = null;
-    constructor({ record }) {
-        this.record = record;
-    }
+    serviceInstance: ServiceInstance = null;
+
     static async init(): Promise<ServiceActor> {
         if (!inst) {
-            inst = new ServiceActor({
-                record: await Record.init()
+            inst = new Promise(async res => {
+                const serv = new ServiceActor();
+                serv.record = await Record.init();
+                serv.serviceInstance = await ServiceInstance.init();
+
+                res(serv);
             });
         }
-        return inst;
+        return await inst;
     }
 
     async get(id: number): Promise<ModelActor> {
@@ -44,11 +48,25 @@ class ServiceActor {
             (actor.images || []).some(v => v === imageId)
         );
     }
-    async deleteActor(id: number): Promise<void> {
-        await this.record.delete(id);
+    async deleteActor(actorId: number): Promise<void> {
+        await this.serviceInstance.getForActor(actorId).then(instances =>
+            instances.map(instance => {
+                return this.serviceInstance.removeActor(instance.id, actorId);
+            })
+        );
+        await this.record.delete(actorId);
     }
     async save(actor: ModelActor): Promise<ModelActor> {
         return await this.record.save(actor);
+    }
+    async removeImage(id: number, imageId: number): Promise<ModelActor> {
+        let actor = await this.record
+            .getAll()
+            .then(v => v.find(actor => actor.id === id));
+        actor.images = (actor.images || []).filter(v => v !== imageId);
+        if (!actor.images.length) delete actor.images;
+        await this.record.save(actor);
+        return actor;
     }
 }
 
@@ -60,11 +78,14 @@ class Record {
     }
     static async init(): Promise<Record> {
         if (!recordInst) {
-            recordInst = new Record({
-                db: await ServiceDB.init()
+            recordInst = new Promise(async res => {
+                const serv = new Record({
+                    db: await ServiceDB.init()
+                });
+                res(serv);
             });
         }
-        return recordInst;
+        return await recordInst;
     }
     async save(data: ModelActor): Promise<ModelActor> {
         await new Promise(res => setTimeout(res, 100));

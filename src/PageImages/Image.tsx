@@ -2,16 +2,11 @@ import * as React from "react";
 import { useState, useEffect, useRef } from "react";
 import { makeStyles, createStyles } from "@material-ui/core/styles";
 import clsx from "clsx";
-import Extension from "@material-ui/icons/Extension";
 import red from "@material-ui/core/colors/red";
-import green from "@material-ui/core/colors/green";
 import orange from "@material-ui/core/colors/orange";
 import blue from "@material-ui/core/colors/blue";
 import purple from "@material-ui/core/colors/purple";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
-import Delete from "@material-ui/icons/Delete";
-import RemoveCircle from "@material-ui/icons/RemoveCircle";
-import moment from "moment";
 
 import { Link } from "react-router-dom";
 import {
@@ -36,6 +31,7 @@ import {
     Drawer,
     Checkbox
 } from "@material-ui/core";
+import RemoveCircle from "@material-ui/icons/RemoveCircle";
 
 import { ModelImage } from "../models/ModelImage";
 import {
@@ -47,51 +43,11 @@ import {
     useDiscover
 } from "../util/hooks";
 import Actions from "./Actions";
+import ImageContent from "./ImageContent";
 
 const useStyles = makeStyles(theme =>
     createStyles({
         card: {},
-        cardContent: {
-            marginTop: theme.spacing(1),
-            display: "flex",
-            flexWrap: "wrap",
-            "& > *": {
-                flex: 1,
-                [theme.breakpoints.down("xs")]: {
-                    flexBasis: "100%",
-                    flexShrink: 0
-                }
-            }
-        },
-        removeInstance: {
-            "& svg": {
-                color: red[600]
-            }
-        },
-
-        addParticipantButton: {
-            background: green[600],
-            marginLeft: theme.spacing(1),
-            marginTop: theme.spacing(1),
-            "& svg": {
-                marginRight: theme.spacing(1)
-            }
-        },
-        removeFromParticipantStart: {
-            background: red[600],
-            marginLeft: theme.spacing(1),
-            marginTop: theme.spacing(1),
-            "& svg": {
-                marginRight: theme.spacing(1)
-            }
-        },
-        deleteImageButton: {
-            background: orange[600],
-            marginLeft: theme.spacing(1),
-            "& svg": {
-                marginRight: theme.spacing(1)
-            }
-        },
         media: {
             height: 0,
             paddingTop: "25.25%",
@@ -149,15 +105,6 @@ const useStyles = makeStyles(theme =>
         },
         extendedIcon: {
             marginRight: theme.spacing(1)
-        },
-        deleteContainer: {
-            display: "flex",
-            justifyContent: "flex-end"
-        },
-        participantsControls: {
-            display: "flex",
-            justifyContent: "flex-start",
-            marginTop: theme.spacing(1)
         }
     })
 );
@@ -166,7 +113,7 @@ type ImageProps = { [P in keyof ModelImage]?: ModelImage[P] } & {
     classes?: { card: string };
     setSortImage?: (a: ModelImage) => void;
     setSelected?: (f: boolean) => void;
-    deleteImage: (i: number) => void;
+    deleteImage?: (i: number) => void;
     selected?: boolean;
     discover?: number;
 };
@@ -178,14 +125,6 @@ function Image(props: ImageProps) {
     const [attachInstances, setAttachInstances] = useState(false);
     const [attachActors, setAttachActors] = useState(false);
     const [removeInstances, setRemoveInstances] = useState(false);
-    const [
-        instanceIds,
-        attatchInstance,
-        detatchInstance
-    ] = useInstanceIdsForImage(props.id);
-    const [actorIds, attatchActor, detatchActor] = useActorIdsForImage(
-        props.id
-    );
 
     const [expanded, setExpanded] = useState(false);
     const [openAction, setOpenAction] = useState(false);
@@ -208,10 +147,7 @@ function Image(props: ImageProps) {
         e.stopPropagation();
         setOpenAction(true);
     }
-    function deleteImage(e) {
-        console.log(props.id);
-        props.deleteImage(props.id);
-    }
+
     function removeInstance(instanceId: number) {
         detatchInstance(instanceId);
     }
@@ -309,7 +245,10 @@ function Image(props: ImageProps) {
                     ) : null}
 
                     <Collapse in={expanded} timeout="auto" unmountOnExit>
-                        {/* <ImageContent /> */}
+                        <ImageContent
+                            deleteImage={props.deleteImage}
+                            {...image}
+                        />
                     </Collapse>
                 </Card>
                 <Drawer

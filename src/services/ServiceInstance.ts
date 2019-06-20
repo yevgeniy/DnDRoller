@@ -1,6 +1,5 @@
 import { ModelActor } from "../models/ModelActor";
 import { ModelInstance } from "../models/ModelInstance";
-import ServiceActor from "./ServiceActor";
 import ServiceDB from "./ServiceDB";
 
 import "../util/extends";
@@ -8,24 +7,21 @@ import "../util/extends";
 let ID = 0;
 let cacheInstance: ModelInstance[] = null;
 
-let instance: ServiceInstance;
+let instance: Promise<ServiceInstance>;
 class ServiceInstance {
     record: Record = null;
-    serviceActor: ServiceActor = null;
 
-    constructor({ record, serviceActor }) {
-        this.record = record;
-        this.serviceActor = serviceActor;
-    }
+    constructor() {}
 
     static async init(): Promise<ServiceInstance> {
-        if (!instance) {
-            instance = new ServiceInstance({
-                record: await Record.init(),
-                serviceActor: await ServiceActor.init()
+        if (!instance)
+            instance = new Promise(async res => {
+                const serv = new ServiceInstance();
+                serv.record = await Record.init();
+                res(serv);
             });
-        }
-        return instance;
+
+        return await instance;
     }
 
     async get(id: number): Promise<ModelInstance> {
@@ -71,6 +67,13 @@ class ServiceInstance {
         await this.record.save(instance);
         return instance;
     }
+    async removeImage(id: number, imageId: number): Promise<ModelInstance> {
+        let instance = await this.record.get(id);
+        instance.images = (instance.images || []).filter(v => v !== imageId);
+        if (!instance.images.length) delete instance.images;
+        await this.record.save(instance);
+        return instance;
+    }
 }
 
 let recordInst;
@@ -81,11 +84,14 @@ class Record {
     }
     static async init(): Promise<Record> {
         if (!recordInst) {
-            recordInst = new Record({
-                db: await ServiceDB.init()
+            recordInst = new Promise(async res => {
+                const serv = new Record({
+                    db: await ServiceDB.init()
+                });
+                res(serv);
             });
         }
-        return recordInst;
+        return await recordInst;
     }
     async get(id: number): Promise<ModelInstance> {
         const all = await this.getAll();

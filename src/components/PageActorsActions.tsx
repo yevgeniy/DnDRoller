@@ -123,7 +123,7 @@ function PageActorsActions(props: PageActorsActionsProps) {
                 <TextField
                     className={classes.mainEntry}
                     label="Hp"
-                    value={hp}
+                    value={hp || ""}
                     type="number"
                     onChange={e => setHp(+e.target.value)}
                     InputLabelProps={{
@@ -154,7 +154,7 @@ function PageActorsActions(props: PageActorsActionsProps) {
                 <TextField
                     className={classes.mainEntry}
                     label="Race"
-                    value={race}
+                    value={race || ""}
                     onChange={e => setRace(e.target.value)}
                     InputLabelProps={{
                         shrink: true

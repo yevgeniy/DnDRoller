@@ -36,12 +36,14 @@ const IMAGE_REPOSITORY = "imageRepository.json";
 type file = "actor" | "image" | "instance" | "file";
 let instance = null;
 class ServiceDB {
-    constructor() {}
     static async init() {
         if (!instance) {
-            await checkDnDAppNS();
-            await checkDnDAppDir();
-            instance = new ServiceDB();
+            instance = new Promise(async res => {
+                const serv = new ServiceDB();
+                await checkDnDAppNS();
+                await checkDnDAppDir();
+                res(serv);
+            });
         }
         return instance;
     }

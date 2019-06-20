@@ -1,5 +1,7 @@
 import { ModelImage } from "../models/ModelImage";
 import ServiceDB from "./ServiceDB";
+import ServiceActor from "./ServiceActor";
+import ServiceInstance from "./ServiceInstance";
 
 export interface File {
     name: string;
@@ -10,18 +12,23 @@ let ID = 0;
 let cacheImages: ModelImage[] = null;
 let cacheKeywords: string[] = [];
 
-let inst: ServiceImage = null;
+let inst: Promise<ServiceImage> = null;
 class ServiceImage {
     record: Record = null;
-    constructor({ record }) {
-        this.record = record;
-    }
+    serviceActor: ServiceActor = null;
+    serviceInstance: ServiceInstance = null;
+
     static async init(): Promise<ServiceImage> {
         if (!inst) {
-            inst = new ServiceImage({
-                record: await Record.init()
+            inst = new Promise(async res => {
+                const serv = new ServiceImage();
+                serv.record = await Record.init();
+                serv.serviceActor = await ServiceActor.init();
+                serv.serviceInstance = await ServiceInstance.init();
+                res(serv);
             });
         }
+
         return inst;
     }
 
@@ -43,8 +50,22 @@ class ServiceImage {
             keywords: null
         });
     }
-    async deleteImage(id: number): Promise<void> {
-        await this.record.delete(id);
+    async deleteImage(imageId: number): Promise<void> {
+        await this.serviceInstance.getForImage(imageId).then(instances =>
+            instances.map(instance => {
+                return this.serviceInstance.removeImage(instance.id, imageId);
+            })
+        );
+        await this.serviceActor.getForImage(imageId).then(actors =>
+            actors.map(actor => {
+                return this.serviceActor.removeImage(actor.id, imageId);
+            })
+        );
+        const image = await this.record
+            .getAll()
+            .then(v => v.find(a => a.id === imageId));
+        if (image.file) await this.record.deleteFile(image.file);
+        await this.record.delete(imageId);
     }
     async save(image: ModelImage): Promise<ModelImage> {
         return await this.record.save(image);
@@ -54,7 +75,7 @@ class ServiceImage {
             .getAll()
             .then(async v => v.find(v => v.id === id));
 
-        if (image.file) await this.record.deleteImg(image.file);
+        if (image.file) await this.record.deleteFile(image.file);
 
         const m = file.name.match(/\.\w+?$/);
         const ext = m ? m[0] : "";
@@ -74,11 +95,14 @@ class Record {
     }
     static async init(): Promise<Record> {
         if (!recordInst) {
-            recordInst = new Record({
-                db: await ServiceDB.init()
+            recordInst = new Promise(async res => {
+                const serv = new Record({
+                    db: await ServiceDB.init()
+                });
+                res(serv);
             });
         }
-        return recordInst;
+        return await recordInst;
     }
     async upload(name: string, data: string | ArrayBuffer): Promise<void> {
         await this.db.upload(name, data);
@@ -86,7 +110,7 @@ class Record {
     async getUrl(file: string): Promise<string> {
         return this.db.getUrl(file);
     }
-    async deleteImg(name: string): Promise<void> {
+    async deleteFile(name: string): Promise<void> {
         await this.db.deleteImg(name);
     }
     async save(data: ModelImage): Promise<ModelImage> {
@@ -120,7 +144,10 @@ class Record {
 
         cacheKeywords = cacheImages
             .map(v => v.keywords || [])
-            .reduce((p, c) => [...p, ...p.filter(v => p.indexOf(v) === -1)]);
+            .reduce(
+                (p, c) => [...p, ...p.filter(v => p.indexOf(v) === -1)],
+                []
+            );
     }
 }
 

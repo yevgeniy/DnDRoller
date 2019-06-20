@@ -4,6 +4,7 @@ import { makeStyles, createStyles } from "@material-ui/core/styles";
 import { Link } from "react-router-dom";
 import clsx from "clsx";
 import Card from "@material-ui/core/Card";
+import Photo from "@material-ui/icons/Photo";
 import CardContent from "@material-ui/core/CardContent";
 import CardHeader from "@material-ui/core/CardHeader";
 import Avatar from "@material-ui/core/Avatar";
@@ -23,6 +24,7 @@ import Button from "@material-ui/core/Button";
 import DirectionsRun from "@material-ui/icons/DirectionsRun";
 import moment from "moment";
 import PageInstancesActions from "./PageInstancesActions";
+import PageImageAttach from "../PageImageAttach/PageImageAttach";
 
 import Chip from "@material-ui/core/Chip";
 import FaceIcon from "@material-ui/icons/Face";
@@ -35,7 +37,7 @@ import Dialog from "@material-ui/core/Dialog";
 
 import PageInstanceActions from "./PageInstanceActions";
 import { ModelInstance } from "../models/ModelInstance";
-import { useService, useActor, useInstance } from "../util/hooks";
+import { useService, useActor, useInstance, useImage } from "../util/hooks";
 import ServiceInstance from "../services/ServiceInstance";
 
 import PageActorAdd from "../PageActorAdd";
@@ -139,6 +141,12 @@ const useStyles = makeStyles(theme =>
                 marginRight: theme.spacing(1)
             }
         },
+        imageContainer: {
+            display: "flex",
+            flexWrap: "nowrap",
+            width: "90vw",
+            overflow: "auto"
+        },
         deleteInstanceButton: {
             background: orange[600],
             marginLeft: theme.spacing(1),
@@ -166,6 +174,8 @@ function Instance(props: InstanceProps) {
     const { expanded, setExpanded } = useRouterMemories(props.id);
     const [confirmDelete, setConfirmDelete] = useState(false);
     const [selectActors, setSelectActors] = useState(false);
+    const [attachImages, setAttachImages] = useState(false);
+    const [deleteImages, setDeleteImages] = useState(false);
 
     useEffect(() => {
         if (!instance) return;
@@ -176,6 +186,11 @@ function Instance(props: InstanceProps) {
         setTimeout(() => setConfirmDelete(false), 1500);
     }, [confirmDelete]);
 
+    const removeImage = (imageId: number) => {
+        instance.images = (instance.images || []).filter(v => v !== imageId);
+        if (!instance.images.length) delete instance.images;
+        updateInstance({ ...instance });
+    };
     const handleExpandClick = e => {
         e.stopPropagation();
         setExpanded(!expanded);
@@ -195,6 +210,12 @@ function Instance(props: InstanceProps) {
     const onAddActors = a => {
         updateInstance({ actors: [...a] });
         setSelectActors(false);
+    };
+    const onAttachImages = async (ids: number[]) => {
+        instance.images = ids;
+        if (!instance.images.length) delete instance.images;
+        updateInstance({ ...instance });
+        setAttachImages(false);
     };
 
     if (!instance) return null;
@@ -277,6 +298,8 @@ function Instance(props: InstanceProps) {
                                             : "Delete Instance"}
                                     </Button>
                                 </div>
+                            </div>
+                            <div>
                                 <div className={classes.catorControls}>
                                     <Button
                                         variant="contained"
@@ -301,8 +324,6 @@ function Instance(props: InstanceProps) {
                                             : "Delete Actors"}
                                     </Button>
                                 </div>
-                            </div>
-                            <div>
                                 <Paper>
                                     <List
                                         subheader={
@@ -318,6 +339,51 @@ function Instance(props: InstanceProps) {
                                                 deleteActors={deleteActors}
                                             />
                                         ))}
+                                    </List>
+                                </Paper>
+                            </div>
+                            <div>
+                                <div className={classes.catorControls}>
+                                    <Button
+                                        variant="contained"
+                                        color="secondary"
+                                        button="true"
+                                        onClick={e => setAttachImages(true)}
+                                        className={classes.addActorButton}>
+                                        <Photo />
+                                        Update Images
+                                    </Button>
+                                    <Button
+                                        variant="contained"
+                                        color="secondary"
+                                        button="secondary"
+                                        onClick={e =>
+                                            setDeleteImages(!deleteImages)
+                                        }
+                                        className={classes.deleteActorStart}>
+                                        <Photo />
+                                        {deleteImages
+                                            ? "...cancel"
+                                            : "Delete Images"}
+                                    </Button>
+                                </div>
+                                <Paper>
+                                    <List
+                                        subheader={
+                                            <ListSubheader component="div">
+                                                Images
+                                            </ListSubheader>
+                                        }>
+                                        <div className={classes.imageContainer}>
+                                            {(instance.images || []).map(v => (
+                                                <ImageEntry
+                                                    key={v}
+                                                    id={v}
+                                                    removeImage={removeImage}
+                                                    deleteImages={deleteImages}
+                                                />
+                                            ))}
+                                        </div>
                                     </List>
                                 </Paper>
                             </div>
@@ -342,6 +408,15 @@ function Instance(props: InstanceProps) {
                 open={selectActors}
                 onClose={e => setSelectActors(false)}>
                 <PageActorAdd onDone={onAddActors} selected={instance.actors} />
+            </Drawer>
+            <Drawer
+                anchor="top"
+                open={attachImages}
+                onClose={e => setAttachImages(false)}>
+                <PageImageAttach
+                    onDone={onAttachImages}
+                    selected={instance.images || []}
+                />
             </Drawer>
         </>
     );
@@ -394,6 +469,51 @@ const ActorEntry = (props: ActorEntryProps) => {
                 </ListItemSecondaryAction>
             ) : null}
         </ListItem>
+    );
+};
+
+const useImageEntryPropsStyles = makeStyles(theme => {
+    return createStyles({
+        entry: {
+            padding: theme.spacing(1 / 2),
+            position: "relative",
+            "& img": {
+                height: "200px"
+            }
+        },
+        removeButton: {
+            position: "absolute",
+            top: 10,
+            right: 22,
+            background: red[600],
+            color: "white"
+        }
+    });
+});
+interface ImageEntryProps {
+    id: number;
+    removeImage: (a: number) => void;
+    deleteImages: boolean;
+}
+const ImageEntry = (props: ImageEntryProps) => {
+    const classes = useImageEntryPropsStyles();
+    const [image, , , url] = useImage(props.id);
+    if (!image) return null;
+    if (!url) return null;
+    return (
+        <div className={classes.entry}>
+            {props.deleteImages ? (
+                <IconButton
+                    onClick={e => props.removeImage(props.id)}
+                    className={classes.removeButton}
+                    edge="end"
+                    aria-label="Comments">
+                    <RemoveCircle />
+                </IconButton>
+            ) : null}
+
+            <img src={url} alt="" />
+        </div>
     );
 };
 

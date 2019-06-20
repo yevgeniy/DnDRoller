@@ -56,7 +56,7 @@ function PageInstances(props) {
     return (
         <RouterContextView.Provider value={props}>
             <Layout
-                title="Instance Respository"
+                title="Image Respository"
                 control={
                     <>
                         <IconButton onClick={onAdd} color="inherit">

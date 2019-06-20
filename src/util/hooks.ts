@@ -162,6 +162,7 @@ export function useImageIds() {
         });
     };
     const deleteImage = async id => {
+        console.log(id);
         await serviceImage.deleteImage(id);
         setImageIds([...imageIds.filter(v => v !== id)]);
     };
