@@ -48,7 +48,7 @@ const ACTOR_REPOSITORY = "actorRepository.json";
 const INSTANCE_REPOSITORY = "instanceRepository.json";
 const IMAGE_REPOSITORY = "imageRepository.json";
 
-type file = "actor" | "image" | "instance";
+type file = "actor" | "image" | "instance" | "file";
 let instance = null;
 class ServiceDB {
     constructor() {}
@@ -85,6 +85,39 @@ class ServiceDB {
             }
         );
         return await res.text();
+    }
+    async deleteImg(name: string): Promise<void> {
+        const path = `/${APP}/${IMAGES}/${name}`;
+        console.log("a", path);
+        await fetch("https://api.dropboxapi.com/2/files/delete_v2", {
+            method: "post",
+            headers: {
+                Authorization:
+                    "Bearer lt-wyxv0LCEAAAAAAAAJCPPTV-l2md4oFIA8gVCAeyOO9WkMH0qyTATQDGJNfE6y",
+                "Content-Type": "application/json"
+            },
+            body: `{"path": "${path}"}`
+        });
+    }
+    async upload(name: string, data: string | ArrayBuffer) {
+        const path = `/${APP}/${IMAGES}/${name}`;
+        return new Promise(res => {
+            var reader = new FileReader();
+            reader.onload = async function() {
+                await fetch("https://content.dropboxapi.com/2/files/upload", {
+                    method: "post",
+                    headers: {
+                        Authorization:
+                            "Bearer lt-wyxv0LCEAAAAAAAAJCPPTV-l2md4oFIA8gVCAeyOO9WkMH0qyTATQDGJNfE6y",
+                        "Dropbox-API-Arg": `{"path": "${path}","mode": "overwrite","autorename": true,"mute": false,"strict_conflict": false}`,
+                        "Content-Type": "application/octet-stream"
+                    },
+                    body: reader.result
+                });
+                res();
+            };
+            reader.readAsArrayBuffer(new Blob([data]));
+        });
     }
     async save(file: file, data: string): Promise<void> {
         let path = "";

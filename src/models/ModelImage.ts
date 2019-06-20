@@ -2,5 +2,7 @@ export interface ModelImage {
     id: number;
     name: string;
     created: number;
-    keywords: string[];
+    keywords?: string[];
+    file?: string;
+    url?: string;
 }
