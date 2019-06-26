@@ -168,7 +168,7 @@ type ActorProps = { [P in keyof ModelActor]?: ModelActor[P] } & {
     classes?: { card: string };
     setSortActor?: (a: ModelActor) => void;
     setSelected?: (f: boolean) => void;
-    deleteActor: (i: number) => void;
+    deleteActor?: (i: number) => void;
     selected?: boolean;
     discover?: number;
 };
