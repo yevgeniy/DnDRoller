@@ -122,8 +122,8 @@ function Image(props: ImageProps) {
     const classes = useStyles(props);
     const [image, updateImage, upload, url] = useImage(props.id);
     const [confirmDelete, setConfirmDelete] = useState(false);
-    const [attachInstances, setAttachInstances] = useState(false);
-    const [attachActors, setAttachActors] = useState(false);
+    const [addInstances, setAddInstances] = useState(false);
+    const [addActors, setAddActors] = useState(false);
     const [removeInstances, setRemoveInstances] = useState(false);
 
     const [expanded, setExpanded] = useState(false);
@@ -146,36 +146,6 @@ function Image(props: ImageProps) {
     function openActionPanel(e) {
         e.stopPropagation();
         setOpenAction(true);
-    }
-
-    function removeInstance(instanceId: number) {
-        detatchInstance(instanceId);
-    }
-    function removeActor(actorId: number) {
-        detatchActor(actorId);
-    }
-
-    async function onAttachInstances(ids: number[]) {
-        for (let x = 0; x < instanceIds.length; x++) {
-            let id = instanceIds[x];
-            if (ids.indexOf(id) === -1) await detatchInstance(id);
-        }
-        for (let x = 0; x < ids.length; x++) {
-            let id = ids[x];
-            await attatchInstance(id);
-        }
-        setAttachInstances(false);
-    }
-    async function onAttachActors(ids: number[]) {
-        for (let x = 0; x < actorIds.length; x++) {
-            let id = actorIds[x];
-            if (ids.indexOf(id) === -1) await detatchActor(id);
-        }
-        for (let x = 0; x < ids.length; x++) {
-            let id = ids[x];
-            await attatchActor(id);
-        }
-        setAttachActors(false);
     }
 
     if (!image) return null;
@@ -264,8 +234,8 @@ function Image(props: ImageProps) {
                 </Drawer>
                 <Drawer
                     anchor="top"
-                    open={attachInstances}
-                    onClose={e => setAttachInstances(false)}>
+                    open={addInstances}
+                    onClose={e => setAddInstances(false)}>
                     {/* <AttachInstance onDone={onAttachInstances}
             selected={instanceIds} /> */}
                 </Drawer>

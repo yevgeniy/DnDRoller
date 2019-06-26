@@ -29,8 +29,12 @@ import {
     Drawer,
     Checkbox
 } from "@material-ui/core";
+import PageInstanceAttach from "../PageInstanceAttach";
+import PageActorAdd from "../PageActorAdd";
 import { makeStyles, createStyles } from "@material-ui/core/styles";
 import { useInstanceIdsForImage, useActorIdsForImage } from "../util/hooks";
+import OnInstanceEntry from "./OnInstanceEntry";
+import OnActorEntry from "./OnActorEntry";
 
 const useStyles = makeStyles(theme =>
     createStyles({
@@ -94,9 +98,10 @@ const ImageContent = (props: ImageContentProps) => {
     const classes = useStyles();
 
     const [confirmDelete, setConfirmDelete] = useState(false);
-    const [attachInstances, setAttachInstances] = useState(false);
-    const [attachActors, setAttachActors] = useState(false);
-    const [removeInstances, setRemoveInstances] = useState(false);
+    const [updatingInstances, setUpdatingInstances] = useState(false);
+    const [removingInstances, setRemovingInstances] = useState(false);
+    const [updatingActors, setUpdatingActors] = useState(false);
+    const [removingActors, setRemovingActors] = useState(false);
     const [
         instanceIds,
         attatchInstance,
@@ -108,6 +113,117 @@ const ImageContent = (props: ImageContentProps) => {
     function deleteImage(e) {
         props.deleteImage(props.id);
     }
+    async function onUpdateInstances(ids: number[]) {
+        for (let x = 0; x < instanceIds.length; x++) {
+            let id = instanceIds[x];
+            if (ids.indexOf(id) === -1) await detatchInstance(id);
+        }
+        for (let x = 0; x < ids.length; x++) {
+            let id = ids[x];
+            await attatchInstance(id);
+        }
+        setUpdatingInstances(false);
+    }
+    async function onUpdateActors(ids: number[]) {
+        for (let x = 0; x < actorIds.length; x++) {
+            let id = actorIds[x];
+            if (ids.indexOf(id) === -1) await detatchActor(id);
+        }
+        for (let x = 0; x < ids.length; x++) {
+            let id = ids[x];
+            await attatchActor(id);
+        }
+        setUpdatingActors(false);
+    }
+
+    const renderInstances = () => {
+        return (
+            <div>
+                <div className={classes.participantsControls}>
+                    <Button
+                        variant="contained"
+                        color="secondary"
+                        button="true"
+                        onClick={e => setUpdatingInstances(true)}
+                        className={classes.addParticipantButton}>
+                        <Extension />
+                        Update Instances
+                    </Button>
+                    <Button
+                        variant="contained"
+                        color="secondary"
+                        button="secondary"
+                        onClick={e => setRemovingInstances(!removingInstances)}
+                        className={classes.removeFromParticipantStart}>
+                        <Extension />
+                        {removingInstances
+                            ? "...cancel"
+                            : "Remove from Instances"}
+                    </Button>
+                </div>
+                <Paper>
+                    <List
+                        subheader={
+                            <ListSubheader component="div">
+                                Instances
+                            </ListSubheader>
+                        }>
+                        {(instanceIds || []).map(v => (
+                            <OnInstanceEntry
+                                key={v}
+                                id={v}
+                                detatchInstance={detatchInstance}
+                                removingInstances={removingInstances}
+                            />
+                        ))}
+                    </List>
+                </Paper>
+            </div>
+        );
+    };
+    const renderActors = () => {
+        return (
+            <div>
+                <div className={classes.participantsControls}>
+                    <Button
+                        variant="contained"
+                        color="secondary"
+                        button="true"
+                        onClick={e => setUpdatingActors(true)}
+                        className={classes.addParticipantButton}>
+                        <Extension />
+                        Update Actors
+                    </Button>
+                    <Button
+                        variant="contained"
+                        color="secondary"
+                        button="secondary"
+                        onClick={e => setRemovingActors(!removingActors)}
+                        className={classes.removeFromParticipantStart}>
+                        <Extension />
+                        {removingActors ? "...cancel" : "Remove from Instances"}
+                    </Button>
+                </div>
+                <Paper>
+                    <List
+                        subheader={
+                            <ListSubheader component="div">
+                                Actors
+                            </ListSubheader>
+                        }>
+                        {(actorIds || []).map(v => (
+                            <OnActorEntry
+                                key={v}
+                                id={v}
+                                detatchActor={detatchActor}
+                                removingActors={removingActors}
+                            />
+                        ))}
+                    </List>
+                </Paper>
+            </div>
+        );
+    };
     return (
         <CardContent>
             <Divider />
@@ -130,49 +246,25 @@ const ImageContent = (props: ImageContentProps) => {
                                 : "Delete Image"}
                         </Button>
                     </div>
-                    <div className={classes.participantsControls}>
-                        <Button
-                            variant="contained"
-                            color="secondary"
-                            button="true"
-                            onClick={e => setAttachInstances(true)}
-                            className={classes.addParticipantButton}>
-                            <Extension />
-                            Update Instances
-                        </Button>
-                        <Button
-                            variant="contained"
-                            color="secondary"
-                            button="secondary"
-                            onClick={e => setRemoveInstances(!removeInstances)}
-                            className={classes.removeFromParticipantStart}>
-                            <Extension />
-                            {removeInstances
-                                ? "...cancel"
-                                : "Remove from Instances"}
-                        </Button>
-                    </div>
-                </div>
-                <div>
-                    <Paper>
-                        {/* <List
-                            subheader={
-                                <ListSubheader component="div">
-                                    On Instance
-                                </ListSubheader>
-                            }>
-                            {(instanceIds || []).map(v => (
-                                <OnInstanceEntry
-                                    key={v}
-                                    id={v}
-                                    removeInstance={removeInstance}
-                                    deleteInstances={removeInstances}
-                                />
-                            ))}
-                        </List> */}
-                    </Paper>
+                    {renderInstances()}
+                    {renderActors()}
                 </div>
             </div>
+            <Drawer
+                anchor="top"
+                open={updatingInstances}
+                onClose={e => setUpdatingInstances(false)}>
+                <PageInstanceAttach
+                    onDone={onUpdateInstances}
+                    selected={instanceIds}
+                />
+            </Drawer>
+            <Drawer
+                anchor="top"
+                open={updatingActors}
+                onClose={e => setUpdatingActors(false)}>
+                <PageActorAdd onDone={onUpdateActors} selected={actorIds} />
+            </Drawer>
         </CardContent>
     );
 };
