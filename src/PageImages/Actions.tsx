@@ -3,18 +3,8 @@ import { useState } from "react";
 import { makeStyles, createStyles } from "@material-ui/core/styles";
 import Divider from "@material-ui/core/Divider";
 import Replay from "@material-ui/icons/Replay";
-import SaveAlt from "@material-ui/icons/SaveAlt";
 import Photo from "@material-ui/icons/Photo";
-import {
-    MenuItem,
-    InputLabel,
-    FilledInput,
-    Devider,
-    Card,
-    CardHeader,
-    TextField,
-    Fab
-} from "@material-ui/core";
+import { Card, CardHeader, TextField, Fab } from "@material-ui/core";
 import { ModelImage } from "../models/ModelImage";
 import KeywordListInput from "../components/KeywordListInput";
 import Uploader from "../components/Uploader";

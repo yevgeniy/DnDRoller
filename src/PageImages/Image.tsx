@@ -12,36 +12,18 @@ import { Link } from "react-router-dom";
 import {
     Typography,
     CardMedia,
-    Divider,
     IconButton,
     Avatar,
-    CardContent,
     CardHeader,
     Card,
-    List,
-    ListItem,
-    ListItemText,
-    ListSubheader,
-    ListItemAvatar,
-    ListItemSecondaryAction,
-    Paper,
-    Chip,
     Button,
     Collapse,
     Drawer,
     Checkbox
 } from "@material-ui/core";
-import RemoveCircle from "@material-ui/icons/RemoveCircle";
 
 import { ModelImage } from "../models/ModelImage";
-import {
-    useInstance,
-    useActor,
-    useInstanceIdsForImage,
-    useActorIdsForImage,
-    useImage,
-    useDiscover
-} from "../util/hooks";
+import { useImage, useDiscover } from "../util/hooks";
 import Actions from "./Actions";
 import ImageContent from "./ImageContent";
 
@@ -123,8 +105,6 @@ function Image(props: ImageProps) {
     const [image, updateImage, upload, url] = useImage(props.id);
     const [confirmDelete, setConfirmDelete] = useState(false);
     const [addInstances, setAddInstances] = useState(false);
-    const [addActors, setAddActors] = useState(false);
-    const [removeInstances, setRemoveInstances] = useState(false);
 
     const [expanded, setExpanded] = useState(false);
     const [openAction, setOpenAction] = useState(false);
@@ -235,10 +215,8 @@ function Image(props: ImageProps) {
                 <Drawer
                     anchor="top"
                     open={addInstances}
-                    onClose={e => setAddInstances(false)}>
-                    {/* <AttachInstance onDone={onAttachInstances}
-            selected={instanceIds} /> */}
-                </Drawer>
+                    onClose={e => setAddInstances(false)}
+                />
             </>
         );
     };
