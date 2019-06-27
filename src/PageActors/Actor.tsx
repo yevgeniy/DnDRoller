@@ -8,40 +8,32 @@ import CardContent from "@material-ui/core/CardContent";
 import CardHeader from "@material-ui/core/CardHeader";
 import Avatar from "@material-ui/core/Avatar";
 import IconButton from "@material-ui/core/IconButton";
-import Typography from "@material-ui/core/Typography";
+
 import red from "@material-ui/core/colors/red";
 import green from "@material-ui/core/colors/green";
 import orange from "@material-ui/core/colors/orange";
 import blue from "@material-ui/core/colors/blue";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
-import AccessTime from "@material-ui/icons/AccessTime";
-import FlashOn from "@material-ui/icons/FlashOn";
-import Divider from "@material-ui/core/Divider";
-import moment from "moment";
 import Delete from "@material-ui/icons/Delete";
 import RemoveCircle from "@material-ui/icons/RemoveCircle";
-import PageImageAttach from "../PageImageAttach/PageImageAttach";
+import FaceIcon from "@material-ui/icons/Face";
+
 import { Link } from "react-router-dom";
 import {
+    Divider,
     List,
     ListItem,
     ListItemText,
     ListSubheader,
     ListItemAvatar,
     ListItemSecondaryAction,
-    Paper
+    Paper,
+    Button,
+    Chip,
+    Collapse,
+    Drawer,
+    Checkbox
 } from "@material-ui/core";
-
-import Chip from "@material-ui/core/Chip";
-import Button from "@material-ui/core/Button";
-
-import FaceIcon from "@material-ui/icons/Face";
-
-import Collapse from "@material-ui/core/Collapse";
-
-import Drawer from "@material-ui/core/Drawer";
-
-import Checkbox from "@material-ui/core/Checkbox";
 
 import { ModelActor } from "../models/ModelActor";
 import {
@@ -51,8 +43,9 @@ import {
     useImage
 } from "../util/hooks";
 
-import PageActorActions from "./PageActorsActions";
-import PageInstanceAttach from "../PageInstanceAttach";
+import PageImagesAdd from "../PageImages/PageImagesAdd";
+import Actions from "./Actions";
+import PageInstancesAdd from "../PageInstances/PageInstancesAdd";
 
 const useStyles = makeStyles(theme =>
     createStyles({
@@ -448,7 +441,7 @@ function Actor(props: ActorProps) {
                     anchor="right"
                     onClose={() => setOpenAction(false)}>
                     <div>
-                        <PageActorActions
+                        <Actions
                             updateActor={updateActor}
                             setOpenAction={setOpenAction}
                             {...actor}
@@ -459,7 +452,7 @@ function Actor(props: ActorProps) {
                     anchor="top"
                     open={attachInstances}
                     onClose={e => setAttachInstances(false)}>
-                    <PageInstanceAttach
+                    <PageInstancesAdd
                         onDone={onAttachInstances}
                         selected={instanceIds}
                     />
@@ -468,7 +461,7 @@ function Actor(props: ActorProps) {
                     anchor="top"
                     open={attachImages}
                     onClose={e => setAttachImages(false)}>
-                    <PageImageAttach
+                    <PageImagesAdd
                         onDone={onAttachImages}
                         selected={actor.images || []}
                     />

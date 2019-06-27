@@ -32,7 +32,7 @@ interface PageImageAttachProps {
     onDone: (actors: number[]) => void;
     selected: number[];
 }
-function PageImageAttach(props: PageImageAttachProps) {
+function PageImagesAdd(props: PageImageAttachProps) {
     const [imageIds, createImage] = useImageIds();
     const [openNewImageDialog, setOpenNewImageDialog] = useState(false);
     const [newImageName, setNewImageName] = useState("");
@@ -134,4 +134,4 @@ function PageImageAttach(props: PageImageAttachProps) {
     );
 }
 
-export default PageImageAttach;
+export default PageImagesAdd;

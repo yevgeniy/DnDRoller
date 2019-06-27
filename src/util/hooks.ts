@@ -67,6 +67,36 @@ export function useInstance(id: number | "empty", history: any = null) {
 
     return [instance, updateInstance, createInstance];
 }
+export function useActorIds() {
+    const serviceActor = useService(ServiceActor);
+    const serviceInstance = useService(ServiceInstance);
+    const [actorIds, setActorIds] = useState();
+
+    useEffect(() => {
+        if (!serviceActor) return;
+        if (!serviceInstance) return;
+
+        serviceActor.getAll().then(res => {
+            setActorIds(res.map(v => v.id));
+        });
+    }, [serviceActor, serviceInstance]);
+
+    async function createActor(name) {
+        const newid = (await serviceActor.createActor(name)).id;
+        setActorIds([...actorIds, newid]);
+    }
+    async function deleteActor(id: number) {
+        var instances = await serviceInstance.getForActor(id);
+        instances.forEach(instance => {
+            instance.actors = instance.actors.filter(v => v !== id);
+            serviceInstance.save(instance);
+        });
+        await serviceActor.deleteActor(id);
+        setActorIds([...actorIds.filter(v => v !== id)]);
+    }
+
+    return [actorIds, createActor, deleteActor];
+}
 export function useActor(id: number): [ModelActor, (f: ModelActor) => void] {
     const serviceActor = useService(ServiceActor);
     const [actor, setActor] = useState(null);

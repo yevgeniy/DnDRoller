@@ -1,5 +1,5 @@
 import * as React from "react";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { makeStyles, createStyles } from "@material-ui/core/styles";
 import clsx from "clsx";
 import Card from "@material-ui/core/Card";
@@ -24,7 +24,7 @@ import Button from "@material-ui/core/Button";
 
 import Drawer from "@material-ui/core/Drawer";
 
-import PageInstanceActions from "./PageInstanceActions";
+import Actions from "./Actions";
 import { ModelActor } from "../models/ModelActor";
 import { useService, useImage } from "../util/hooks";
 import ServiceActor from "../services/ServiceActor";
@@ -93,14 +93,14 @@ const useActorStyles = makeStyles(theme =>
     })
 );
 
-type PageInstanceActorProps = { [P in keyof ModelActor]?: ModelActor[P] } & {
+type ActorProps = { [P in keyof ModelActor]?: ModelActor[P] } & {
     classes?: { card: string };
     setSortActor?: (a: ModelActor) => void;
     resetActor?: number;
     removeActor?: (id: number) => void;
 };
 
-function PageInstanceActor(props: PageInstanceActorProps) {
+function Actor(props: ActorProps) {
     const classes = useActorStyles(props);
     const [actor, updateActor] = useActor(props.id, props.resetActor);
     const [confirmRemove, setConfirmRemove] = useState(false);
@@ -240,9 +240,7 @@ function PageInstanceActor(props: PageInstanceActorProps) {
                 anchor="right"
                 onClose={() => setOpenAction(false)}>
                 <div>
-                    <PageInstanceActions
-                        {...{ updateActor, setOpenAction, ...actor }}
-                    />
+                    <Actions {...{ updateActor, setOpenAction, ...actor }} />
                 </div>
             </Drawer>
         </>
@@ -298,4 +296,4 @@ function useActor(id: number, resetActorToken?: number) {
     return [actor, updateActor];
 }
 
-export default PageInstanceActor;
+export default Actor;

@@ -29,8 +29,8 @@ import {
     Drawer,
     Checkbox
 } from "@material-ui/core";
-import PageInstanceAttach from "../PageInstanceAttach";
-import PageActorAdd from "../PageActorAdd";
+import PageInstancesAdd from "../PageInstances/PageInstancesAdd";
+import PageActorsAdd from "../PageActors/PageActorsAdd";
 import { makeStyles, createStyles } from "@material-ui/core/styles";
 import { useInstanceIdsForImage, useActorIdsForImage } from "../util/hooks";
 import OnInstanceEntry from "./OnInstanceEntry";
@@ -254,7 +254,7 @@ const ImageContent = (props: ImageContentProps) => {
                 anchor="top"
                 open={updatingInstances}
                 onClose={e => setUpdatingInstances(false)}>
-                <PageInstanceAttach
+                <PageInstancesAdd
                     onDone={onUpdateInstances}
                     selected={instanceIds}
                 />
@@ -263,7 +263,7 @@ const ImageContent = (props: ImageContentProps) => {
                 anchor="top"
                 open={updatingActors}
                 onClose={e => setUpdatingActors(false)}>
-                <PageActorAdd onDone={onUpdateActors} selected={actorIds} />
+                <PageActorsAdd onDone={onUpdateActors} selected={actorIds} />
             </Drawer>
         </CardContent>
     );

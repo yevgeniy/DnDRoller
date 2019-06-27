@@ -1,26 +1,14 @@
 import * as React from "react";
 import { render } from "react-dom";
 import * as serviceWorker from "./serviceWorker";
-import {
-    Switch,
-    Route,
-    Link,
-    BrowserRouter,
-    Redirect,
-    BrowserRouterProps
-} from "react-router-dom";
-import PageInstance from "./PageInstance";
+import { Switch, Route, BrowserRouter } from "react-router-dom";
+import PageInstance from "./PageInstance/PageInstance";
 import PageHome from "./PageHome";
-import PageInstances from "./PageInstances";
-import PageActors from "./PageActors";
+import PageInstances from "./PageInstances/PageInstances";
+import PageActors from "./PageActors/PageActors";
 import PageImages from "./PageImages/PageImages";
 
-import {
-    withStyles,
-    StyleRules,
-    createMuiTheme,
-    responsiveFontSizes
-} from "@material-ui/core/styles";
+import { withStyles, StyleRules } from "@material-ui/core/styles";
 import "./util/extends";
 
 /*g*/

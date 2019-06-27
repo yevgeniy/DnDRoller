@@ -1,47 +1,40 @@
 import * as React from "react";
 import { useState, useEffect, useContext } from "react";
 import { makeStyles, createStyles } from "@material-ui/core/styles";
-import { Link } from "react-router-dom";
 import clsx from "clsx";
-import Card from "@material-ui/core/Card";
-import Photo from "@material-ui/icons/Photo";
-import CardContent from "@material-ui/core/CardContent";
-import CardHeader from "@material-ui/core/CardHeader";
-import Avatar from "@material-ui/core/Avatar";
-import IconButton from "@material-ui/core/IconButton";
-import Typography from "@material-ui/core/Typography";
+import { Link } from "react-router-dom";
 import red from "@material-ui/core/colors/red";
 import green from "@material-ui/core/colors/green";
 import orange from "@material-ui/core/colors/orange";
 import blue from "@material-ui/core/colors/blue";
+import Photo from "@material-ui/icons/Photo";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import RemoveCircle from "@material-ui/icons/RemoveCircle";
 import Delete from "@material-ui/icons/Delete";
 import AccessTime from "@material-ui/icons/AccessTime";
-import FlashOn from "@material-ui/icons/FlashOn";
-import Divider from "@material-ui/core/Divider";
-import Button from "@material-ui/core/Button";
 import DirectionsRun from "@material-ui/icons/DirectionsRun";
+import {
+    Button,
+    Divider,
+    IconButton,
+    Avatar,
+    CardHeader,
+    CardContent,
+    Card,
+    Chip,
+    Checkbox,
+    Collapse,
+    Drawer
+} from "@material-ui/core";
+
 import moment from "moment";
-import PageInstancesActions from "./PageInstancesActions";
-import PageImageAttach from "../PageImageAttach/PageImageAttach";
+import Actions from "./Actions";
 
-import Chip from "@material-ui/core/Chip";
-import FaceIcon from "@material-ui/icons/Face";
-import Checkbox from "@material-ui/core/Checkbox";
+import { useActor, useInstance, useImage } from "../util/hooks";
 
-import Collapse from "@material-ui/core/Collapse";
-
-import Drawer from "@material-ui/core/Drawer";
-import Dialog from "@material-ui/core/Dialog";
-
-import PageInstanceActions from "./PageInstanceActions";
+import PageImagesAdd from "../PageImages/PageImagesAdd";
+import PageActorsAdd from "../PageActors/PageActorsAdd";
 import { ModelInstance } from "../models/ModelInstance";
-import { useService, useActor, useInstance, useImage } from "../util/hooks";
-import ServiceInstance from "../services/ServiceInstance";
-
-import PageActorAdd from "../PageActorAdd";
-
 import { RouterContextView } from "../util/routerContext";
 
 import {
@@ -396,7 +389,7 @@ function Instance(props: InstanceProps) {
                 anchor="right"
                 onClose={() => setOpenAction(false)}>
                 <div>
-                    <PageInstancesActions
+                    <Actions
                         updateInstance={updateInstance}
                         setOpenAction={setOpenAction}
                         {...instance}
@@ -407,13 +400,16 @@ function Instance(props: InstanceProps) {
                 anchor="top"
                 open={selectActors}
                 onClose={e => setSelectActors(false)}>
-                <PageActorAdd onDone={onAddActors} selected={instance.actors} />
+                <PageActorsAdd
+                    onDone={onAddActors}
+                    selected={instance.actors}
+                />
             </Drawer>
             <Drawer
                 anchor="top"
                 open={attachImages}
                 onClose={e => setAttachImages(false)}>
-                <PageImageAttach
+                <PageImagesAdd
                     onDone={onAttachImages}
                     selected={instance.images || []}
                 />
