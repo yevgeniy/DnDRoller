@@ -111,7 +111,6 @@ function PageImageAttach(props: PageImageAttachProps) {
                     </DialogContentText>
                     <form onSubmit={onNewImageName}>
                         <TextField
-                            autoFocus
                             margin="dense"
                             id="name"
                             label="Image Name"
