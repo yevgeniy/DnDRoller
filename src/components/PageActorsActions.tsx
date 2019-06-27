@@ -75,7 +75,14 @@ function PageActorsActions(props: PageActorsActionsProps) {
 
     const onUpdateActor = (e: any) => {
         e.preventDefault();
-        props.updateActor({ name, hp, class: cls, race, size });
+        props.updateActor({
+            name,
+            hp,
+            hpCurrent: hpCurrent === null ? hp : hpCurrent,
+            class: cls,
+            race,
+            size
+        });
         props.setOpenAction(false);
     };
     const onReset = e => {
