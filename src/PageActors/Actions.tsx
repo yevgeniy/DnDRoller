@@ -13,11 +13,11 @@ import {
     InputLabel,
     FilledInput,
     Card,
-    CardHeader,
     TextField,
     Fab,
     FormControl
 } from "@material-ui/core";
+import { CardHeader } from "../components";
 
 import { ActorSize } from "../enums";
 import ClassListInput from "../components/ClassListInput";

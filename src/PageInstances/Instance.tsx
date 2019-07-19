@@ -18,7 +18,6 @@ import {
     Divider,
     IconButton,
     Avatar,
-    CardHeader,
     CardContent,
     Card,
     Chip,
@@ -26,6 +25,7 @@ import {
     Collapse,
     Drawer
 } from "@material-ui/core";
+import { CardHeader } from "../components";
 
 import moment from "moment";
 import Actions from "./Actions";

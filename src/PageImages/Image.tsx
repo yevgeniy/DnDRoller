@@ -14,13 +14,13 @@ import {
     CardMedia,
     IconButton,
     Avatar,
-    CardHeader,
     Card,
     Button,
     Collapse,
     Drawer,
     Checkbox
 } from "@material-ui/core";
+import { CardHeader } from "../components";
 
 import { ModelImage } from "../models/ModelImage";
 import { useImage, useDiscover } from "../util/hooks";
