@@ -97,7 +97,6 @@ type ImageContentProps = { [P in keyof ModelImage]: ModelImage[P] } & {
 const ImageContent = (props: ImageContentProps) => {
     const classes = useStyles();
 
-    const [confirmDelete, setConfirmDelete] = useState(false);
     const [updatingInstances, setUpdatingInstances] = useState(false);
     const [removingInstances, setRemovingInstances] = useState(false);
     const [updatingActors, setUpdatingActors] = useState(false);
@@ -229,23 +228,6 @@ const ImageContent = (props: ImageContentProps) => {
             <Divider />
             <div className={classes.cardContent}>
                 <div>
-                    <div className={classes.deleteContainer}>
-                        <Button
-                            variant="contained"
-                            color="secondary"
-                            onClick={e =>
-                                confirmDelete
-                                    ? deleteImage(e)
-                                    : setConfirmDelete(true)
-                            }
-                            button="true"
-                            className={classes.deleteImageButton}>
-                            <Delete />
-                            {confirmDelete
-                                ? "...again to confirm"
-                                : "Delete Image"}
-                        </Button>
-                    </div>
                     {renderInstances()}
                     {renderActors()}
                 </div>

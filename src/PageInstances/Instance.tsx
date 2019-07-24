@@ -6,6 +6,7 @@ import { Link } from "react-router-dom";
 import red from "@material-ui/core/colors/red";
 import green from "@material-ui/core/colors/green";
 import orange from "@material-ui/core/colors/orange";
+import purple from "@material-ui/core/colors/purple";
 import blue from "@material-ui/core/colors/blue";
 import Photo from "@material-ui/icons/Photo";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
@@ -15,6 +16,7 @@ import AccessTime from "@material-ui/icons/AccessTime";
 import DirectionsRun from "@material-ui/icons/DirectionsRun";
 import {
     Button,
+    Fab,
     Divider,
     IconButton,
     Avatar,
@@ -30,7 +32,7 @@ import { CardHeader } from "../components";
 import moment from "moment";
 import Actions from "./Actions";
 
-import { useActor, useInstance, useImage } from "../util/hooks";
+import { useActor, useInstance, useImage, useHot } from "../util/hooks";
 
 import PageImagesAdd from "../PageImages/PageImagesAdd";
 import PageActorsAdd from "../PageActors/PageActorsAdd";
@@ -50,6 +52,17 @@ import {
 const useStyles = makeStyles(theme =>
     createStyles({
         card: {},
+        deleteButton: {
+            "& svg": {
+                transition: "all ease 200ms",
+                color: purple[600]
+            }
+        },
+        deleteButtonActive: {
+            "& svg": {
+                transform: "scale(2)"
+            }
+        },
         expand: {
             transform: "rotate(0deg)",
             marginLeft: "auto",
@@ -165,19 +178,15 @@ function Instance(props: InstanceProps) {
 
     const [openAction, setOpenAction] = useState(false);
     const { expanded, setExpanded } = useRouterMemories(props.id);
-    const [confirmDelete, setConfirmDelete] = useState(false);
     const [selectActors, setSelectActors] = useState(false);
     const [attachImages, setAttachImages] = useState(false);
     const [deleteImages, setDeleteImages] = useState(false);
+    const { hot: hotDelete, setHot: setHotDelete } = useHot();
 
     useEffect(() => {
         if (!instance) return;
         props.setSortInstance(instance);
     }, [instance]);
-    useEffect(() => {
-        if (!confirmDelete) return;
-        setTimeout(() => setConfirmDelete(false), 1500);
-    }, [confirmDelete]);
 
     const removeImage = (imageId: number) => {
         instance.images = (instance.images || []).filter(v => v !== imageId);
@@ -196,7 +205,7 @@ function Instance(props: InstanceProps) {
         if (!instance) return;
         updateInstance({ actors: instance.actors.filter(v => v !== id) });
     };
-    const deleteInstance = e => {
+    const deleteInstance = (e = null) => {
         if (!instance) return;
         props.deleteInstance(props.id);
     };
@@ -210,6 +219,10 @@ function Instance(props: InstanceProps) {
         updateInstance({ ...instance });
         setAttachImages(false);
     };
+    const deleteAct = () => {
+        if (hotDelete) deleteInstance();
+        else setHotDelete(true);
+    };
 
     if (!instance) return null;
 
@@ -217,6 +230,23 @@ function Instance(props: InstanceProps) {
         <>
             <Card className={classes.card}>
                 <CardHeader
+                    contextMenu={
+                        <>
+                            <div>
+                                <Fab
+                                    className={clsx(classes.deleteButton, {
+                                        [classes.deleteButtonActive]: hotDelete
+                                    })}
+                                    onClick={deleteAct}
+                                    variant="extended"
+                                    color="default"
+                                    size="small"
+                                    type="submit">
+                                    <Delete />
+                                </Fab>
+                            </div>
+                        </>
+                    }
                     onClick={e =>
                         props.setSelected
                             ? props.setSelected(!props.selected)
@@ -271,27 +301,6 @@ function Instance(props: InstanceProps) {
                     <CardContent>
                         <Divider />
                         <div className={classes.cardContent}>
-                            <div>
-                                <div className={classes.deleteContainer}>
-                                    <Button
-                                        variant="contained"
-                                        color="secondary"
-                                        onClick={e =>
-                                            confirmDelete
-                                                ? deleteInstance(e)
-                                                : setConfirmDelete(true)
-                                        }
-                                        button="true"
-                                        className={
-                                            classes.deleteInstanceButton
-                                        }>
-                                        <Delete />
-                                        {confirmDelete
-                                            ? "...again to confirm"
-                                            : "Delete Instance"}
-                                    </Button>
-                                </div>
-                            </div>
                             <div>
                                 <div className={classes.catorControls}>
                                     <Button

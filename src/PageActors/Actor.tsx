@@ -2,10 +2,8 @@ import * as React from "react";
 import { useState, useEffect, useRef } from "react";
 import { makeStyles, createStyles } from "@material-ui/core/styles";
 import clsx from "clsx";
-import { Card, Fab } from "@material-ui/core";
 import Extension from "@material-ui/icons/Extension";
-import CardContent from "@material-ui/core/CardContent";
-import { CardHeader } from "../components";
+
 import Avatar from "@material-ui/core/Avatar";
 import IconButton from "@material-ui/core/IconButton";
 
@@ -20,7 +18,10 @@ import RemoveCircle from "@material-ui/icons/RemoveCircle";
 import FaceIcon from "@material-ui/icons/Face";
 
 import { Link } from "react-router-dom";
+import { CardHeader } from "../components";
 import {
+    Card,
+    Fab,
     Divider,
     List,
     ListItem,
@@ -28,6 +29,7 @@ import {
     ListSubheader,
     ListItemAvatar,
     ListItemSecondaryAction,
+    CardContent,
     Paper,
     Button,
     Chip,
@@ -96,13 +98,6 @@ const useStyles = makeStyles(theme =>
                 marginRight: theme.spacing(1)
             }
         },
-        deleteActorButton: {
-            background: orange[600],
-            marginLeft: theme.spacing(1),
-            "& svg": {
-                marginRight: theme.spacing(1)
-            }
-        },
         expand: {
             transform: "rotate(0deg)",
             marginLeft: "auto",
@@ -158,10 +153,6 @@ const useStyles = makeStyles(theme =>
         extendedIcon: {
             marginRight: theme.spacing(1)
         },
-        deleteContainer: {
-            display: "flex",
-            justifyContent: "flex-end"
-        },
         instancesControls: {
             display: "flex",
             justifyContent: "flex-start",
@@ -182,7 +173,6 @@ type ActorProps = { [P in keyof ModelActor]?: ModelActor[P] } & {
 function Actor(props: ActorProps) {
     const classes = useStyles(props);
     const [actor, updateActor] = useActor(props.id);
-    const [confirmDelete, setConfirmDelete] = useState(false);
     const [attachInstances, setAttachInstances] = useState(false);
     const [deleteInstances, setDeleteInstances] = useState(false);
     const [attachImages, setAttachImages] = useState(false);
@@ -202,11 +192,6 @@ function Actor(props: ActorProps) {
         if (!actor) return;
         props.setSortActor(actor);
     }, [actor]);
-    useEffect(() => {
-        if (!confirmDelete) return;
-        setTimeout(() => setConfirmDelete(false), 1500);
-    }, [confirmDelete]);
-
     function handleExpandClick(e) {
         e.stopPropagation();
         setExpanded(!expanded);
@@ -252,7 +237,6 @@ function Actor(props: ActorProps) {
     const c = [];
     for (let i in actor.class) c.push(`${i} lvl ${actor.class[i]}`);
 
-    console.log("b", hotDelete);
     const renderView = () => {
         return (
             <>
@@ -337,27 +321,6 @@ function Actor(props: ActorProps) {
                         <CardContent>
                             <Divider />
                             <div className={classes.cardContent}>
-                                <div>
-                                    <div className={classes.deleteContainer}>
-                                        <Button
-                                            variant="contained"
-                                            color="secondary"
-                                            onClick={e =>
-                                                confirmDelete
-                                                    ? deleteActor(e)
-                                                    : setConfirmDelete(true)
-                                            }
-                                            button="true"
-                                            className={
-                                                classes.deleteActorButton
-                                            }>
-                                            <Delete />
-                                            {confirmDelete
-                                                ? "...again to confirm"
-                                                : "Delete Actor"}
-                                        </Button>
-                                    </div>
-                                </div>
                                 <div>
                                     <div className={classes.instancesControls}>
                                         <Button
