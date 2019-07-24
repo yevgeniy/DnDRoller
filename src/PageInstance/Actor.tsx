@@ -9,12 +9,13 @@ import Avatar from "@material-ui/core/Avatar";
 import IconButton from "@material-ui/core/IconButton";
 import Typography from "@material-ui/core/Typography";
 import red from "@material-ui/core/colors/red";
+import purple from "@material-ui/core/colors/purple";
 import orange from "@material-ui/core/colors/orange";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import FlashOn from "@material-ui/icons/FlashOn";
 import Delete from "@material-ui/icons/Delete";
 
-import { Divider, Paper, List, ListSubheader } from "@material-ui/core";
+import { Divider, Paper, List, ListSubheader, Fab } from "@material-ui/core";
 
 import Chip from "@material-ui/core/Chip";
 import FaceIcon from "@material-ui/icons/Face";
@@ -26,12 +27,23 @@ import Drawer from "@material-ui/core/Drawer";
 
 import Actions from "./Actions";
 import { ModelActor } from "../models/ModelActor";
-import { useService, useImage } from "../util/hooks";
+import { useService, useImage, useHot } from "../util/hooks";
 import ServiceActor from "../services/ServiceActor";
 
 const useActorStyles = makeStyles(theme =>
     createStyles({
         card: {},
+        deleteButton: {
+            "& svg": {
+                transition: "all ease 200ms",
+                color: purple[600]
+            }
+        },
+        deleteButtonActive: {
+            "& svg": {
+                transform: "scale(2)"
+            }
+        },
         imageContainer: {
             display: "flex",
             flexWrap: "nowrap",
@@ -104,10 +116,7 @@ function Actor(props: ActorProps) {
     const classes = useActorStyles(props);
     const [actor, updateActor] = useActor(props.id, props.resetActor);
     const [confirmRemove, setConfirmRemove] = useState(false);
-    useEffect(() => {
-        if (!confirmRemove) return;
-        setTimeout(() => setConfirmRemove(false), 1500);
-    }, [confirmRemove]);
+    const { hot: hotDelete, setHot: setHotDelete } = useHot();
 
     useEffect(() => {
         if (!actor) return;
@@ -117,7 +126,7 @@ function Actor(props: ActorProps) {
     const [expanded, setExpanded] = useState(false);
     const [openAction, setOpenAction] = useState(false);
 
-    function removeActor(e) {
+    function removeActor(e = null) {
         props.removeActor(props.id);
     }
     function handleExpandClick(e) {
@@ -128,6 +137,10 @@ function Actor(props: ActorProps) {
         e.stopPropagation();
         setOpenAction(true);
     }
+    const deleteAct = () => {
+        if (hotDelete) removeActor();
+        else setHotDelete(true);
+    };
 
     if (!actor) return null;
 
@@ -138,6 +151,23 @@ function Actor(props: ActorProps) {
         <>
             <Card className={classes.card}>
                 <CardHeader
+                    contextMenu={
+                        <>
+                            <div>
+                                <Fab
+                                    className={clsx(classes.deleteButton, {
+                                        [classes.deleteButtonActive]: hotDelete
+                                    })}
+                                    onClick={deleteAct}
+                                    variant="extended"
+                                    color="default"
+                                    size="small"
+                                    type="submit">
+                                    <Delete />
+                                </Fab>
+                            </div>
+                        </>
+                    }
                     onClick={openActionPanel}
                     avatar={
                         <Avatar aria-label="Recipe" className={classes.avatar}>
@@ -190,21 +220,6 @@ function Actor(props: ActorProps) {
                                         {actor.size}
                                     </Typography>
                                 </div>
-                                <Button
-                                    variant="contained"
-                                    color="secondary"
-                                    onClick={e =>
-                                        confirmRemove
-                                            ? removeActor(e)
-                                            : setConfirmRemove(true)
-                                    }
-                                    button="true"
-                                    className={classes.removeButton}>
-                                    <Delete />
-                                    {confirmRemove
-                                        ? "...again to confirm"
-                                        : "Remove from Instance"}
-                                </Button>
                             </div>
 
                             {actor.images && actor.images.length && (

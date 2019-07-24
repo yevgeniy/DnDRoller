@@ -64,7 +64,7 @@ const useStyles = makeStyles(
 const useCardHeaderStyles = makeStyles(theme => {
     return createStyles({
         root: {
-            padding: [[7, 10]],
+            padding: "7px 10px" /*why is padding not working*/,
             [theme.breakpoints.up("sm")]: {
                 padding: ""
             }

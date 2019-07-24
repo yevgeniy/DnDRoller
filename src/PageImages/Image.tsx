@@ -2,6 +2,7 @@ import * as React from "react";
 import { useState, useEffect, useRef } from "react";
 import { makeStyles, createStyles } from "@material-ui/core/styles";
 import clsx from "clsx";
+import Delete from "@material-ui/icons/Delete";
 import red from "@material-ui/core/colors/red";
 import orange from "@material-ui/core/colors/orange";
 import blue from "@material-ui/core/colors/blue";
@@ -10,6 +11,7 @@ import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 
 import { Link } from "react-router-dom";
 import {
+    Fab,
     Typography,
     CardMedia,
     IconButton,
@@ -23,13 +25,24 @@ import {
 import { CardHeader } from "../components";
 
 import { ModelImage } from "../models/ModelImage";
-import { useImage, useDiscover } from "../util/hooks";
+import { useImage, useDiscover, useHot } from "../util/hooks";
 import Actions from "./Actions";
 import ImageContent from "./ImageContent";
 
 const useStyles = makeStyles(theme =>
     createStyles({
         card: {},
+        deleteButton: {
+            "& svg": {
+                transition: "all ease 200ms",
+                color: purple[600]
+            }
+        },
+        deleteButtonActive: {
+            "& svg": {
+                transform: "scale(2)"
+            }
+        },
         media: {
             height: 0,
             paddingTop: "25.25%",
@@ -103,21 +116,17 @@ type ImageProps = { [P in keyof ModelImage]?: ModelImage[P] } & {
 function Image(props: ImageProps) {
     const classes = useStyles(props);
     const [image, updateImage, upload, url] = useImage(props.id);
-    const [confirmDelete, setConfirmDelete] = useState(false);
     const [addInstances, setAddInstances] = useState(false);
 
     const [expanded, setExpanded] = useState(false);
     const [openAction, setOpenAction] = useState(false);
     const elmRef = useDiscover(props.discover, props.id, setExpanded);
+    const { hot: hotDelete, setHot: setHotDelete } = useHot();
 
     useEffect(() => {
         if (!image) return;
         props.setSortImage(image);
     }, [image]);
-    useEffect(() => {
-        if (!confirmDelete) return;
-        setTimeout(() => setConfirmDelete(false), 1500);
-    }, [confirmDelete]);
 
     function handleExpandClick(e) {
         e.stopPropagation();
@@ -127,15 +136,35 @@ function Image(props: ImageProps) {
         e.stopPropagation();
         setOpenAction(true);
     }
+    const deleteAct = () => {
+        if (hotDelete) props.deleteImage(props.id);
+        else setHotDelete(true);
+    };
 
     if (!image) return null;
 
-    console.log(image.name, url);
     const renderView = () => {
         return (
             <>
                 <Card className={classes.card} ref={elmRef}>
                     <CardHeader
+                        contextMenu={
+                            <>
+                                <div>
+                                    <Fab
+                                        className={clsx(classes.deleteButton, {
+                                            [classes.deleteButtonActive]: hotDelete
+                                        })}
+                                        onClick={deleteAct}
+                                        variant="extended"
+                                        color="default"
+                                        size="small"
+                                        type="submit">
+                                        <Delete />
+                                    </Fab>
+                                </div>
+                            </>
+                        }
                         onClick={e =>
                             props.setSelected
                                 ? props.setSelected(!props.selected)
