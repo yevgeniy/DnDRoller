@@ -2,7 +2,7 @@ import * as React from "react";
 import { useState, useEffect, useRef } from "react";
 import { makeStyles, createStyles } from "@material-ui/core/styles";
 import clsx from "clsx";
-import Card from "@material-ui/core/Card";
+import { Card, Fab } from "@material-ui/core";
 import Extension from "@material-ui/icons/Extension";
 import CardContent from "@material-ui/core/CardContent";
 import { CardHeader } from "../components";
@@ -13,6 +13,7 @@ import red from "@material-ui/core/colors/red";
 import green from "@material-ui/core/colors/green";
 import orange from "@material-ui/core/colors/orange";
 import blue from "@material-ui/core/colors/blue";
+import purple from "@material-ui/core/colors/purple";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import Delete from "@material-ui/icons/Delete";
 import RemoveCircle from "@material-ui/icons/RemoveCircle";
@@ -40,7 +41,8 @@ import {
     useInstance,
     useActor,
     useInstanceIdsForActor,
-    useImage
+    useImage,
+    useHot
 } from "../util/hooks";
 
 import PageImagesAdd from "../PageImages/PageImagesAdd";
@@ -50,6 +52,17 @@ import PageInstancesAdd from "../PageInstances/PageInstancesAdd";
 const useStyles = makeStyles(theme =>
     createStyles({
         card: {},
+        deleteButton: {
+            "& svg": {
+                transition: "all ease 200ms",
+                color: purple[600]
+            }
+        },
+        deleteButtonActive: {
+            "& svg": {
+                transform: "scale(2)"
+            }
+        },
         cardContent: {
             marginTop: theme.spacing(1),
             display: "flex",
@@ -183,6 +196,7 @@ function Actor(props: ActorProps) {
     const [expanded, setExpanded] = useState(false);
     const [openAction, setOpenAction] = useState(false);
     const elmRef = useDiscover(props.discover, props.id, setExpanded);
+    const { hot: hotDelete, setHot: setHotDelete } = useHot();
 
     useEffect(() => {
         if (!actor) return;
@@ -201,8 +215,7 @@ function Actor(props: ActorProps) {
         e.stopPropagation();
         setOpenAction(true);
     }
-    function deleteActor(e) {
-        console.log(props.id);
+    function deleteActor(e = null) {
         props.deleteActor(props.id);
     }
     function removeInstance(instanceId: number) {
@@ -230,16 +243,38 @@ function Actor(props: ActorProps) {
         updateActor({ ...actor });
         setAttachImages(false);
     }
+    const deleteAct = () => {
+        if (hotDelete) deleteActor();
+        else setHotDelete(true);
+    };
 
     if (!actor) return null;
     const c = [];
     for (let i in actor.class) c.push(`${i} lvl ${actor.class[i]}`);
 
+    console.log("b", hotDelete);
     const renderView = () => {
         return (
             <>
                 <Card className={classes.card} ref={elmRef}>
                     <CardHeader
+                        contextMenu={
+                            <>
+                                <div>
+                                    <Fab
+                                        className={clsx(classes.deleteButton, {
+                                            [classes.deleteButtonActive]: hotDelete
+                                        })}
+                                        onClick={deleteAct}
+                                        variant="extended"
+                                        color="default"
+                                        size="small"
+                                        type="submit">
+                                        <Delete />
+                                    </Fab>
+                                </div>
+                            </>
+                        }
                         onClick={e =>
                             props.setSelected
                                 ? props.setSelected(!props.selected)
@@ -282,6 +317,8 @@ function Actor(props: ActorProps) {
                                         [classes.expandOpen]: expanded
                                     })}
                                     onClick={handleExpandClick}
+                                    onMouseDown={e => e.stopPropagation()}
+                                    onMouseUp={e => e.stopPropagation()}
                                     aria-expanded={expanded}
                                     aria-label="Show more">
                                     <ExpandMoreIcon />

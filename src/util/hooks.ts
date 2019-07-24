@@ -108,7 +108,6 @@ export function useActor(id: number): [ModelActor, (f: ModelActor) => void] {
 
     async function updateActor(updateActor) {
         const newActor = { ...actor, ...updateActor };
-        console.log(newActor);
         await serviceActor.save(newActor);
         setActor(newActor);
     }
@@ -125,7 +124,6 @@ export function useImage(id: number) {
         serviceImage.get(id).then(setImage);
     }, [serviceImage]);
     useEffect(() => {
-        console.log("a", image);
         if (!serviceImage) return;
         if (!image) return;
         if (!image.file && url) {
@@ -136,7 +134,6 @@ export function useImage(id: number) {
     }, [image && image.file, serviceImage]);
 
     async function updateImage(updateImage) {
-        console.log("b", image);
         const newImage = { ...image, ...updateImage };
         await serviceImage.save(newImage);
         setImage(newImage);
@@ -192,7 +189,6 @@ export function useImageIds() {
         });
     };
     const deleteImage = async id => {
-        console.log(id);
         await serviceImage.deleteImage(id);
         setImageIds([...imageIds.filter(v => v !== id)]);
     };
@@ -318,4 +314,15 @@ export function useDiscover(
     });
 
     return ref;
+}
+export function useHot() {
+    const [hot, setHot] = useState(false);
+
+    useEffect(() => {
+        if (!hot) return;
+
+        setTimeout(() => setHot(false), 1500);
+    }, [hot]);
+
+    return { hot, setHot };
 }
