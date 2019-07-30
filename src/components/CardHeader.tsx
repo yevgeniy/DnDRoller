@@ -14,6 +14,7 @@ const useStyles = makeStyles(
       root: {
         position: "relative"
       },
+      swiper: {},
       contextMenu: {
         position: "absolute",
         left: 5,
@@ -91,31 +92,26 @@ const CardHeader = props => {
   return <MuiCardHeader classes={cardHeaderClasses} {...props} />;
 };
 
-const SwipeCompWrapper = ({ onClick, ...props }) => {
+const SwipeCompWrapper = ({ ...props }) => {
   const classes = useStyles(props);
   const { open, setOpen, setClose, elmRef } = useContextMenu();
   const moveref = useRef({ x: 0, y: 0 });
 
-  const clickeval = e => {
-    onClick &&
-      Math.abs(moveref.current.x) < 10 &&
-      Math.abs(moveref.current.y) < 10 &&
-      onClick(e);
+  const clickdetect = e => {
+    const {
+      current: { x, y }
+    } = moveref;
+    if (Math.abs(x) < 10 && Math.abs(y) < 10 && props.onClick) {
+      props.onClick(e);
+    }
+    moveref.current = { x: 0, y: 0 };
   };
+
   return (
-    <div
-      className={classes.root}
-      onMouseDown={e => {
-        moveref.current = { x: 0, y: 0 };
-      }}
-      onTouchStart={e => {
-        moveref.current = { x: 0, y: 0 };
-      }}
-      onMouseUp={clickeval}
-      onTouchEnd={clickeval}
-    >
+    <div className={classes.root} onClick={clickdetect}>
       <Swipeable
         {...props}
+        className={clsx(classes.swiper, props.className)}
         onSwipedLeft={setOpen}
         trackMouse
         onSwiping={e => {
@@ -130,17 +126,16 @@ const SwipeCompWrapper = ({ onClick, ...props }) => {
           className={clsx(classes.contextMenuBackground, {
             [classes.contextMenuOpen]: open
           })}
-          onClick={setClose}
-          onMouseDown={e => e.stopPropagation()}
-          onMouseUp={e => e.stopPropagation()}
+          onClick={e => {
+            e.stopPropagation();
+            setClose();
+          }}
         />
         <div
           className={clsx(classes.contextMenuItems, {
             [classes.contextMenuItemOpen]: open
           })}
           ref={elmRef}
-          onMouseDown={e => e.stopPropagation()}
-          onMouseUp={e => e.stopPropagation()}
         >
           {props.contextMenu}
         </div>
