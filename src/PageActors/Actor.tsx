@@ -16,7 +16,7 @@ import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import Delete from "@material-ui/icons/Delete";
 import RemoveCircle from "@material-ui/icons/RemoveCircle";
 import FaceIcon from "@material-ui/icons/Face";
-import Clone from "../components/Clone";
+import Clone from "@material-ui/icons/CallSplit";
 
 import { Link } from "react-router-dom";
 import { CardHeader } from "../components";
@@ -56,16 +56,27 @@ const useStyles = makeStyles(theme =>
   createStyles({
     card: {},
     deleteButton: {
+      background: "white",
       "& svg": {
         transition: "all ease 200ms",
+        transform: "scale(2)",
         color: purple[600]
+      }
+    },
+    cloneButton: {
+      background: "white",
+      marginLeft: theme.spacing(2),
+      "& svg": {
+        color: purple[600],
+        transform: "scale(2)"
       }
     },
     deleteButtonActive: {
       "& svg": {
-        transform: "scale(2)"
+        transform: "scale(1)"
       }
     },
+
     cardContent: {
       marginTop: theme.spacing(1),
       display: "flex",
@@ -260,7 +271,7 @@ function Actor(props: ActorProps) {
                     <Delete />
                   </Fab>
                   <Fab
-                    className={classes.deleteButton}
+                    className={classes.cloneButton}
                     variant="extended"
                     color="default"
                     size="small"
