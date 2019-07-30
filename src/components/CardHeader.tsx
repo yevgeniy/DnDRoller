@@ -135,6 +135,7 @@ const SwipeCompWrapper = ({ ...props }) => {
           className={clsx(classes.contextMenuItems, {
             [classes.contextMenuItemOpen]: open
           })}
+          onClick={e => e.stopPropagation()}
           ref={elmRef}
         >
           {props.contextMenu}
