@@ -19,7 +19,7 @@ import FaceIcon from "@material-ui/icons/Face";
 import Clone from "@material-ui/icons/CallSplit";
 
 import { Link } from "react-router-dom";
-import { CardHeader } from "../components";
+import { CardHeader, ContextMenu } from "../components";
 import {
   Card,
   Fab,
@@ -60,7 +60,10 @@ const useStyles = makeStyles(theme =>
       "& svg": {
         transition: "all ease 200ms",
         transform: "scale(2)",
-        color: purple[600]
+        color: purple[600],
+        [theme.breakpoints.up("sm")]: {
+          transform: "scale(1.5)"
+        }
       }
     },
     cloneButton: {
@@ -68,7 +71,10 @@ const useStyles = makeStyles(theme =>
       marginLeft: theme.spacing(2),
       "& svg": {
         color: purple[600],
-        transform: "scale(2)"
+        transform: "scale(2)",
+        [theme.breakpoints.up("sm")]: {
+          transform: "scale(1.5)"
+        }
       }
     },
     deleteButtonActive: {
@@ -178,6 +184,7 @@ type ActorProps = { [P in keyof ModelActor]?: ModelActor[P] } & {
   setSortActor?: (a: ModelActor) => void;
   setSelected?: (f: boolean) => void;
   deleteActor?: (i: number) => void;
+  cloneActor?: (a: ModelActor) => void;
   selected?: boolean;
   discover?: number;
 };
@@ -189,6 +196,7 @@ function Actor(props: ActorProps) {
   const [deleteInstances, setDeleteInstances] = useState(false);
   const [attachImages, setAttachImages] = useState(false);
   const [deleteImages, setDeleteImages] = useState(false);
+  const cmcloser = useRef();
   const [
     instanceIds,
     attatchInstance,
@@ -241,46 +249,54 @@ function Actor(props: ActorProps) {
     setAttachImages(false);
   }
   const deleteAct = () => {
-    if (hotDelete) deleteActor();
-    else setHotDelete(true);
+    if (hotDelete) {
+      deleteActor();
+      cmcloser.current && cmcloser.current();
+    } else setHotDelete(true);
+  };
+  const cloneAct = () => {
+    props.cloneActor({ ...actor });
+    cmcloser.current && cmcloser.current();
   };
 
   if (!actor) return null;
   const c = [];
   for (let i in actor.class) c.push(`${i} lvl ${actor.class[i]}`);
 
-  console.log("b", hotDelete);
   const renderView = () => {
     return (
       <>
         <Card className={classes.card} ref={elmRef}>
           <CardHeader
             contextMenu={
-              <>
-                <div>
-                  <Fab
-                    className={clsx(classes.deleteButton, {
-                      [classes.deleteButtonActive]: hotDelete
-                    })}
-                    onClick={deleteAct}
-                    variant="extended"
-                    color="default"
-                    size="small"
-                    type="submit"
-                  >
-                    <Delete />
-                  </Fab>
-                  <Fab
-                    className={classes.cloneButton}
-                    variant="extended"
-                    color="default"
-                    size="small"
-                    type="submit"
-                  >
-                    <Clone />
-                  </Fab>
-                </div>
-              </>
+              <ContextMenu
+                onOpen={c => {
+                  cmcloser.current = c;
+                }}
+              >
+                <Fab
+                  className={clsx(classes.deleteButton, {
+                    [classes.deleteButtonActive]: hotDelete
+                  })}
+                  onClick={deleteAct}
+                  variant="extended"
+                  color="default"
+                  size="small"
+                  type="submit"
+                >
+                  <Delete />
+                </Fab>
+                <Fab
+                  className={classes.cloneButton}
+                  onClick={cloneAct}
+                  variant="extended"
+                  color="default"
+                  size="small"
+                  type="submit"
+                >
+                  <Clone />
+                </Fab>
+              </ContextMenu>
             }
             onClick={e =>
               props.setSelected

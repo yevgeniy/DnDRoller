@@ -7,6 +7,7 @@ import { CardHeader as MuiCardHeader, Fab } from "@material-ui/core";
 import { makeStyles, createStyles } from "@material-ui/core/styles";
 import { CardHeaderProps as MuiCardHeaderProps } from "@material-ui/core/CardHeader";
 import { Swipeable } from "react-swipeable";
+import { ContextMenu } from "./index";
 
 const useStyles = makeStyles(
   theme => {
@@ -138,7 +139,14 @@ const SwipeCompWrapper = ({ ...props }) => {
           onClick={e => e.stopPropagation()}
           ref={elmRef}
         >
-          {props.contextMenu}
+          {React.Children.map(props.contextMenu, menu => {
+            if (menu.type === ContextMenu)
+              return React.cloneElement(menu, {
+                setClose,
+                isOpen: open
+              });
+            return menu;
+          })}
         </div>
       </div>
     </div>
