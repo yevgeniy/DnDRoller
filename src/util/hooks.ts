@@ -108,7 +108,6 @@ export function useActorIds() {
   }
   async function cloneActor(actor: ModelActor) {
     let newactor = await serviceActor.createActor(`${actor.name} -- Clone`);
-    console.log("new actor", newactor);
     await serviceActor.save({ ...actor, name: newactor.name, id: newactor.id });
     setActorIds([...actorIds, newactor.id]);
   }
@@ -192,7 +191,6 @@ export function useInstanceIds() {
       name: newinstance.name,
       id: newinstance.id
     });
-    console.log([...instanceIds, newinstance.id]);
     setInstanceIds([...instanceIds, newinstance.id]);
   };
 
