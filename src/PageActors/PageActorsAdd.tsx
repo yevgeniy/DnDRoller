@@ -21,8 +21,8 @@ interface PageActorAddProps {
   onDone: (actors: number[]) => void;
   selected: number[];
 }
-function PageActorsAdd(props: PageActorAddProps) {
-  const [actorIds, createActor, _, cloneActor] = useActorIds();
+const PageActorsAdd = React.memo((props: PageActorAddProps) => {
+  const [actorIds, createActor, deleteActor, cloneActor] = useActorIds();
   const [openNewActorDialog, setOpenNewActorDialog] = useState(false);
   const [newActorName, setNewActorName] = useState("");
   const [selected, setSelected] = useState(props.selected);
@@ -69,6 +69,7 @@ function PageActorsAdd(props: PageActorAddProps) {
             id={v}
             setSelected={onSetSelected(v)}
             selected={selected.some(z => v === z)}
+            deleteActor={deleteActor}
             cloneActor={cloneActor}
           />
         ))}
@@ -106,6 +107,6 @@ function PageActorsAdd(props: PageActorAddProps) {
       </Dialog>
     </Layout>
   );
-}
+});
 
 export default PageActorsAdd;

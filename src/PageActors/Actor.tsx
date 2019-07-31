@@ -183,13 +183,13 @@ type ActorProps = { [P in keyof ModelActor]?: ModelActor[P] } & {
   classes?: { card: string };
   setSortActor?: (a: ModelActor) => void;
   setSelected?: (f: boolean) => void;
-  deleteActor?: (i: number) => void;
-  cloneActor?: (a: ModelActor) => void;
+  deleteActor?: (i: number) => any;
+  cloneActor?: (a: ModelActor) => any;
   selected?: boolean;
   discover?: number;
 };
 
-function Actor(props: ActorProps) {
+const Actor = React.memo((props: ActorProps) => {
   const classes = useStyles(props);
   const [actor, updateActor] = useActor(props.id);
   const [attachInstances, setAttachInstances] = useState(false);
@@ -474,7 +474,7 @@ function Actor(props: ActorProps) {
   };
 
   return renderView();
-}
+});
 
 function useDiscover(
   discover: number,
@@ -505,7 +505,7 @@ interface ActorEntryProps {
   removeInstance: (a: number) => void;
   deleteInstances: boolean;
 }
-const InstanceEntry = (props: ActorEntryProps) => {
+const InstanceEntry = React.memo((props: ActorEntryProps) => {
   const classes = useStyles();
   const [instance] = useInstance(props.id);
 
@@ -544,7 +544,7 @@ const InstanceEntry = (props: ActorEntryProps) => {
       ) : null}
     </ListItem>
   );
-};
+});
 
 const useImageEntryPropsStyles = makeStyles(theme => {
   return createStyles({
@@ -569,7 +569,7 @@ interface ImageEntryProps {
   removeImage: (a: number) => void;
   deleteImages: boolean;
 }
-const ImageEntry = (props: ImageEntryProps) => {
+const ImageEntry = React.memo((props: ImageEntryProps) => {
   const classes = useImageEntryPropsStyles();
   const [image, , , url] = useImage(props.id);
   if (!image) return null;
@@ -590,6 +590,6 @@ const ImageEntry = (props: ImageEntryProps) => {
       <img src={url} alt="" />
     </div>
   );
-};
+});
 
 export default Actor;
