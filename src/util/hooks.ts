@@ -183,15 +183,16 @@ export function useInstanceIds() {
     await serviceInstance.deleteInstance(id);
     setInstanceIds([...instanceIds.filter(v => v !== id)]);
   };
-  const cloneInstance = async instance => {
+  const cloneInstance = async (instance: ModelInstance) => {
     const newinstance = await serviceInstance.createInstance(
       `${instance.name} -- Clone`
     );
-    await serviceInstance.update({
+    await serviceInstance.save({
       ...instance,
       name: newinstance.name,
       id: newinstance.id
     });
+    console.log([...instanceIds, newinstance.id]);
     setInstanceIds([...instanceIds, newinstance.id]);
   };
 
