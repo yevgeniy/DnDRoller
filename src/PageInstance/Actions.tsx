@@ -50,7 +50,7 @@ type ActionsProps = { [P in keyof ModelActor]: ModelActor[P] } & {
   setOpenAction: (a: boolean) => void;
 };
 
-function Actions(props: ActionsProps) {
+const Actions = React.memo((props: ActionsProps) => {
   const classes = useStyle();
   const [demage, setDemage] = useState();
   const [initiative, setInitiative] = useState();
@@ -143,6 +143,6 @@ function Actions(props: ActionsProps) {
       </form>
     </div>
   );
-}
+});
 
 export default Actions;

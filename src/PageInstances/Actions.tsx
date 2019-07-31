@@ -14,135 +14,138 @@ import { Link } from "react-router-dom";
 import { ModelInstance } from "../models/ModelInstance";
 
 const useStyle = makeStyles(theme => {
-    return createStyles({
-        reset: {
-            margin: theme.spacing(1, 0, 1, 1)
-        },
-        container: {
-            padding: theme.spacing(1),
-            width: 200
-        },
-        nameCard: {
-            marginBottom: theme.spacing(1)
-        },
-        mainEntry: {
-            width: "60%",
-            marginTop: 0,
-            marginRight: theme.spacing(1)
-        },
-        root: {
-            display: "flex",
-            flexWrap: "wrap"
-        },
-        formControl: {
-            margin: theme.spacing(0, 0, 1, 0),
-            minWidth: 120
-        },
-        selectEmpty: {
-            marginTop: theme.spacing(2)
-        },
-        entry2: {
-            marginTop: theme.spacing(1),
-            width: "60%"
-        },
-        gotoButton: {
-            background: green[600],
-            color: theme.palette.common.white,
-            marginLeft: theme.spacing(1),
-            "& svg": {
-                transform: "scaleX(-1)"
-            }
-        }
-    });
+  return createStyles({
+    reset: {
+      margin: theme.spacing(1, 0, 1, 1)
+    },
+    container: {
+      padding: theme.spacing(1),
+      width: 200
+    },
+    nameCard: {
+      marginBottom: theme.spacing(1)
+    },
+    mainEntry: {
+      width: "60%",
+      marginTop: 0,
+      marginRight: theme.spacing(1)
+    },
+    root: {
+      display: "flex",
+      flexWrap: "wrap"
+    },
+    formControl: {
+      margin: theme.spacing(0, 0, 1, 0),
+      minWidth: 120
+    },
+    selectEmpty: {
+      marginTop: theme.spacing(2)
+    },
+    entry2: {
+      marginTop: theme.spacing(1),
+      width: "60%"
+    },
+    gotoButton: {
+      background: green[600],
+      color: theme.palette.common.white,
+      marginLeft: theme.spacing(1),
+      "& svg": {
+        transform: "scaleX(-1)"
+      }
+    }
+  });
 });
 
 type PageInstancesActionsProps = {
-    [P in keyof ModelInstance]: ModelInstance[P]
+  [P in keyof ModelInstance]: ModelInstance[P]
 } & {
-    /*update any prop of actor*/
-    updateInstance: (
-        a: { [P in keyof ModelInstance]?: ModelInstance[P] }
-    ) => void;
-    setOpenAction: (a: boolean) => void;
+  /*update any prop of actor*/
+  updateInstance: (
+    a: { [P in keyof ModelInstance]?: ModelInstance[P] }
+  ) => void;
+  setOpenAction: (a: boolean) => void;
 };
 
-function PageInstancesActions(props: PageInstancesActionsProps) {
-    const classes = useStyle();
-    const [name, setName] = useState(props.name);
+const PageInstancesActions = React.memo((props: PageInstancesActionsProps) => {
+  const classes = useStyle();
+  const [name, setName] = useState(props.name);
 
-    const onUpdateInstance = (e: any) => {
-        e.preventDefault();
-        props.updateInstance({ name });
-        props.setOpenAction(false);
-    };
-    const onReset = e => {
-        setName(props.name);
-    };
+  const onUpdateInstance = (e: any) => {
+    e.preventDefault();
+    props.updateInstance({ name });
+    props.setOpenAction(false);
+  };
+  const onReset = e => {
+    setName(props.name);
+  };
 
-    return (
-        <div className={classes.container}>
-            <Card className={classes.nameCard}>
-                <CardHeader
-                    avatar={<AccessTime />}
-                    title={props.name}
-                    subheader={moment()
-                        .subtract(+new Date() - props.created, "ms")
-                        .calendar()}
-                    action={
-                        <>
-                            <Fab
-                                className={classes.gotoButton}
-                                component={Link}
-                                to={{
-                                    pathname: "/instance",
-                                    state: {
-                                        id: props.id
-                                    }
-                                }}>
-                                <ReplyAll />
-                            </Fab>
-                        </>
-                    }
-                />
-            </Card>
+  return (
+    <div className={classes.container}>
+      <Card className={classes.nameCard}>
+        <CardHeader
+          avatar={<AccessTime />}
+          title={props.name}
+          subheader={moment()
+            .subtract(+new Date() - props.created, "ms")
+            .calendar()}
+          action={
+            <>
+              <Fab
+                className={classes.gotoButton}
+                component={Link}
+                to={{
+                  pathname: "/instance",
+                  state: {
+                    id: props.id
+                  }
+                }}
+              >
+                <ReplyAll />
+              </Fab>
+            </>
+          }
+        />
+      </Card>
 
-            <form onSubmit={onUpdateInstance}>
-                <TextField
-                    className={classes.mainEntry}
-                    label="Name"
-                    value={name}
-                    onChange={e => setName(e.target.value)}
-                    InputLabelProps={{
-                        shrink: true
-                    }}
-                    margin="dense"
-                    variant="filled"
-                />
+      <form onSubmit={onUpdateInstance}>
+        <TextField
+          className={classes.mainEntry}
+          label="Name"
+          value={name}
+          onChange={e => setName(e.target.value)}
+          InputLabelProps={{
+            shrink: true
+          }}
+          margin="dense"
+          variant="filled"
+        />
 
-                <div>
-                    <Fab
-                        className={classes.reset}
-                        variant="extended"
-                        color="primary"
-                        size="small"
-                        type="submit">
-                        <SaveAlt />
-                        Save
-                    </Fab>
-                    <Fab
-                        className={classes.reset}
-                        variant="extended"
-                        color="secondary"
-                        size="small"
-                        onClick={onReset}>
-                        <Replay />
-                        Reset
-                    </Fab>
-                </div>
-            </form>
-            <Divider />
+        <div>
+          <Fab
+            className={classes.reset}
+            variant="extended"
+            color="primary"
+            size="small"
+            type="submit"
+          >
+            <SaveAlt />
+            Save
+          </Fab>
+          <Fab
+            className={classes.reset}
+            variant="extended"
+            color="secondary"
+            size="small"
+            onClick={onReset}
+          >
+            <Replay />
+            Reset
+          </Fab>
         </div>
-    );
-}
+      </form>
+      <Divider />
+    </div>
+  );
+});
 
 export default PageInstancesActions;

@@ -127,7 +127,7 @@ type ActorProps = { [P in keyof ModelActor]?: ModelActor[P] } & {
   cloneActor?: (actor: ModelActor) => any;
 };
 
-function Actor(props: ActorProps) {
+const Actor = React.memo((props: ActorProps) => {
   const classes = useActorStyles(props);
   const [actor, updateActor] = useActor(props.id, props.resetActor);
   const [confirmRemove, setConfirmRemove] = useState(false);
@@ -286,7 +286,7 @@ function Actor(props: ActorProps) {
       </Drawer>
     </>
   );
-}
+});
 
 const useImageEntryPropsStyles = makeStyles(theme => {
   return createStyles({
@@ -302,7 +302,7 @@ const useImageEntryPropsStyles = makeStyles(theme => {
 interface ImageEntryProps {
   id: number;
 }
-const ImageEntry = (props: ImageEntryProps) => {
+const ImageEntry = React.memo((props: ImageEntryProps) => {
   const classes = useImageEntryPropsStyles();
   const [image, , , url] = useImage(props.id);
   if (!image) return null;
@@ -312,7 +312,7 @@ const ImageEntry = (props: ImageEntryProps) => {
       <img src={url} alt="" />
     </div>
   );
-};
+});
 
 function useActor(id: number, resetActorToken?: number) {
   const serviceActor = useService(ServiceActor);

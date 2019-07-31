@@ -18,7 +18,7 @@ interface InstancesProps {
   children: React.ReactElement | React.ReactElement[];
   sort: SortInstancesBy;
 }
-function Instances({ children, ...props }: InstancesProps) {
+const Instances = React.memo(({ children, ...props }: InstancesProps) => {
   const classes = useStyles(props);
   const [sortedElms] = useSort(props.sort, children);
 
@@ -31,7 +31,7 @@ function Instances({ children, ...props }: InstancesProps) {
       )}
     </div>
   );
-}
+});
 
 function useSort(
   by: SortInstancesBy,

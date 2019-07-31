@@ -17,7 +17,7 @@ import DialogTitle from "@material-ui/core/DialogTitle";
 
 import { RouterContextView } from "../util/routerContext";
 
-function PageInstances(props) {
+const PageInstances = React.memo(props => {
   const [
     instanceIds,
     createInstance,
@@ -99,6 +99,6 @@ function PageInstances(props) {
       </Layout>
     </RouterContextView.Provider>
   );
-}
+});
 
 export default PageInstances;

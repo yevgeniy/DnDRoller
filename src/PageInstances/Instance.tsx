@@ -189,7 +189,7 @@ type InstanceProps = { [P in keyof ModelInstance]?: ModelInstance[P] } & {
   cloneInstance?: (instance: ModelInstance) => any;
 };
 
-function Instance(props: InstanceProps) {
+const Instance = React.memo((props: InstanceProps) => {
   const classes = useStyles(props);
   const [instance, updateInstance] = useInstance(props.id);
   const [deleteActors, setDeleteActors] = useState(false);
@@ -453,14 +453,14 @@ function Instance(props: InstanceProps) {
       </Drawer>
     </>
   );
-}
+});
 
 interface ActorEntryProps {
   id: number;
   removeActor: (a: number) => void;
   deleteActors: boolean;
 }
-const ActorEntry = (props: ActorEntryProps) => {
+const ActorEntry = React.memo((props: ActorEntryProps) => {
   const classes = useStyles();
   const [actor] = useActor(props.id);
 
@@ -502,7 +502,7 @@ const ActorEntry = (props: ActorEntryProps) => {
       ) : null}
     </ListItem>
   );
-};
+});
 
 const useImageEntryPropsStyles = makeStyles(theme => {
   return createStyles({
@@ -527,7 +527,7 @@ interface ImageEntryProps {
   removeImage: (a: number) => void;
   deleteImages: boolean;
 }
-const ImageEntry = (props: ImageEntryProps) => {
+const ImageEntry = React.memo((props: ImageEntryProps) => {
   const classes = useImageEntryPropsStyles();
   const [image, , , url] = useImage(props.id);
   if (!image) return null;
@@ -548,7 +548,7 @@ const ImageEntry = (props: ImageEntryProps) => {
       <img src={url} alt="" />
     </div>
   );
-};
+});
 
 function useRouterMemories(id: number) {
   const router = useContext(RouterContextView);

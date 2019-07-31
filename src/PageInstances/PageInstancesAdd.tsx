@@ -21,7 +21,7 @@ interface PageInstanceAttachProps {
   onDone: (actors: number[]) => void;
   selected: number[];
 }
-function PageInstanceAttach(props: PageInstanceAttachProps) {
+const PageInstanceAttach = React.memo((props: PageInstanceAttachProps) => {
   const [instanceIds, createInstance, _, cloneInstance] = useInstanceIds();
   const [openNewInstanceDialog, setOpenNewInstanceDialog] = useState(false);
   const [newInstanceName, setNewInstanceName] = useState("");
@@ -107,6 +107,6 @@ function PageInstanceAttach(props: PageInstanceAttachProps) {
       </Dialog>
     </Layout>
   );
-}
+});
 
 export default PageInstanceAttach;
