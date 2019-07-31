@@ -16,6 +16,7 @@ export function useService(S) {
 }
 export function useInstance(id: number | "empty", history: any = null) {
   const serviceInstance = useService(ServiceInstance);
+  const serviceActor = useService(ServiceActor);
   const [instance, setInstance] = useState(null);
 
   useEffect(() => {
@@ -64,8 +65,19 @@ export function useInstance(id: number | "empty", history: any = null) {
 
     setInstance(newInstance);
   }
+  async function cloneActor(actor: ModelActor) {
+    let newactor = await serviceActor.createActor(`${actor.name} -- Clone`);
+    let name, id;
+    await serviceActor.save({ ...actor, name: newactor.name, id: newactor.id });
+    const newinstance = await serviceInstance.save({
+      ...instance,
+      actors: [...instance.actors, newactor.id]
+    });
 
-  return [instance, updateInstance, createInstance];
+    setInstance(newinstance);
+  }
+
+  return [instance, updateInstance, createInstance, cloneActor];
 }
 export function useActorIds() {
   const serviceActor = useService(ServiceActor);
@@ -95,7 +107,7 @@ export function useActorIds() {
     setActorIds([...actorIds.filter(v => v !== id)]);
   }
   async function cloneActor(actor: ModelActor) {
-    const newactor = await serviceActor.createActor(`${actor.name} -- Clone`);
+    let newactor = await serviceActor.createActor(`${actor.name} -- Clone`);
     console.log("new actor", newactor);
     await serviceActor.save({ ...actor, name: newactor.name, id: newactor.id });
     setActorIds([...actorIds, newactor.id]);
@@ -171,8 +183,19 @@ export function useInstanceIds() {
     await serviceInstance.deleteInstance(id);
     setInstanceIds([...instanceIds.filter(v => v !== id)]);
   };
+  const cloneInstance = async instance => {
+    const newinstance = await serviceInstance.createInstance(
+      `${instance.name} -- Clone`
+    );
+    await serviceInstance.update({
+      ...instance,
+      name: newinstance.name,
+      id: newinstance.id
+    });
+    setInstanceIds([...instanceIds, newinstance.id]);
+  };
 
-  return [instanceIds, createInstance, deleteInstance];
+  return [instanceIds, createInstance, deleteInstance, cloneInstance];
 }
 
 export function useImageIds() {

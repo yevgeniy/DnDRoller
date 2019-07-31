@@ -16,7 +16,7 @@ const useStyles = makeStyles(
         position: "relative"
       },
       swiper: {},
-      contextMenu: {
+      contextmenu: {
         position: "absolute",
         left: 5,
         right: 5,
@@ -28,7 +28,7 @@ const useStyles = makeStyles(
         transition: "all ease 200ms",
         pointerEvents: "none"
       },
-      contextMenuBackground: {
+      contextmenuBackground: {
         position: "absolute",
         width: "0%",
         right: 0,
@@ -37,12 +37,12 @@ const useStyles = makeStyles(
         background: purple[600],
         transition: "all ease 200ms"
       },
-      contextMenuOpen: {
+      contextmenuOpen: {
         pointerEvents: "all",
         width: "100%"
       },
 
-      contextMenuItems: {
+      contextmenuItems: {
         opacity: 0,
         transition: "all ease 200ms",
         "& svg": {
@@ -50,7 +50,7 @@ const useStyles = makeStyles(
           color: purple[600]
         }
       },
-      contextMenuItemOpen: {
+      contextmenuItemOpen: {
         opacity: 1,
         pointerEvents: "all"
       },
@@ -75,13 +75,13 @@ const useCardHeaderStyles = makeStyles(theme => {
 });
 
 type CardHeaderProps = MuiCardHeaderProps & {
-  contextMenu?: React.ReactElement;
+  contextmenu?: React.ReactElement;
 };
 
 const CardHeader = props => {
   const cardHeaderClasses = useCardHeaderStyles(props);
 
-  if (props.contextMenu)
+  if (props.contextmenu)
     return (
       <MuiCardHeader
         classes={cardHeaderClasses}
@@ -95,7 +95,7 @@ const CardHeader = props => {
 
 const SwipeCompWrapper = ({ ...props }) => {
   const classes = useStyles(props);
-  const { open, setOpen, setClose, elmRef } = useContextMenu();
+  const { open, setOpen, setClose, elmRef } = usecontextmenu();
   const moveref = useRef({ x: 0, y: 0 });
 
   const clickdetect = e => {
@@ -122,10 +122,10 @@ const SwipeCompWrapper = ({ ...props }) => {
           };
         }}
       />
-      <div className={classes.contextMenu}>
+      <div className={classes.contextmenu}>
         <div
-          className={clsx(classes.contextMenuBackground, {
-            [classes.contextMenuOpen]: open
+          className={clsx(classes.contextmenuBackground, {
+            [classes.contextmenuOpen]: open
           })}
           onClick={e => {
             e.stopPropagation();
@@ -133,13 +133,13 @@ const SwipeCompWrapper = ({ ...props }) => {
           }}
         />
         <div
-          className={clsx(classes.contextMenuItems, {
-            [classes.contextMenuItemOpen]: open
+          className={clsx(classes.contextmenuItems, {
+            [classes.contextmenuItemOpen]: open
           })}
           onClick={e => e.stopPropagation()}
           ref={elmRef}
         >
-          {React.Children.map(props.contextMenu, menu => {
+          {React.Children.map(props.contextmenu, menu => {
             if (menu.type === ContextMenu)
               return React.cloneElement(menu, {
                 setClose,
@@ -153,7 +153,7 @@ const SwipeCompWrapper = ({ ...props }) => {
   );
 };
 
-function useContextMenu() {
+function usecontextmenu() {
   const [open, so] = useState(false);
   const elmRef = useRef();
 

@@ -196,7 +196,7 @@ function Actor(props: ActorProps) {
   const [deleteInstances, setDeleteInstances] = useState(false);
   const [attachImages, setAttachImages] = useState(false);
   const [deleteImages, setDeleteImages] = useState(false);
-  const cmcloser = useRef();
+  const cmcloser = useRef(function() {});
   const [
     instanceIds,
     attatchInstance,
@@ -248,15 +248,15 @@ function Actor(props: ActorProps) {
     updateActor({ ...actor });
     setAttachImages(false);
   }
-  const deleteAct = () => {
+  const doDelete = () => {
     if (hotDelete) {
       deleteActor();
-      cmcloser.current && cmcloser.current();
+      cmcloser.current();
     } else setHotDelete(true);
   };
-  const cloneAct = () => {
+  const doClone = () => {
     props.cloneActor({ ...actor });
-    cmcloser.current && cmcloser.current();
+    cmcloser.current();
   };
 
   if (!actor) return null;
@@ -268,7 +268,7 @@ function Actor(props: ActorProps) {
       <>
         <Card className={classes.card} ref={elmRef}>
           <CardHeader
-            contextMenu={
+            contextmenu={
               <ContextMenu
                 onOpen={c => {
                   cmcloser.current = c;
@@ -278,7 +278,7 @@ function Actor(props: ActorProps) {
                   className={clsx(classes.deleteButton, {
                     [classes.deleteButtonActive]: hotDelete
                   })}
-                  onClick={deleteAct}
+                  onClick={doDelete}
                   variant="extended"
                   color="default"
                   size="small"
@@ -288,7 +288,7 @@ function Actor(props: ActorProps) {
                 </Fab>
                 <Fab
                   className={classes.cloneButton}
-                  onClick={cloneAct}
+                  onClick={doClone}
                   variant="extended"
                   color="default"
                   size="small"
