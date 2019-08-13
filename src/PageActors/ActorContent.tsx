@@ -10,19 +10,24 @@ import {
   makeStyles,
   createStyles,
   IconButton,
+  Tab,
+  Tabs,
   Button,
   Paper,
   List,
   Drawer,
   ListSubheader
 } from "@material-ui/core";
+import { TabPanel } from "../components";
 import { Link } from "react-router-dom";
 import green from "@material-ui/core/colors/green";
 import red from "@material-ui/core/colors/red";
 import blue from "@material-ui/core/colors/blue";
 
-import Extension from "@material-ui/icons/Extension";
 import RemoveCircle from "@material-ui/icons/RemoveCircle";
+import Extension from "@material-ui/icons/Extension";
+import Photo from "@material-ui/icons/Photo";
+import Info from "@material-ui/icons/Info";
 
 import PageImagesAdd from "../PageImages/PageImagesAdd";
 import PageInstancesAdd from "../PageInstances/PageInstancesAdd";
@@ -32,12 +37,6 @@ import { ModelActor } from "../models/ModelActor";
 
 const useStyles = makeStyles(theme => {
   return createStyles({
-    imageContainer: {
-      display: "flex",
-      flexWrap: "nowrap",
-      width: "90vw",
-      overflow: "auto"
-    },
     cardContent: {
       marginTop: theme.spacing(1),
       display: "flex",
@@ -50,6 +49,14 @@ const useStyles = makeStyles(theme => {
         }
       }
     },
+
+    imageContainer: {
+      display: "flex",
+      flexWrap: "nowrap",
+      width: "90vw",
+      overflow: "auto"
+    },
+
     avatar: {
       backgroundColor: red[500],
       [theme.breakpoints.down("xs")]: {
@@ -101,6 +108,7 @@ const ActorContent = React.memo(
     const [attachImages, setAttachImages] = useState(false);
     const [deleteInstances, setDeleteInstances] = useState(false);
     const [deleteImages, setDeleteImages] = useState(false);
+    const [tab, setTab] = useState(0);
     const [
       instanceIds,
       attatchInstance,
@@ -135,7 +143,27 @@ const ActorContent = React.memo(
 
     return (
       <div className={classes.cardContent}>
-        <div>
+        <Tabs
+          onChange={(e, v) => setTab(v)}
+          value={tab}
+          indicatorColor="primary"
+          textColor="primary"
+          variant="fullWidth"
+        >
+          <Tab label="Info" icon={<Info />} />
+          <Tab label="Instances" icon={<Extension />} />
+          <Tab label="Images" icon={<Photo />} />
+        </Tabs>
+        <TabPanel value={tab} index={0}>
+          Item One
+        </TabPanel>
+        <TabPanel value={tab} index={1}>
+          Item Two
+        </TabPanel>
+        <TabPanel value={tab} index={2}>
+          Item Three
+        </TabPanel>
+        {/* <div>
           <div className={classes.instancesControls}>
             <Button
               variant="contained"
@@ -214,7 +242,7 @@ const ActorContent = React.memo(
               </div>
             </List>
           </Paper>
-        </div>
+        </div> */}
         <Drawer
           anchor="top"
           open={attachInstances}
