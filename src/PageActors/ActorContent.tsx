@@ -202,8 +202,8 @@ const ActorContent = React.memo(
               onClick={e => setAttachImages(true)}
               className={classes.tabControlButton}
             >
-              <Edit />
               Update
+              <Edit />
             </Button>
           </div>
           <Paper>
