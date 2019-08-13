@@ -54,7 +54,7 @@ const useStyles = makeStyles(theme => {
     imageContainer: {
       display: "flex",
       flexWrap: "nowrap",
-      width: "90vw",
+      width: "77vw",
       overflow: "auto"
     },
 
@@ -172,7 +172,7 @@ const ActorContent = React.memo(
               button="true"
               onClick={e => setAttachInstances(true)}
             >
-              Update Instances
+              Update
               <Edit />
             </Button>
           </div>
@@ -194,33 +194,16 @@ const ActorContent = React.memo(
           </Paper>
         </TabPanel>
         <TabPanel value={tab} index={2}>
-          Item Three
-        </TabPanel>
-        {/* <div>
-          
-          
-        </div>
-        <div>
           <div className={classes.tabControls}>
             <Button
               variant="contained"
               color="secondary"
               button="true"
               onClick={e => setAttachImages(true)}
-              className={classes.addInstanceButton}
+              className={classes.tabControlButton}
             >
-              <Extension />
-              Update Images
-            </Button>
-            <Button
-              variant="contained"
-              color="secondary"
-              button="secondary"
-              onClick={e => setDeleteImages(!deleteImages)}
-              className={classes.removeFromInstanceStart}
-            >
-              <Extension />
-              {deleteImages ? "...cancel" : "Remove Images"}
+              <Edit />
+              Update
             </Button>
           </div>
           <Paper>
@@ -239,6 +222,13 @@ const ActorContent = React.memo(
               </div>
             </List>
           </Paper>
+        </TabPanel>
+        {/* <div>
+          
+          
+        </div>
+        <div>
+          
         </div> */}
         <Drawer
           anchor="top"
