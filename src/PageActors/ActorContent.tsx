@@ -28,6 +28,7 @@ import RemoveCircle from "@material-ui/icons/RemoveCircle";
 import Extension from "@material-ui/icons/Extension";
 import Photo from "@material-ui/icons/Photo";
 import Info from "@material-ui/icons/Info";
+import Edit from "@material-ui/icons/Edit";
 
 import PageImagesAdd from "../PageImages/PageImagesAdd";
 import PageInstancesAdd from "../PageInstances/PageInstancesAdd";
@@ -67,10 +68,15 @@ const useStyles = makeStyles(theme => {
     instanceAvatar: {
       backgroundColor: blue[500]
     },
-    instancesControls: {
+    tabControls: {
       display: "flex",
       justifyContent: "flex-start",
-      marginTop: theme.spacing(1)
+      background: theme.palette.grey[400]
+    },
+    tabControlButton: {
+      "& svg": {
+        margin: [[0, 0, 0, theme.spacing(1)]]
+      }
     },
     addInstanceButton: {
       background: green[600],
@@ -158,32 +164,16 @@ const ActorContent = React.memo(
           Item One
         </TabPanel>
         <TabPanel value={tab} index={1}>
-          Item Two
-        </TabPanel>
-        <TabPanel value={tab} index={2}>
-          Item Three
-        </TabPanel>
-        {/* <div>
-          <div className={classes.instancesControls}>
+          <div className={classes.tabControls}>
             <Button
+              className={classes.tabControlButton}
               variant="contained"
               color="secondary"
               button="true"
               onClick={e => setAttachInstances(true)}
-              className={classes.addInstanceButton}
             >
-              <Extension />
               Update Instances
-            </Button>
-            <Button
-              variant="contained"
-              color="secondary"
-              button="secondary"
-              onClick={e => setDeleteInstances(!deleteInstances)}
-              className={classes.removeFromInstanceStart}
-            >
-              <Extension />
-              {deleteInstances ? "...cancel" : "Remove from Instances"}
+              <Edit />
             </Button>
           </div>
           <Paper>
@@ -202,9 +192,16 @@ const ActorContent = React.memo(
               ))}
             </List>
           </Paper>
+        </TabPanel>
+        <TabPanel value={tab} index={2}>
+          Item Three
+        </TabPanel>
+        {/* <div>
+          
+          
         </div>
         <div>
-          <div className={classes.instancesControls}>
+          <div className={classes.tabControls}>
             <Button
               variant="contained"
               color="secondary"
