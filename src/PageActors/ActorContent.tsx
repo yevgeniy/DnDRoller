@@ -183,12 +183,7 @@ const ActorContent = React.memo(
               }
             >
               {(instanceIds || []).map(v => (
-                <InstanceEntry
-                  key={v}
-                  id={v}
-                  removeInstance={removeInstance}
-                  deleteInstances={deleteInstances}
-                />
+                <InstanceEntry key={v} id={v} />
               ))}
             </List>
           </Paper>
@@ -212,24 +207,12 @@ const ActorContent = React.memo(
             >
               <div className={classes.imageContainer}>
                 {(actor.images || []).map(v => (
-                  <ImageEntry
-                    key={v}
-                    id={v}
-                    removeImage={removeImage}
-                    deleteImages={deleteImages}
-                  />
+                  <ImageEntry key={v} id={v} />
                 ))}
               </div>
             </List>
           </Paper>
         </TabPanel>
-        {/* <div>
-          
-          
-        </div>
-        <div>
-          
-        </div> */}
         <Drawer
           anchor="top"
           open={attachInstances}
@@ -252,18 +235,14 @@ const ActorContent = React.memo(
   }
 );
 
-interface ActorEntryProps {
+interface InstanceEntryProps {
   id: number;
-  removeInstance: (a: number) => void;
-  deleteInstances: boolean;
 }
-const InstanceEntry = React.memo((props: ActorEntryProps) => {
+const InstanceEntry = React.memo((props: InstanceEntryProps) => {
   const classes = useStyles();
   const [instance] = useInstance(props.id);
 
   if (!instance) return null;
-
-  let c = [];
 
   return (
     <ListItem
@@ -282,18 +261,6 @@ const InstanceEntry = React.memo((props: ActorEntryProps) => {
         </Avatar>
       </ListItemAvatar>
       <ListItemText primary={instance.name} />
-      {props.deleteInstances ? (
-        <ListItemSecondaryAction>
-          <IconButton
-            onClick={e => props.removeInstance(props.id)}
-            className={classes.removeInstance}
-            edge="end"
-            aria-label="Comments"
-          >
-            <RemoveCircle />
-          </IconButton>
-        </ListItemSecondaryAction>
-      ) : null}
     </ListItem>
   );
 });
@@ -306,20 +273,11 @@ const useImageEntryPropsStyles = makeStyles(theme => {
       "& img": {
         height: "200px"
       }
-    },
-    removeButton: {
-      position: "absolute",
-      top: 10,
-      right: 22,
-      background: red[600],
-      color: "white"
     }
   });
 });
 interface ImageEntryProps {
   id: number;
-  removeImage: (a: number) => void;
-  deleteImages: boolean;
 }
 const ImageEntry = React.memo((props: ImageEntryProps) => {
   const classes = useImageEntryPropsStyles();
@@ -328,17 +286,6 @@ const ImageEntry = React.memo((props: ImageEntryProps) => {
   if (!url) return null;
   return (
     <div className={classes.entry}>
-      {props.deleteImages ? (
-        <IconButton
-          onClick={e => props.removeImage(props.id)}
-          className={classes.removeButton}
-          edge="end"
-          aria-label="Comments"
-        >
-          <RemoveCircle />
-        </IconButton>
-      ) : null}
-
       <img src={url} alt="" />
     </div>
   );
