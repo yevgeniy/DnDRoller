@@ -75,7 +75,7 @@ const useStyles = makeStyles(theme => {
     },
     tabControlButton: {
       "& svg": {
-        margin: [[0, 0, 0, theme.spacing(1)]]
+        margin: "0 0 0 8px"
       }
     },
     addInstanceButton: {
