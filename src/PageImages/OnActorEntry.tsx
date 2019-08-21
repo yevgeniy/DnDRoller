@@ -1,15 +1,12 @@
 import * as React from "react";
-import { makeStyles, useTheme, createStyles } from "@material-ui/core/styles";
+import { makeStyles, createStyles } from "@material-ui/core/styles";
 import { useActor } from "../util/hooks";
 import {
   ListItem,
   ListItemAvatar,
   Avatar,
-  ListItemText,
-  ListItemSecondaryAction,
-  IconButton
+  ListItemText
 } from "@material-ui/core";
-import RemoveCircle from "@material-ui/icons/RemoveCircle";
 import { Link } from "react-router-dom";
 import clsx from "clsx";
 import red from "@material-ui/core/colors/red";
@@ -38,7 +35,6 @@ const useStyles = makeStyles(theme => {
 interface onActorEntryProps {
   id: number;
   detatchActor: (a: number) => void;
-  removingActors: boolean;
 }
 const OnActorEntry = React.memo((props: onActorEntryProps) => {
   const classes = useStyles();
@@ -63,18 +59,6 @@ const OnActorEntry = React.memo((props: onActorEntryProps) => {
         </Avatar>
       </ListItemAvatar>
       <ListItemText primary={actor.name} />
-      {props.removingActors ? (
-        <ListItemSecondaryAction>
-          <IconButton
-            onClick={e => props.detatchActor(props.id)}
-            className={classes.detatchActor}
-            edge="end"
-            aria-label="Comments"
-          >
-            <RemoveCircle />
-          </IconButton>
-        </ListItemSecondaryAction>
-      ) : null}
     </ListItem>
   );
 });

@@ -5,9 +5,14 @@ import green from "@material-ui/core/colors/green";
 import orange from "@material-ui/core/colors/orange";
 import red from "@material-ui/core/colors/red";
 import Extension from "@material-ui/icons/Extension";
+import DirectionsRun from "@material-ui/icons/DirectionsRun";
+import Info from "@material-ui/icons/Info";
+import Edit from "@material-ui/icons/Edit";
 import RemoveCircle from "@material-ui/icons/RemoveCircle";
 import Delete from "@material-ui/icons/Delete";
 import {
+  Tab,
+  Tabs,
   Typography,
   CardMedia,
   Divider,
@@ -29,6 +34,7 @@ import {
   Drawer,
   Checkbox
 } from "@material-ui/core";
+import { TabPanel } from "../components";
 import PageInstancesAdd from "../PageInstances/PageInstancesAdd";
 import PageActorsAdd from "../PageActors/PageActorsAdd";
 import { makeStyles, createStyles } from "@material-ui/core/styles";
@@ -48,6 +54,16 @@ const useStyles = makeStyles(theme =>
           flexBasis: "100%",
           flexShrink: 0
         }
+      }
+    },
+    tabControls: {
+      display: "flex",
+      justifyContent: "flex-start",
+      background: theme.palette.grey[400]
+    },
+    tabControlButton: {
+      "& svg": {
+        margin: "0 0 0 8px"
       }
     },
     removeInstance: {
@@ -97,20 +113,18 @@ type ImageContentProps = { [P in keyof ModelImage]: ModelImage[P] } & {
 const ImageContent = React.memo((props: ImageContentProps) => {
   const classes = useStyles();
 
-  const [updatingInstances, setUpdatingInstances] = useState(false);
-  const [removingInstances, setRemovingInstances] = useState(false);
-  const [updatingActors, setUpdatingActors] = useState(false);
-  const [removingActors, setRemovingActors] = useState(false);
+  const [isAttachingInstances, setIsAttachingInstances] = useState(false);
+  const [isAttachingActors, setIsAttachingActors] = useState(false);
+
+  const [tab, setTab] = useState(0);
   const [
     instanceIds,
     attatchInstance,
     detatchInstance
   ] = useInstanceIdsForImage(props.id);
   const [actorIds, attatchActor, detatchActor] = useActorIdsForImage(props.id);
-  function deleteImage(e) {
-    props.deleteImage(props.id);
-  }
-  async function onUpdateInstances(ids: number[]) {
+
+  const onUpdateInstances = async (ids: number[]) => {
     for (let x = 0; x < instanceIds.length; x++) {
       let id = instanceIds[x];
       if (ids.indexOf(id) === -1) await detatchInstance(id);
@@ -119,9 +133,9 @@ const ImageContent = React.memo((props: ImageContentProps) => {
       let id = ids[x];
       await attatchInstance(id);
     }
-    setUpdatingInstances(false);
-  }
-  async function onUpdateActors(ids: number[]) {
+    setIsAttachingInstances(false);
+  };
+  const onUpdateActors = async (ids: number[]) => {
     for (let x = 0; x < actorIds.length; x++) {
       let id = actorIds[x];
       if (ids.indexOf(id) === -1) await detatchActor(id);
@@ -130,113 +144,91 @@ const ImageContent = React.memo((props: ImageContentProps) => {
       let id = ids[x];
       await attatchActor(id);
     }
-    setUpdatingActors(false);
-  }
+    setIsAttachingActors(false);
+  };
 
-  const renderInstances = () => {
-    return (
-      <div>
-        <div className={classes.participantsControls}>
-          <Button
-            variant="contained"
-            color="secondary"
-            button="true"
-            onClick={e => setUpdatingInstances(true)}
-            className={classes.addParticipantButton}
-          >
-            <Extension />
-            Update Instances
-          </Button>
-          <Button
-            variant="contained"
-            color="secondary"
-            button="secondary"
-            onClick={e => setRemovingInstances(!removingInstances)}
-            className={classes.removeFromParticipantStart}
-          >
-            <Extension />
-            {removingInstances ? "...cancel" : "Remove from Instances"}
-          </Button>
-        </div>
-        <Paper>
-          <List
-            subheader={<ListSubheader component="div">Instances</ListSubheader>}
-          >
-            {(instanceIds || []).map(v => (
-              <OnInstanceEntry
-                key={v}
-                id={v}
-                detatchInstance={detatchInstance}
-                removingInstances={removingInstances}
-              />
-            ))}
-          </List>
-        </Paper>
-      </div>
-    );
-  };
-  const renderActors = () => {
-    return (
-      <div>
-        <div className={classes.participantsControls}>
-          <Button
-            variant="contained"
-            color="secondary"
-            button="true"
-            onClick={e => setUpdatingActors(true)}
-            className={classes.addParticipantButton}
-          >
-            <Extension />
-            Update Actors
-          </Button>
-          <Button
-            variant="contained"
-            color="secondary"
-            button="secondary"
-            onClick={e => setRemovingActors(!removingActors)}
-            className={classes.removeFromParticipantStart}
-          >
-            <Extension />
-            {removingActors ? "...cancel" : "Remove from Instances"}
-          </Button>
-        </div>
-        <Paper>
-          <List
-            subheader={<ListSubheader component="div">Actors</ListSubheader>}
-          >
-            {(actorIds || []).map(v => (
-              <OnActorEntry
-                key={v}
-                id={v}
-                detatchActor={detatchActor}
-                removingActors={removingActors}
-              />
-            ))}
-          </List>
-        </Paper>
-      </div>
-    );
-  };
   return (
     <CardContent>
       <Divider />
       <div className={classes.cardContent}>
-        <div>
-          {renderInstances()}
-          {renderActors()}
-        </div>
+        <Tabs
+          onChange={(e, v) => setTab(v)}
+          value={tab}
+          indicatorColor="primary"
+          textColor="primary"
+          variant="fullWidth"
+        >
+          <Tab label="Info" icon={<Info />} />
+          <Tab label="Instances" icon={<Extension />} />
+          <Tab label="Actors" icon={<DirectionsRun />} />
+        </Tabs>
+        <TabPanel value={tab} index={0}>
+          Item One
+        </TabPanel>
+        <TabPanel value={tab} index={1}>
+          <div className={classes.tabControls}>
+            <Button
+              className={classes.tabControlButton}
+              variant="contained"
+              color="secondary"
+              button="true"
+              onClick={e => setIsAttachingInstances(true)}
+            >
+              Update
+              <Edit />
+            </Button>
+          </div>
+          <Paper>
+            <List
+              subheader={
+                <ListSubheader component="div">Instances</ListSubheader>
+              }
+            >
+              {(instanceIds || []).map(v => (
+                <OnInstanceEntry
+                  key={v}
+                  id={v}
+                  detatchInstance={detatchInstance}
+                />
+              ))}
+            </List>
+          </Paper>
+        </TabPanel>
+        <TabPanel value={tab} index={2}>
+          <div className={classes.tabControls}>
+            <Button
+              variant="contained"
+              color="secondary"
+              button="true"
+              onClick={e => setIsAttachingActors(true)}
+              className={classes.tabControlButton}
+            >
+              Update
+              <Edit />
+            </Button>
+          </div>
+          <Paper>
+            <List
+              subheader={<ListSubheader component="div">Actors</ListSubheader>}
+            >
+              {(actorIds || []).map(v => (
+                <OnActorEntry key={v} id={v} detatchActor={detatchActor} />
+              ))}
+            </List>
+          </Paper>
+        </TabPanel>
       </div>
       <Drawer
         anchor="top"
-        open={updatingInstances}
-        onClose={e => setUpdatingInstances(false)}
+        open={isAttachingInstances}
+        onClose={e => setIsAttachingInstances(false)}
       >
         <PageInstancesAdd onDone={onUpdateInstances} selected={instanceIds} />
       </Drawer>
       <Drawer
         anchor="top"
-        open={updatingActors}
-        onClose={e => setUpdatingActors(false)}
+        open={isAttachingActors}
+        onClose={e => setIsAttachingActors(false)}
       >
         <PageActorsAdd onDone={onUpdateActors} selected={actorIds} />
       </Drawer>
