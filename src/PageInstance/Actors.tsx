@@ -1,18 +1,22 @@
 import * as React from "react";
 import { useState } from "react";
-import { makeStyles } from "@material-ui/core/styles";
+import { makeStyles, createStyles } from "@material-ui/core/styles";
 import { SortActorsBy } from "../enums";
 
-const useActorsStyles = makeStyles(theme => {
-  return {
-    card: {
-      marginTop: theme.spacing(1),
-      "&:first-child": {
-        marginTop: 0
+const useActorsStyles = makeStyles(
+  theme => {
+    return createStyles({
+      root: {},
+      card: {
+        marginTop: theme.spacing(1),
+        "&:first-child": {
+          marginTop: 0
+        }
       }
-    }
-  };
-});
+    });
+  },
+  { name: "Actors" }
+);
 
 interface ActorsProps {
   children: React.ReactElement | React.ReactElement[];
@@ -23,7 +27,7 @@ const Actors = React.memo(({ children, ...props }: ActorsProps) => {
   const [sortedElms] = useSort(props.sort, children);
 
   return (
-    <div>
+    <div className={classes.root}>
       {sortedElms.map(v =>
         React.cloneElement(v, {
           classes

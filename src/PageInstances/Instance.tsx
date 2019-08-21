@@ -8,14 +8,18 @@ import green from "@material-ui/core/colors/green";
 import orange from "@material-ui/core/colors/orange";
 import purple from "@material-ui/core/colors/purple";
 import blue from "@material-ui/core/colors/blue";
-import Photo from "@material-ui/icons/Photo";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import RemoveCircle from "@material-ui/icons/RemoveCircle";
 import Delete from "@material-ui/icons/Delete";
 import AccessTime from "@material-ui/icons/AccessTime";
 import DirectionsRun from "@material-ui/icons/DirectionsRun";
+import Info from "@material-ui/icons/Info";
+import Edit from "@material-ui/icons/Edit";
+import Photo from "@material-ui/icons/Photo";
 import Clone from "@material-ui/icons/CallSplit";
 import {
+  Tabs,
+  Tab,
   Button,
   Fab,
   Divider,
@@ -28,7 +32,7 @@ import {
   Collapse,
   Drawer
 } from "@material-ui/core";
-import { CardHeader, ContextMenu } from "../components";
+import { CardHeader, ContextMenu, TabPanel } from "../components";
 
 import moment from "moment";
 import Actions from "./Actions";
@@ -62,6 +66,16 @@ const useStyles = makeStyles(theme =>
         [theme.breakpoints.up("sm")]: {
           transform: "scale(1.5)"
         }
+      }
+    },
+    tabControls: {
+      display: "flex",
+      justifyContent: "flex-start",
+      background: theme.palette.grey[400]
+    },
+    tabControlButton: {
+      "& svg": {
+        margin: "0 0 0 8px"
       }
     },
     cloneButton: {
@@ -192,26 +206,21 @@ type InstanceProps = { [P in keyof ModelInstance]?: ModelInstance[P] } & {
 const Instance = React.memo((props: InstanceProps) => {
   const classes = useStyles(props);
   const [instance, updateInstance] = useInstance(props.id);
-  const [deleteActors, setDeleteActors] = useState(false);
-
   const [openAction, setOpenAction] = useState(false);
   const { expanded, setExpanded } = useRouterMemories(props.id);
-  const [selectActors, setSelectActors] = useState(false);
-  const [attachImages, setAttachImages] = useState(false);
-  const [deleteImages, setDeleteImages] = useState(false);
+  const [isAttachingActors, setIsAttachingActors] = useState(false);
+  const [isAttachingImages, setIsAttachingImages] = useState(false);
+
   const { hot: hotDelete, setHot: setHotDelete } = useHot();
   const cxcloser = useRef(function() {});
+
+  const [tab, setTab] = useState(0);
 
   useEffect(() => {
     if (!instance) return;
     props.setSortInstance(instance);
   }, [instance]);
 
-  const removeImage = (imageId: number) => {
-    instance.images = (instance.images || []).filter(v => v !== imageId);
-    if (!instance.images.length) delete instance.images;
-    updateInstance({ ...instance });
-  };
   const handleExpandClick = e => {
     e.stopPropagation();
     setExpanded(!expanded);
@@ -220,22 +229,18 @@ const Instance = React.memo((props: InstanceProps) => {
     e.stopPropagation();
     setOpenAction(true);
   };
-  const removeActor = id => {
-    if (!instance) return;
-    updateInstance({ actors: instance.actors.filter(v => v !== id) });
-  };
   const deleteInstance = (e = null) => {
     if (!instance) return;
     props.deleteInstance(props.id);
   };
-  const onAddActors = a => {
+  const doAttachActors = a => {
     updateInstance({ actors: [...a] });
-    setSelectActors(false);
+    setIsAttachingActors(false);
   };
-  const onAttachImages = async (ids: number[]) => {
+  const doAttachImages = async (ids: number[]) => {
     instance.images = ids;
     updateInstance({ ...instance });
-    setAttachImages(false);
+    setIsAttachingImages(false);
   };
   const doDelete = () => {
     if (hotDelete) {
@@ -334,27 +339,31 @@ const Instance = React.memo((props: InstanceProps) => {
           <CardContent>
             <Divider />
             <div className={classes.cardContent}>
-              <div>
-                <div className={classes.catorControls}>
+              <Tabs
+                onChange={(e, v) => setTab(v)}
+                value={tab}
+                indicatorColor="primary"
+                textColor="primary"
+                variant="fullWidth"
+              >
+                <Tab label="Info" icon={<Info />} />
+                <Tab label="Actors" icon={<DirectionsRun />} />
+                <Tab label="Images" icon={<Photo />} />
+              </Tabs>
+              <TabPanel value={tab} index={0}>
+                Item One
+              </TabPanel>
+              <TabPanel value={tab} index={1}>
+                <div className={classes.tabControls}>
                   <Button
+                    className={classes.tabControlButton}
                     variant="contained"
                     color="secondary"
                     button="true"
-                    onClick={e => setSelectActors(true)}
-                    className={classes.addActorButton}
+                    onClick={e => setIsAttachingActors(true)}
                   >
-                    <DirectionsRun />
-                    Update Actors
-                  </Button>
-                  <Button
-                    variant="contained"
-                    color="secondary"
-                    button="secondary"
-                    onClick={e => setDeleteActors(!deleteActors)}
-                    className={classes.deleteActorStart}
-                  >
-                    <DirectionsRun />
-                    {deleteActors ? "...cancel" : "Delete Actors"}
+                    Update
+                    <Edit />
                   </Button>
                 </div>
                 <Paper>
@@ -363,38 +372,23 @@ const Instance = React.memo((props: InstanceProps) => {
                       <ListSubheader component="div">Actors</ListSubheader>
                     }
                   >
-                    {instance.actors.map(v => (
-                      <ActorEntry
-                        key={v}
-                        id={v}
-                        removeActor={removeActor}
-                        deleteActors={deleteActors}
-                      />
+                    {(instance.actors || []).map(v => (
+                      <ActorEntry key={v} id={v} />
                     ))}
                   </List>
                 </Paper>
-              </div>
-              <div>
-                <div className={classes.catorControls}>
+              </TabPanel>
+              <TabPanel value={tab} index={2}>
+                <div className={classes.tabControls}>
                   <Button
                     variant="contained"
                     color="secondary"
                     button="true"
-                    onClick={e => setAttachImages(true)}
-                    className={classes.addActorButton}
+                    onClick={e => setIsAttachingImages(true)}
+                    className={classes.tabControlButton}
                   >
-                    <Photo />
-                    Update Images
-                  </Button>
-                  <Button
-                    variant="contained"
-                    color="secondary"
-                    button="secondary"
-                    onClick={e => setDeleteImages(!deleteImages)}
-                    className={classes.deleteActorStart}
-                  >
-                    <Photo />
-                    {deleteImages ? "...cancel" : "Delete Images"}
+                    Update
+                    <Edit />
                   </Button>
                 </div>
                 <Paper>
@@ -405,17 +399,12 @@ const Instance = React.memo((props: InstanceProps) => {
                   >
                     <div className={classes.imageContainer}>
                       {(instance.images || []).map(v => (
-                        <ImageEntry
-                          key={v}
-                          id={v}
-                          removeImage={removeImage}
-                          deleteImages={deleteImages}
-                        />
+                        <ImageEntry key={v} id={v} />
                       ))}
                     </div>
                   </List>
                 </Paper>
-              </div>
+              </TabPanel>
             </div>
           </CardContent>
         </Collapse>
@@ -435,18 +424,18 @@ const Instance = React.memo((props: InstanceProps) => {
       </Drawer>
       <Drawer
         anchor="top"
-        open={selectActors}
-        onClose={e => setSelectActors(false)}
+        open={isAttachingActors}
+        onClose={e => setIsAttachingActors(false)}
       >
-        <PageActorsAdd onDone={onAddActors} selected={instance.actors} />
+        <PageActorsAdd onDone={doAttachActors} selected={instance.actors} />
       </Drawer>
       <Drawer
         anchor="top"
-        open={attachImages}
-        onClose={e => setAttachImages(false)}
+        open={isAttachingImages}
+        onClose={e => setIsAttachingImages(false)}
       >
         <PageImagesAdd
-          onDone={onAttachImages}
+          onDone={doAttachImages}
           selected={instance.images || []}
         />
       </Drawer>
@@ -456,8 +445,6 @@ const Instance = React.memo((props: InstanceProps) => {
 
 interface ActorEntryProps {
   id: number;
-  removeActor: (a: number) => void;
-  deleteActors: boolean;
 }
 const ActorEntry = React.memo((props: ActorEntryProps) => {
   const classes = useStyles();
@@ -487,18 +474,6 @@ const ActorEntry = React.memo((props: ActorEntryProps) => {
         </Avatar>
       </ListItemAvatar>
       <ListItemText primary={actor.name} secondary={<>{c.join(", ")}</>} />
-      {props.deleteActors ? (
-        <ListItemSecondaryAction>
-          <IconButton
-            onClick={e => props.removeActor(props.id)}
-            className={classes.removeActor}
-            edge="end"
-            aria-label="Comments"
-          >
-            <RemoveCircle />
-          </IconButton>
-        </ListItemSecondaryAction>
-      ) : null}
     </ListItem>
   );
 });
@@ -523,8 +498,6 @@ const useImageEntryPropsStyles = makeStyles(theme => {
 });
 interface ImageEntryProps {
   id: number;
-  removeImage: (a: number) => void;
-  deleteImages: boolean;
 }
 const ImageEntry = React.memo((props: ImageEntryProps) => {
   const classes = useImageEntryPropsStyles();
@@ -533,17 +506,6 @@ const ImageEntry = React.memo((props: ImageEntryProps) => {
   if (!url) return null;
   return (
     <div className={classes.entry}>
-      {props.deleteImages ? (
-        <IconButton
-          onClick={e => props.removeImage(props.id)}
-          className={classes.removeButton}
-          edge="end"
-          aria-label="Comments"
-        >
-          <RemoveCircle />
-        </IconButton>
-      ) : null}
-
       <img src={url} alt="" />
     </div>
   );

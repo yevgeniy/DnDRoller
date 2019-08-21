@@ -22,7 +22,6 @@ import Chip from "@material-ui/core/Chip";
 import FaceIcon from "@material-ui/icons/Face";
 
 import Collapse from "@material-ui/core/Collapse";
-import Button from "@material-ui/core/Button";
 
 import Drawer from "@material-ui/core/Drawer";
 
@@ -130,7 +129,6 @@ type ActorProps = { [P in keyof ModelActor]?: ModelActor[P] } & {
 const Actor = React.memo((props: ActorProps) => {
   const classes = useActorStyles(props);
   const [actor, updateActor] = useActor(props.id, props.resetActor);
-  const [confirmRemove, setConfirmRemove] = useState(false);
   const { hot: hotDelete, setHot: setHotDelete } = useHot();
   const cmcloser = useRef(function() {});
 
