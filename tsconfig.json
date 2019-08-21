@@ -5,7 +5,6 @@
         "jsx": "react",
         "module": "commonjs",
         "outDir": "./build/",
-        // "preserveConstEnums": true,
         "removeComments": true,
         "sourceMap": true,
         "allowUnreachableCode": true,
@@ -19,14 +18,13 @@
         "noUnusedLocals": false,
         "noUnusedParameters": false,
         "skipLibCheck": true,
-        // "composite": false,
         "strictBindCallApply": false,
         "strictFunctionTypes": false,
         "strictPropertyInitialization": false,
         "strictNullChecks": false,
         "suppressExcessPropertyErrors": true,
         "suppressImplicitAnyIndexErrors": true,
-        "noEmitOnError": true,
+        "noEmitOnError": true
     },
     "include": [
         "./src/**/*"

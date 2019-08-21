@@ -234,7 +234,6 @@ const Instance = React.memo((props: InstanceProps) => {
   };
   const onAttachImages = async (ids: number[]) => {
     instance.images = ids;
-    if (!instance.images.length) delete instance.images;
     updateInstance({ ...instance });
     setAttachImages(false);
   };

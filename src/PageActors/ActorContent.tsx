@@ -142,7 +142,6 @@ const ActorContent = React.memo(
     };
     const onAttachImages = async (ids: number[]) => {
       actor.images = ids;
-      if (!actor.images.length) delete actor.images;
       updateActor({ ...actor });
       setAttachImages(false);
     };
