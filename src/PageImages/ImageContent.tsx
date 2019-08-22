@@ -38,7 +38,11 @@ import { TabPanel } from "../components";
 import PageInstancesAdd from "../PageInstances/PageInstancesAdd";
 import PageActorsAdd from "../PageActors/PageActorsAdd";
 import { makeStyles, createStyles } from "@material-ui/core/styles";
-import { useInstanceIdsForImage, useActorIdsForImage } from "../util/hooks";
+import {
+  useInstanceIdsForImage,
+  useActorIdsForImage,
+  useHistoryState
+} from "../util/hooks";
 import OnInstanceEntry from "./OnInstanceEntry";
 import OnActorEntry from "./OnActorEntry";
 
@@ -116,7 +120,8 @@ const ImageContent = React.memo((props: ImageContentProps) => {
   const [isAttachingInstances, setIsAttachingInstances] = useState(false);
   const [isAttachingActors, setIsAttachingActors] = useState(false);
 
-  const [tab, setTab] = useState(0);
+  const { tab, setTab } = useRouterMemories(props.id);
+
   const [
     instanceIds,
     attatchInstance,
@@ -235,5 +240,16 @@ const ImageContent = React.memo((props: ImageContentProps) => {
     </CardContent>
   );
 });
+
+function useRouterMemories(id: number) {
+  const { state, updateState } = useHistoryState(`image-content-${id}`, {
+    tab: 0
+  });
+
+  return {
+    ...state,
+    setTab: f => updateState({ tab: f })
+  };
+}
 
 export default ImageContent;

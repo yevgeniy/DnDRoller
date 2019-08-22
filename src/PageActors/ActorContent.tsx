@@ -22,7 +22,6 @@ import green from "@material-ui/core/colors/green";
 import red from "@material-ui/core/colors/red";
 import blue from "@material-ui/core/colors/blue";
 
-import RemoveCircle from "@material-ui/icons/RemoveCircle";
 import Extension from "@material-ui/icons/Extension";
 import Photo from "@material-ui/icons/Photo";
 import Info from "@material-ui/icons/Info";

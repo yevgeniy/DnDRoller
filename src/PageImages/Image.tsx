@@ -9,7 +9,6 @@ import blue from "@material-ui/core/colors/blue";
 import purple from "@material-ui/core/colors/purple";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 
-import { Link } from "react-router-dom";
 import {
   Fab,
   Typography,
@@ -25,7 +24,7 @@ import {
 import { CardHeader, ContextMenu } from "../components";
 
 import { ModelImage } from "../models/ModelImage";
-import { useImage, useDiscover, useHot } from "../util/hooks";
+import { useImage, useDiscover, useHot, useHistoryState } from "../util/hooks";
 import Actions from "./Actions";
 import ImageContent from "./ImageContent";
 
@@ -119,10 +118,13 @@ const Image = React.memo((props: ImageProps) => {
   const classes = useStyles(props);
   const [image, updateImage, upload, url] = useImage(props.id);
   const [addInstances, setAddInstances] = useState(false);
-
-  const [expanded, setExpanded] = useState(false);
   const [openAction, setOpenAction] = useState(false);
-  const elmRef = useDiscover(props.discover, props.id, setExpanded);
+
+  const { isExpanded, setIsExpanded } = useRouterMemories(props.id);
+
+  const elmRef = useDiscover(props.discover, props.id, () =>
+    setIsExpanded(true)
+  );
   const { hot: hotDelete, setHot: setHotDelete } = useHot();
   const cmcloser = useRef(function() {});
 
@@ -133,7 +135,7 @@ const Image = React.memo((props: ImageProps) => {
 
   function handleExpandClick(e) {
     e.stopPropagation();
-    setExpanded(!expanded);
+    setIsExpanded(!isExpanded);
   }
   function openActionPanel(e) {
     e.stopPropagation();
@@ -201,10 +203,10 @@ const Image = React.memo((props: ImageProps) => {
                 </Typography>
                 <IconButton
                   className={clsx(classes.expand, {
-                    [classes.expandOpen]: expanded
+                    [classes.expandOpen]: isExpanded
                   })}
                   onClick={handleExpandClick}
-                  aria-expanded={expanded}
+                  aria-expanded={isExpanded}
                   aria-label="Show more"
                 >
                   <ExpandMoreIcon />
@@ -226,7 +228,7 @@ const Image = React.memo((props: ImageProps) => {
             />
           ) : null}
 
-          <Collapse in={expanded} timeout="auto" unmountOnExit>
+          <Collapse in={isExpanded} timeout="auto" unmountOnExit>
             <ImageContent deleteImage={props.deleteImage} {...image} />
           </Collapse>
         </Card>
@@ -253,5 +255,16 @@ const Image = React.memo((props: ImageProps) => {
 
   return renderView();
 });
+
+function useRouterMemories(id: number) {
+  const { state, updateState } = useHistoryState(`image-${id}`, {
+    isExpanded: false
+  });
+
+  return {
+    ...state,
+    setIsExpanded: f => updateState({ isExpanded: f })
+  };
+}
 
 export default Image;
