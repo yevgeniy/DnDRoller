@@ -31,7 +31,12 @@ import Edit from "@material-ui/icons/Edit";
 import PageImagesAdd from "../PageImages/PageImagesAdd";
 import PageInstancesAdd from "../PageInstances/PageInstancesAdd";
 
-import { useInstance, useImage, useInstanceIdsForActor } from "../util/hooks";
+import {
+  useInstance,
+  useImage,
+  useInstanceIdsForActor,
+  useHistoryState
+} from "../util/hooks";
 import { ModelActor } from "../models/ModelActor";
 
 const useStyles = makeStyles(theme => {
@@ -108,25 +113,17 @@ const ActorContent = React.memo(
   ({ updateActor, ...actor }: ActorContentProps) => {
     const classes = useStyles();
 
-    const [attachInstances, setAttachInstances] = useState(false);
-    const [attachImages, setAttachImages] = useState(false);
-    const [deleteInstances, setDeleteInstances] = useState(false);
-    const [deleteImages, setDeleteImages] = useState(false);
-    const [tab, setTab] = useState(0);
+    const [isAttachingInstances, setIsAttachingInstances] = useState(false);
+    const [isAttachingImages, setIsAttachingImages] = useState(false);
+
+    const { tab, setTab } = useRouterMemories(actor.id);
+
     const [
       instanceIds,
       attatchInstance,
       detatchInstance
     ] = useInstanceIdsForActor(actor.id);
 
-    const removeInstance = (instanceId: number) => {
-      detatchInstance(instanceId);
-    };
-    const removeImage = (imageId: number) => {
-      actor.images = (actor.images || []).filter(v => v !== imageId);
-      if (!actor.images.length) delete actor.images;
-      updateActor({ ...actor });
-    };
     const onAttachInstances = async (ids: number[]) => {
       for (let x = 0; x < instanceIds.length; x++) {
         let id = instanceIds[x];
@@ -136,12 +133,12 @@ const ActorContent = React.memo(
         let id = ids[x];
         await attatchInstance(id);
       }
-      setAttachInstances(false);
+      setIsAttachingInstances(false);
     };
     const onAttachImages = async (ids: number[]) => {
       actor.images = ids;
       updateActor({ ...actor });
-      setAttachImages(false);
+      setIsAttachingImages(false);
     };
 
     return (
@@ -167,7 +164,7 @@ const ActorContent = React.memo(
               variant="contained"
               color="secondary"
               button="true"
-              onClick={e => setAttachInstances(true)}
+              onClick={e => setIsAttachingInstances(true)}
             >
               Update
               <Edit />
@@ -191,7 +188,7 @@ const ActorContent = React.memo(
               variant="contained"
               color="secondary"
               button="true"
-              onClick={e => setAttachImages(true)}
+              onClick={e => setIsAttachingImages(true)}
               className={classes.tabControlButton}
             >
               Update
@@ -212,15 +209,15 @@ const ActorContent = React.memo(
         </TabPanel>
         <Drawer
           anchor="top"
-          open={attachInstances}
-          onClose={e => setAttachInstances(false)}
+          open={isAttachingInstances}
+          onClose={e => setIsAttachingInstances(false)}
         >
           <PageInstancesAdd onDone={onAttachInstances} selected={instanceIds} />
         </Drawer>
         <Drawer
           anchor="top"
-          open={attachImages}
-          onClose={e => setAttachImages(false)}
+          open={isAttachingImages}
+          onClose={e => setIsAttachingImages(false)}
         >
           <PageImagesAdd
             onDone={onAttachImages}
@@ -287,5 +284,16 @@ const ImageEntry = React.memo((props: ImageEntryProps) => {
     </div>
   );
 });
+
+function useRouterMemories(id: number) {
+  const { state, updateState } = useHistoryState(`actor-content-${id}`, {
+    tab: 0
+  });
+
+  return {
+    ...state,
+    setTab: f => updateState({ tab: f })
+  };
+}
 
 export default ActorContent;

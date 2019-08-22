@@ -29,7 +29,7 @@ import {
 } from "@material-ui/core";
 
 import { ModelActor } from "../models/ModelActor";
-import { useActor, useHot, useDiscover } from "../util/hooks";
+import { useActor, useHot, useDiscover, useHistoryState } from "../util/hooks";
 
 import Actions from "./Actions";
 
@@ -129,9 +129,12 @@ const Actor = React.memo((props: ActorProps) => {
   const [actor, updateActor] = useActor(props.id);
   const cmcloser = useRef(function() {});
 
-  const [expanded, setExpanded] = useState(false);
-  const [openAction, setOpenAction] = useState(false);
-  const elmRef = useDiscover(props.discover, props.id, () => setExpanded(true));
+  const { isExpanded, setIsExpanded } = useRouterMemories(props.id);
+  const [isActionsOpen, setIsActionsOpen] = useState(false);
+
+  const elmRef = useDiscover(props.discover, props.id, () =>
+    setIsExpanded(true)
+  );
   const { hot: hotDelete, setHot: setHotDelete } = useHot();
 
   useEffect(() => {
@@ -140,11 +143,11 @@ const Actor = React.memo((props: ActorProps) => {
   }, [actor]);
   function handleExpandClick(e) {
     e.stopPropagation();
-    setExpanded(!expanded);
+    setIsExpanded(!isExpanded);
   }
   function openActionPanel(e) {
     e.stopPropagation();
-    setOpenAction(true);
+    setIsActionsOpen(true);
   }
   function deleteActor(e = null) {
     props.deleteActor(props.id);
@@ -233,12 +236,12 @@ const Actor = React.memo((props: ActorProps) => {
                 />
                 <IconButton
                   className={clsx(classes.expand, {
-                    [classes.expandOpen]: expanded
+                    [classes.expandOpen]: isExpanded
                   })}
                   onClick={handleExpandClick}
                   onMouseDown={e => e.stopPropagation()}
                   onMouseUp={e => e.stopPropagation()}
-                  aria-expanded={expanded}
+                  aria-expanded={isExpanded}
                   aria-label="Show more"
                 >
                   <ExpandMoreIcon />
@@ -251,7 +254,7 @@ const Actor = React.memo((props: ActorProps) => {
               </Button>
             }
           />
-          <Collapse in={expanded} timeout="auto" unmountOnExit>
+          <Collapse in={isExpanded} timeout="auto" unmountOnExit>
             <CardContent>
               <Divider />
               <ActorContent updateActor={updateActor} {...actor} />
@@ -259,14 +262,14 @@ const Actor = React.memo((props: ActorProps) => {
           </Collapse>
         </Card>
         <Drawer
-          open={openAction}
+          open={isActionsOpen}
           anchor="right"
-          onClose={() => setOpenAction(false)}
+          onClose={() => setIsActionsOpen(false)}
         >
           <div>
             <Actions
               updateActor={updateActor}
-              setOpenAction={setOpenAction}
+              setOpenAction={setIsActionsOpen}
               {...actor}
             />
           </div>
@@ -277,5 +280,16 @@ const Actor = React.memo((props: ActorProps) => {
 
   return renderView();
 });
+
+function useRouterMemories(id: number) {
+  const { state, updateState } = useHistoryState(`actor-${id}`, {
+    isExpanded: false
+  });
+
+  return {
+    ...state,
+    setIsExpanded: f => updateState({ isExpanded: f })
+  };
+}
 
 export default Actor;
