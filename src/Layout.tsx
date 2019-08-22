@@ -1,26 +1,15 @@
 import * as React from "react";
 import { useState, useEffect, useContext, useCallback } from "react";
 import { makeStyles } from "@material-ui/core/styles";
-import { RouteComponentProps } from "react-router-dom";
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
-import Button from "@material-ui/core/Button";
 import IconButton from "@material-ui/core/IconButton";
 import MenuIcon from "@material-ui/icons/Menu";
 
 import Drawer from "@material-ui/core/Drawer";
-import List from "@material-ui/core/List";
-import Divider from "@material-ui/core/Divider";
-import ListItem from "@material-ui/core/ListItem";
-import ListItemIcon from "@material-ui/core/ListItemIcon";
-import ListItemText from "@material-ui/core/ListItemText";
-import ListSubheader from "@material-ui/core/ListSubheader";
-import InboxIcon from "@material-ui/icons/MoveToInbox";
-import MailIcon from "@material-ui/icons/Mail";
-
 import MainOptions from "./components/MainOptions";
-import { RouterContextView } from "./util/routerContext";
+import { useHistoryState } from "./util/hooks";
 
 const useStyles = makeStyles(theme => ({
   container: {
@@ -99,54 +88,44 @@ function MainMenu({ setMainMenuOpen }: MainMenuProps) {
 }
 
 function useScrollMemory() {
-  let router = useContext(RouterContextView);
-  //@ts-ignore
-  router = router || {
-    history: {
-      action: "",
-      replace: function() {}
-    },
-    location: {
-      state: null
-    }
-  };
-  router.location.state = router.location.state || {};
+  const {
+    state: { scroll },
+    updateState
+  } = useHistoryState("layout", { scroll: 0 });
 
-  const [scroll, setScroll] = useState(router.location.state.scrollTop);
+  const [scrollToSet, setScrollToSet] = useState(scroll);
+
   let [scrollHeight, setScrollHeight] = useState(
     document.querySelector("html").scrollHeight
   );
-  const [scrollSet, setScrollSet] = useState(false);
+
+  let t;
   const onScroll = useCallback(() => {
     let s = document.querySelector("html").scrollTop;
-    setScroll(s);
-    setScrollSet(true);
-  }, []);
-  useEffect(() => {
-    if (!router) return;
-    let t = setTimeout(() => {
-      router.history.replace(router.location.pathname, {
-        ...(router.location.state || {}),
-        scrollTop: scroll
-      });
+    /*update scroll after scrolling has stopped*/
+    clearTimeout(t);
+    t = setTimeout(() => {
+      updateState({ scroll: s });
     }, 100);
-    return () => {
-      clearTimeout(t);
-    };
-  }, [scroll]);
+
+    /*if we scrolled the page before we had opportunity to regen the scroll
+    don't regen the scroll*/
+    setScrollToSet(null);
+  }, []);
 
   useEffect(() => {
-    if (!router) return;
     document.addEventListener("scroll", onScroll);
     return () => {
       document.removeEventListener("scroll", onScroll);
     };
   }, []);
 
+  /*while there is scroll to be set we continually poll scrollheight
+  for some time as the rest of the app regens it's state*/
   useEffect(() => {
     let t = setInterval(
       () =>
-        scrollSet === false &&
+        scrollToSet &&
         setScrollHeight(document.querySelector("html").scrollHeight),
       100
     );
@@ -156,12 +135,11 @@ function useScrollMemory() {
       clearInterval(t1);
     };
   }, []);
-
   useEffect(() => {
-    if (router.history.action !== "POP") return;
-
+    /*for as long as scrollheight is updating due to regen
+    effects, regen the scroll top*/
     document.removeEventListener("scroll", onScroll);
-    document.querySelector("html").scrollTop = scroll;
+    document.querySelector("html").scrollTop = scrollToSet;
     setTimeout(() => document.addEventListener("scroll", onScroll), 500);
   }, [scrollHeight]);
 }

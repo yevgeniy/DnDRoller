@@ -1,11 +1,62 @@
 import * as React from "react";
-import { useState, useEffect, useMemo, useRef } from "react";
+import {
+  useCallback,
+  useState,
+  useEffect,
+  useContext,
+  useMemo,
+  useRef
+} from "react";
 import ServiceActor from "../services/ServiceActor";
 import ServiceInstance from "../services/ServiceInstance";
 import ServiceImage, { File } from "../services/ServiceImage";
 import { ModelActor } from "../models/ModelActor";
-import { ModelImage } from "../models/ModelImage";
 import { ModelInstance } from "../models/ModelInstance";
+import { RouterContextView } from "./routerContext";
+
+export function useDiscover(
+  discover: number,
+  id: number,
+  wasDiscovered: () => void
+) {
+  const ref = useRef();
+
+  useEffect(() => {
+    if (discover !== id) return;
+    if (!ref.current) return;
+    //@ts-ignore
+    ref.current.scrollIntoView();
+    wasDiscovered();
+  });
+
+  return ref;
+}
+
+const _historyState = [];
+export function useHistoryState(id, initialstate) {
+  const router = useContext(RouterContextView);
+  const key = router.history.location.key;
+  let historyentry = _historyState.find(v => v.key === key);
+  if (!historyentry) {
+    if (router.history.length > 20) _historyState.shift();
+    historyentry = {
+      key: key,
+      state: {}
+    };
+    _historyState.push(historyentry);
+  }
+  const [state, setState] = useState(
+    historyentry[id] || (historyentry[id] = initialstate)
+  );
+  const updateState = u => {
+    historyentry[id] = {
+      ...historyentry[id],
+      ...u
+    };
+    setState(historyentry[id]);
+  };
+  return { state, updateState };
+}
 
 export function useService(S) {
   const [service, setService] = useState(null);
@@ -320,29 +371,7 @@ export function useActorIdsForImage(id: number) {
 
   return [actorIds, attachActor, detatchActor];
 }
-export function useDiscover(
-  discover: number,
-  id: number,
-  setExpanded: (f: boolean) => void
-) {
-  const ref = useRef();
-  const [discovered, setDiscovered] = useState(false);
 
-  useEffect(() => {
-    if (discover !== id) return;
-    setExpanded(true);
-  }, []);
-  useEffect(() => {
-    if (discovered) return;
-    if (discover !== id) return;
-    if (!ref.current) return;
-    //@ts-ignore
-    ref.current.scrollIntoView();
-    setDiscovered(true);
-  });
-
-  return ref;
-}
 export function useHot() {
   const [hot, setHot] = useState(false);
 

@@ -1,5 +1,5 @@
 import * as React from "react";
-import { useState, useEffect, useContext, useRef } from "react";
+import { useState, useEffect, useContext, useRef, useReducer } from "react";
 import { makeStyles, createStyles } from "@material-ui/core/styles";
 import clsx from "clsx";
 import { Link } from "react-router-dom";
@@ -9,7 +9,6 @@ import orange from "@material-ui/core/colors/orange";
 import purple from "@material-ui/core/colors/purple";
 import blue from "@material-ui/core/colors/blue";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
-import RemoveCircle from "@material-ui/icons/RemoveCircle";
 import Delete from "@material-ui/icons/Delete";
 import AccessTime from "@material-ui/icons/AccessTime";
 import DirectionsRun from "@material-ui/icons/DirectionsRun";
@@ -37,7 +36,13 @@ import { CardHeader, ContextMenu, TabPanel } from "../components";
 import moment from "moment";
 import Actions from "./Actions";
 
-import { useActor, useInstance, useImage, useHot } from "../util/hooks";
+import {
+  useActor,
+  useInstance,
+  useImage,
+  useHot,
+  useHistoryState
+} from "../util/hooks";
 
 import PageImagesAdd from "../PageImages/PageImagesAdd";
 import PageActorsAdd from "../PageActors/PageActorsAdd";
@@ -50,7 +55,6 @@ import {
   ListItemText,
   ListSubheader,
   ListItemAvatar,
-  ListItemSecondaryAction,
   Paper
 } from "@material-ui/core";
 
@@ -206,15 +210,21 @@ type InstanceProps = { [P in keyof ModelInstance]?: ModelInstance[P] } & {
 const Instance = React.memo((props: InstanceProps) => {
   const classes = useStyles(props);
   const [instance, updateInstance] = useInstance(props.id);
-  const [openAction, setOpenAction] = useState(false);
-  const { expanded, setExpanded } = useRouterMemories(props.id);
-  const [isAttachingActors, setIsAttachingActors] = useState(false);
-  const [isAttachingImages, setIsAttachingImages] = useState(false);
+  const [isActionsOpen, setIsActionsOpen] = useState(false);
+
+  const {
+    tab,
+    setTab,
+    isAttachingImages,
+    setIsAttachingImages,
+    isExpanded,
+    setIsExpanded,
+    isAttachingActors,
+    setIsAttachingActors
+  } = useRouterMemories(props.id);
 
   const { hot: hotDelete, setHot: setHotDelete } = useHot();
   const cxcloser = useRef(function() {});
-
-  const [tab, setTab] = useState(0);
 
   useEffect(() => {
     if (!instance) return;
@@ -223,11 +233,11 @@ const Instance = React.memo((props: InstanceProps) => {
 
   const handleExpandClick = e => {
     e.stopPropagation();
-    setExpanded(!expanded);
+    setIsExpanded(!isExpanded);
   };
   const openActionPanel = e => {
     e.stopPropagation();
-    setOpenAction(true);
+    setIsActionsOpen(true);
   };
   const deleteInstance = (e = null) => {
     if (!instance) return;
@@ -323,10 +333,10 @@ const Instance = React.memo((props: InstanceProps) => {
               />
               <IconButton
                 className={clsx(classes.expand, {
-                  [classes.expandOpen]: expanded
+                  [classes.expandOpen]: isExpanded
                 })}
                 onClick={handleExpandClick}
-                aria-expanded={expanded}
+                aria-expanded={isExpanded}
                 aria-label="Show more"
               >
                 <ExpandMoreIcon />
@@ -335,7 +345,7 @@ const Instance = React.memo((props: InstanceProps) => {
           }
           title={instance.name}
         />
-        <Collapse in={expanded} timeout="auto" unmountOnExit>
+        <Collapse in={isExpanded} timeout="auto" unmountOnExit>
           <CardContent>
             <Divider />
             <div className={classes.cardContent}>
@@ -410,14 +420,14 @@ const Instance = React.memo((props: InstanceProps) => {
         </Collapse>
       </Card>
       <Drawer
-        open={openAction}
+        open={isActionsOpen}
         anchor="right"
-        onClose={() => setOpenAction(false)}
+        onClose={() => setIsActionsOpen(false)}
       >
         <div>
           <Actions
             updateInstance={updateInstance}
-            setOpenAction={setOpenAction}
+            setOpenAction={setIsActionsOpen}
             {...instance}
           />
         </div>
@@ -512,22 +522,19 @@ const ImageEntry = React.memo((props: ImageEntryProps) => {
 });
 
 function useRouterMemories(id: number) {
-  const router = useContext(RouterContextView);
-  router.location.state = router.location.state || {};
-  router.location.state.menuOpen = router.location.state.menuOpen || {};
-
-  const [expanded, setExpanded] = useState(router.location.state.menuOpen[id]);
-
-  useEffect(() => {
-    router.history.replace(router.location.pathname, {
-      ...(router.location.state || {}),
-      menuOpen: { ...router.location.state.menuOpen, [id]: expanded }
-    });
-  }, [expanded]);
+  const { state, updateState } = useHistoryState(`instance-${id}`, {
+    tab: 0,
+    isExpanded: false,
+    isAttachingActors: false,
+    isAttachingImages: false
+  });
 
   return {
-    expanded,
-    setExpanded
+    ...state,
+    setIsExpanded: f => updateState({ isExpanded: f }),
+    setIsAttachingActors: f => updateState({ isAttachingActors: f }),
+    setIsAttachingImages: f => updateState({ isAttachingImages: f }),
+    setTab: t => updateState({ tab: t })
   };
 }
 

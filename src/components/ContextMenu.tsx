@@ -31,8 +31,6 @@ const ContextMenu = ({
 }: ContextMenuProps) => {
   const classes = useStyles(props);
 
-  console.log("hi");
-
   useEffect(() => {
     if (!isOpen) return;
     onOpen && onOpen(setClose);

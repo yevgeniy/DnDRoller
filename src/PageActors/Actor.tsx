@@ -29,7 +29,7 @@ import {
 } from "@material-ui/core";
 
 import { ModelActor } from "../models/ModelActor";
-import { useActor, useInstanceIdsForActor, useHot } from "../util/hooks";
+import { useActor, useHot, useDiscover } from "../util/hooks";
 
 import Actions from "./Actions";
 
@@ -131,7 +131,7 @@ const Actor = React.memo((props: ActorProps) => {
 
   const [expanded, setExpanded] = useState(false);
   const [openAction, setOpenAction] = useState(false);
-  const elmRef = useDiscover(props.discover, props.id, setExpanded);
+  const elmRef = useDiscover(props.discover, props.id, () => setExpanded(true));
   const { hot: hotDelete, setHot: setHotDelete } = useHot();
 
   useEffect(() => {
@@ -277,29 +277,5 @@ const Actor = React.memo((props: ActorProps) => {
 
   return renderView();
 });
-
-function useDiscover(
-  discover: number,
-  id: number,
-  setExpanded: (f: boolean) => void
-) {
-  const ref = useRef();
-  const [discovered, setDiscovered] = useState(false);
-
-  useEffect(() => {
-    if (discover !== id) return;
-    setExpanded(true);
-  }, []);
-  useEffect(() => {
-    if (discovered) return;
-    if (discover !== id) return;
-    if (!ref.current) return;
-    //@ts-ignore
-    ref.current.scrollIntoView();
-    setDiscovered(true);
-  });
-
-  return ref;
-}
 
 export default Actor;

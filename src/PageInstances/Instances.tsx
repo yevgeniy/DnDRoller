@@ -1,5 +1,5 @@
 import * as React from "react";
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { SortInstancesBy } from "../enums";
 
@@ -52,16 +52,18 @@ function useSort(
     default:
   }
 
+  const setSortInstance = useCallback(a => {
+    const i = sort.findIndex(v => v.id === a.id);
+    if (i === -1) setSort([...sort, a]);
+    else {
+      sort[i] = { ...a };
+      setSort([...sort]);
+    }
+  }, []);
+
   const elms = React.Children.map(children, v => {
     return React.cloneElement(v, {
-      setSortInstance: a => {
-        const i = sort.findIndex(v => v.id === a.id);
-        if (i === -1) setSort([...sort, a]);
-        else {
-          sort[i] = { ...a };
-          setSort([...sort]);
-        }
-      }
+      setSortInstance: setSortInstance
     });
   });
   const sortedelms = [];

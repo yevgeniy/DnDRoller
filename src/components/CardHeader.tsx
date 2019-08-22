@@ -165,7 +165,6 @@ function usecontextmenu() {
     let c = false;
     const h1 = () => {
       c = true;
-      console.log("a", c);
     };
     const h2 = () => {
       if (c) {

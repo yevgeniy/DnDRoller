@@ -1,10 +1,10 @@
 import * as React from "react";
-import { useState } from "react";
+import { useState, useContext } from "react";
 import Layout from "../Layout";
 import Add from "@material-ui/icons/Add";
 import { IconButton } from "@material-ui/core";
-import Instance from "./Instance";
 import Instances from "./Instances";
+import Instance from "./Instance";
 import { useInstanceIds } from "../util/hooks";
 
 import Button from "@material-ui/core/Button";
@@ -33,6 +33,7 @@ const PageInstances = React.memo(
       RouterViewContextState & PageInstancesLocationState
     >
   ) => {
+    console.log("from on high");
     const [
       instanceIds,
       createInstance,
