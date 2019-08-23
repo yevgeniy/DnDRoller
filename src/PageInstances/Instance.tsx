@@ -26,12 +26,11 @@ import {
   Avatar,
   CardContent,
   Card,
-  Chip,
   Checkbox,
   Collapse,
   Drawer
 } from "@material-ui/core";
-import { CardHeader, ContextMenu, TabPanel } from "../components";
+import { CardHeader, ContextMenu, TabPanel, Chip } from "../components";
 
 import moment from "moment";
 import Actions from "./Actions";

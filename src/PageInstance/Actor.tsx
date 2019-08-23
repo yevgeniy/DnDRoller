@@ -16,15 +16,19 @@ import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import FlashOn from "@material-ui/icons/FlashOn";
 import Delete from "@material-ui/icons/Delete";
 import Clone from "@material-ui/icons/CallSplit";
-
-import { Divider, Paper, List, ListSubheader, Fab } from "@material-ui/core";
-
-import Chip from "@material-ui/core/Chip";
 import FaceIcon from "@material-ui/icons/Face";
 
-import Collapse from "@material-ui/core/Collapse";
+import {
+  Divider,
+  Paper,
+  List,
+  ListSubheader,
+  Fab,
+  Collapse,
+  Drawer
+} from "@material-ui/core";
 
-import Drawer from "@material-ui/core/Drawer";
+import { Chip } from "../components";
 
 import Actions from "./Actions";
 import { ModelActor } from "../models/ModelActor";
