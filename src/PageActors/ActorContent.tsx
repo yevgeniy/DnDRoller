@@ -275,11 +275,14 @@ interface ImageEntryProps {
 const ImageEntry = React.memo((props: ImageEntryProps) => {
   const classes = useImageEntryPropsStyles();
   const { image, url } = useImage(props.id);
+
   if (!image) return null;
   if (!url) return null;
   return (
     <div className={classes.entry}>
-      <img src={url} alt="" />
+      <Link to={{ pathname: "/image", state: { imageId: image.id } }}>
+        <img src={url} alt="" />
+      </Link>
     </div>
   );
 });

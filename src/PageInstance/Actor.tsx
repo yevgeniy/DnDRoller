@@ -1,6 +1,7 @@
 import * as React from "react";
 import { useState, useEffect, useRef } from "react";
 import { makeStyles, createStyles } from "@material-ui/core/styles";
+import { Link } from "react-router-dom";
 import clsx from "clsx";
 import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
@@ -307,7 +308,9 @@ const ImageEntry = React.memo((props: ImageEntryProps) => {
   if (!url) return null;
   return (
     <div className={classes.entry}>
-      <img src={url} alt="" />
+      <Link to={{ pathname: "/image", state: { imageId: image.id } }}>
+        <img src={url} alt="" />
+      </Link>
     </div>
   );
 });
