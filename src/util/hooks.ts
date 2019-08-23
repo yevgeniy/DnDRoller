@@ -211,7 +211,7 @@ export function useImage(id: number) {
     setImage({ ...newimage });
   }
 
-  return [image, updateImage, upload, url];
+  return { image, updateImage, upload, url };
 }
 export function useInstanceIds() {
   const serviceInstance = useService(ServiceInstance);

@@ -8,6 +8,7 @@ import orange from "@material-ui/core/colors/orange";
 import blue from "@material-ui/core/colors/blue";
 import purple from "@material-ui/core/colors/purple";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
+import { Link } from "react-router-dom";
 
 import {
   Fab,
@@ -116,7 +117,7 @@ type ImageProps = { [P in keyof ModelImage]?: ModelImage[P] } & {
 
 const Image = React.memo((props: ImageProps) => {
   const classes = useStyles(props);
-  const [image, updateImage, upload, url] = useImage(props.id);
+  const { image, updateImage, upload, url } = useImage(props.id);
   const [addInstances, setAddInstances] = useState(false);
   const [openAction, setOpenAction] = useState(false);
 
@@ -223,6 +224,8 @@ const Image = React.memo((props: ImageProps) => {
           {url ? (
             <CardMedia
               className={classes.media}
+              component={Link}
+              to={{ pathname: "/image", state: { imageId: image.id } }}
               image={url}
               title={image.name}
             />
