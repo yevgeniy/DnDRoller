@@ -28,7 +28,7 @@ import Drawer from "@material-ui/core/Drawer";
 
 import Actions from "./Actions";
 import { ModelActor } from "../models/ModelActor";
-import { useService, useImage, useHot } from "../util/hooks";
+import { useHistoryState, useService, useImage, useHot } from "../util/hooks";
 import ServiceActor from "../services/ServiceActor";
 
 const useActorStyles = makeStyles(theme =>
@@ -132,13 +132,13 @@ const Actor = React.memo((props: ActorProps) => {
   const [actor, updateActor] = useActor(props.id, props.resetActor);
   const { hot: hotDelete, setHot: setHotDelete } = useHot();
   const cmcloser = useRef(function() {});
+  const { isExpanded, setIsExpanded } = useRouterMemories(props.id);
 
   useEffect(() => {
     if (!actor) return;
     props.setSortActor(actor);
   }, [actor]);
 
-  const [expanded, setExpanded] = useState(false);
   const [openAction, setOpenAction] = useState(false);
 
   function removeActor(e = null) {
@@ -146,7 +146,7 @@ const Actor = React.memo((props: ActorProps) => {
   }
   function handleExpandClick(e) {
     e.stopPropagation();
-    setExpanded(!expanded);
+    setIsExpanded(!isExpanded);
   }
   function openActionPanel(e) {
     e.stopPropagation();
@@ -229,10 +229,10 @@ const Actor = React.memo((props: ActorProps) => {
               />
               <IconButton
                 className={clsx(classes.expand, {
-                  [classes.expandOpen]: expanded
+                  [classes.expandOpen]: isExpanded
                 })}
                 onClick={handleExpandClick}
-                aria-expanded={expanded}
+                aria-expanded={isExpanded}
                 aria-label="Show more"
               >
                 <ExpandMoreIcon />
@@ -242,7 +242,7 @@ const Actor = React.memo((props: ActorProps) => {
           title={actor.name}
           subheader={c.join(", ")}
         />
-        <Collapse in={expanded} timeout="auto" unmountOnExit>
+        <Collapse in={isExpanded} timeout="auto" unmountOnExit>
           <CardContent>
             <Divider />
             <div className={classes.content}>
@@ -336,6 +336,16 @@ function useActor(id: number, resetActorToken?: number) {
   }
 
   return [actor, updateActor];
+}
+function useRouterMemories(id: number) {
+  const { state, updateState } = useHistoryState(`actor-${id}`, {
+    isExpanded: false
+  });
+
+  return {
+    ...state,
+    setIsExpanded: f => updateState({ isExpanded: f })
+  };
 }
 
 export default Actor;
