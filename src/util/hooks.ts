@@ -22,12 +22,13 @@ export function useDiscover(
   const ref = useRef();
 
   useEffect(() => {
+    console.log(ref.current);
     if (discover !== id) return;
     if (!ref.current) return;
     //@ts-ignore
     ref.current.scrollIntoView();
     wasDiscovered();
-  });
+  }, [ref.current]);
 
   return ref;
 }

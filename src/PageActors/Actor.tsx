@@ -14,7 +14,7 @@ import Delete from "@material-ui/icons/Delete";
 import FaceIcon from "@material-ui/icons/Face";
 import Clone from "@material-ui/icons/CallSplit";
 
-import { CardHeader, ContextMenu } from "../components";
+import { CardHeader, ContextMenu, Chip } from "../components";
 import ActorContent from "./ActorContent";
 import {
   Card,
@@ -22,7 +22,6 @@ import {
   Divider,
   CardContent,
   Button,
-  Chip,
   Collapse,
   Drawer,
   Checkbox

@@ -4,13 +4,12 @@ import { makeStyles, createStyles, Chip as MuiChip } from "@material-ui/core";
 import { ChipProps } from "@material-ui/core/Chip";
 
 const useStyles = makeStyles(
-  theme => {
-    return createStyles({
+  theme =>
+    createStyles({
       root: {
         height: 25
       }
-    });
-  },
+    }),
   { name: "Chip" }
 );
 const useStylesMuiChip = makeStyles(theme => {
