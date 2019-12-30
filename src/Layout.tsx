@@ -10,6 +10,9 @@ import MenuIcon from "@material-ui/icons/Menu";
 import Drawer from "@material-ui/core/Drawer";
 import MainOptions from "./components/MainOptions";
 import { useHistoryState } from "./util/hooks";
+import { RouterContextView } from "./util/routerContext";
+
+import { useOpenStream, useMessageStream } from "./util/sync";
 
 const useStyles = makeStyles(theme => ({
   container: {
@@ -31,9 +34,18 @@ interface LayoutProps {
   title: React.ReactNode;
   control: React.ReactNode;
 }
-export default (props: LayoutProps) => {
-  const classes = useStyles();
+export default function Layout(props: LayoutProps) {
+  const classes = useStyles(props);
   const [mainMenuOpen, setMainMenuOpen] = useState(false);
+  const router = useContext(RouterContextView);
+
+  const { set: setHistory } = useMessageStream("history");
+
+  useEffect(() => {
+    const key = router.history.location.key;
+    setHistory(key);
+  }, []);
+
   useScrollMemory();
 
   return (
@@ -61,7 +73,7 @@ export default (props: LayoutProps) => {
       </Drawer>
     </div>
   );
-};
+}
 
 const useMainMenuStyles = makeStyles(theme => {
   return {
@@ -74,7 +86,7 @@ interface MainMenuProps {
   setMainMenuOpen: (b: boolean) => void;
 }
 function MainMenu({ setMainMenuOpen }: MainMenuProps) {
-  const classes = useMainMenuStyles();
+  const classes = useMainMenuStyles({});
   return (
     <div
       className={classes.list}
