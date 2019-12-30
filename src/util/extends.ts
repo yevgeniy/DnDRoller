@@ -2,6 +2,9 @@ declare global {
   interface Array<T> {
     mapAsync<Q>(fn: { (v: T, i: number): Q | Promise<Q> }): Promise<Q[]>;
   }
+  interface EventTarget {
+    id: any;
+  }
 }
 
 Array.prototype.mapAsync = async function<Q>(fn): Promise<Q[]> {

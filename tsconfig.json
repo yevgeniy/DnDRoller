@@ -1,32 +1,44 @@
 {
-    "compilerOptions": {
-        "allowSyntheticDefaultImports": true,
-        "esModuleInterop": true,
-        "jsx": "react",
-        "module": "commonjs",
-        "outDir": "./build/",
-        "removeComments": true,
-        "sourceMap": true,
-        "allowUnreachableCode": true,
-        "allowUnusedLabels": true,
-        "alwaysStrict": false,
-        "strict": false,
-        "noImplicitUseStrict": false,
-        "noImplicitAny": false,
-        "noFallthroughCasesInSwitch": false,
-        "noStrictGenericChecks": false,
-        "noUnusedLocals": false,
-        "noUnusedParameters": false,
-        "skipLibCheck": true,
-        "strictBindCallApply": false,
-        "strictFunctionTypes": false,
-        "strictPropertyInitialization": false,
-        "strictNullChecks": false,
-        "suppressExcessPropertyErrors": true,
-        "suppressImplicitAnyIndexErrors": true,
-        "noEmitOnError": true
-    },
-    "include": [
-        "./src/**/*"
-    ]
+  "compilerOptions": {
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "jsx": "preserve",
+    "module": "esnext",
+    "outDir": "./build/",
+    "removeComments": true,
+    "sourceMap": true,
+    "allowUnreachableCode": true,
+    "allowUnusedLabels": true,
+    "alwaysStrict": false,
+    "strict": false,
+    "noImplicitUseStrict": false,
+    "noImplicitAny": false,
+    "noFallthroughCasesInSwitch": false,
+    "noStrictGenericChecks": false,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "skipLibCheck": true,
+    "strictBindCallApply": false,
+    "strictFunctionTypes": false,
+    "strictPropertyInitialization": false,
+    "strictNullChecks": false,
+    "suppressExcessPropertyErrors": true,
+    "suppressImplicitAnyIndexErrors": true,
+    "noEmitOnError": true,
+    "target": "es5",
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
+    "allowJs": true,
+    "forceConsistentCasingInFileNames": true,
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true
+  },
+  "include": [
+    "./src/**/*"
+  ]
 }

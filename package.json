@@ -11,6 +11,7 @@
     "@types/react-router-dom": "4.3.3",
     "clsx": "1.0.4",
     "moment": "2.24.0",
+    "nimm-sync": "^2.0.0",
     "panzoom": "8.1.2",
     "react": "16.8.4",
     "react-dom": "16.8.4",

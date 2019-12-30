@@ -80,7 +80,7 @@ const PageImage = React.memo(
     >
   ) => {
     const { url } = useImage(props.location.state.imageId);
-    const classes = useStyles();
+    const classes = useStyles({});
 
     const imgRef = useRef();
     const [zoom, setZoom] = useState(1);
@@ -106,7 +106,9 @@ const PageImage = React.memo(
       const loaded = () => {
         instance = panzoom(document.querySelector("#panthis"), {
           onTouch: function(e) {
-            let paths = [...e.composedPath()].map(v => v.id);
+            let paths = [...e.composedPath()].map(v => {
+              return v.id;
+            });
             if (paths.some(v => v === "backButton" || v === "menuButton"))
               return false;
             return true;
