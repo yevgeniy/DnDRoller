@@ -26,9 +26,22 @@ const history = {
     system.currentHistory = current;
   }
 };
+const scroll = {
+  key: "scroll",
+  get: () => (system.currentHistory && system.currentHistory.scroll) || 0,
+  set: s => system.currentHistory && (system.currentHistory.scroll = s)
+};
 
-const dict = NimmSync.create([history]);
+const dict = NimmSync.create([history, scroll]);
 export const { useOpenStream, useMessageStream } = NimmSync.connect(
   dict,
   React
 );
+
+useOpenStream.scroll = () => {
+  const { on } = useMessageStream("history");
+  const [scroll, opers] = useOpenStream("scroll");
+  on(opers.get);
+
+  return [scroll, opers];
+};

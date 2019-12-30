@@ -1,5 +1,5 @@
 import * as React from "react";
-import { useState, useEffect, useContext, useCallback } from "react";
+import { useRef, useState, useEffect, useContext, useCallback } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
@@ -100,44 +100,40 @@ function MainMenu({ setMainMenuOpen }: MainMenuProps) {
 }
 
 function useScrollMemory() {
-  const {
-    state: { scroll },
-    updateState
-  } = useHistoryState("layout", { scroll: 0 });
-
-  const [scrollToSet, setScrollToSet] = useState(scroll);
+  const [scroll, { set }] = useOpenStream.scroll();
+  const isScrollHot = useRef(false);
 
   let [scrollHeight, setScrollHeight] = useState(
     document.querySelector("html").scrollHeight
   );
 
   let t;
-  const onScroll = useCallback(() => {
+  const onScroll = () => {
     let s = document.querySelector("html").scrollTop;
     /*update scroll after scrolling has stopped*/
     clearTimeout(t);
     t = setTimeout(() => {
-      updateState({ scroll: s });
+      if (!history) return;
+      console.log("setting scroll", s);
+      set(s);
     }, 100);
 
-    /*if we scrolled the page before we had opportunity to regen the scroll
-    don't regen the scroll*/
-    setScrollToSet(null);
-  }, []);
+    isScrollHot.current = true;
+  };
 
   useEffect(() => {
     document.addEventListener("scroll", onScroll);
     return () => {
       document.removeEventListener("scroll", onScroll);
     };
-  }, []);
+  }, [history]);
 
   /*while there is scroll to be set we continually poll scrollheight
   for some time as the rest of the app regens it's state*/
   useEffect(() => {
     let t = setInterval(
       () =>
-        scrollToSet &&
+        isScrollHot.current === false &&
         setScrollHeight(document.querySelector("html").scrollHeight),
       100
     );
@@ -146,12 +142,13 @@ function useScrollMemory() {
       clearInterval(t);
       clearInterval(t1);
     };
-  }, []);
+  }, [history]);
   useEffect(() => {
     /*for as long as scrollheight is updating due to regen
     effects, regen the scroll top*/
+    if (isScrollHot.current) return;
     document.removeEventListener("scroll", onScroll);
-    document.querySelector("html").scrollTop = scrollToSet;
+    document.querySelector("html").scrollTop = scroll;
     setTimeout(() => document.addEventListener("scroll", onScroll), 500);
-  }, [scrollHeight]);
+  }, [scrollHeight, history]);
 }
