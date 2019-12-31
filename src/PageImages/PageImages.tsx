@@ -49,7 +49,7 @@ const PageInstances = React.memo(
     const [imageIds, createImage, deleteImage] = useImageIds();
     const [openNewImageDialog, setOpenNewImageDialog] = useState(false);
     const [newImageName, setNewImageName] = useState("");
-    const classes = useStyles();
+    const classes = useStyles({});
 
     const onAdd = e => {
       setNewImageName("");
@@ -69,64 +69,60 @@ const PageInstances = React.memo(
     if (!imageIds) return null;
 
     return (
-      <RouterContextView.Provider value={props}>
-        <Layout
-          title="Image Respository"
-          control={
-            <>
-              <IconButton onClick={onAdd} color="inherit">
-                <Add />
-              </IconButton>
-            </>
-          }
+      <Layout
+        hisotryId={props.history.location.key}
+        title="Image Respository"
+        control={
+          <>
+            <IconButton onClick={onAdd} color="inherit">
+              <Add />
+            </IconButton>
+          </>
+        }
+      >
+        <Images sort="name">
+          {imageIds.map(v => (
+            <Image key={v} id={v} deleteImage={deleteImage} />
+          ))}
+        </Images>
+        <Dialog
+          open={openNewImageDialog}
+          onClose={e => setOpenNewImageDialog(false)}
+          aria-labelledby="form-dialog-title"
         >
-          <Images sort="name">
-            {imageIds.map(v => (
-              <Image key={v} id={v} deleteImage={deleteImage} />
-            ))}
-          </Images>
-          <Dialog
-            open={openNewImageDialog}
-            onClose={e => setOpenNewImageDialog(false)}
-            aria-labelledby="form-dialog-title"
-          >
-            <DialogContent>
-              <DialogContentText>
-                Upload images. You will be able to set image names afterwards.
-              </DialogContentText>
+          <DialogContent>
+            <DialogContentText>
+              Upload images. You will be able to set image names afterwards.
+            </DialogContentText>
 
-              <Uploader multiple onSelected={onImgSelected} />
-              <Typography className={classes.or} variant="h4">
-                -or-
-              </Typography>
-              <DialogContentText>
-                Create an image. You will be able to upload a file afterwards.
-              </DialogContentText>
-              <form onSubmit={onNewImageName}>
-                <TextField
-                  autoFocus
-                  margin="dense"
-                  id="name"
-                  label="Image Name"
-                  fullWidth
-                  onChange={e => setNewImageName(e.target.value)}
-                />
-              </form>
-            </DialogContent>
-            <DialogActions>
-              <Button onClick={onNewImageName} color="primary">
-                Submit
-              </Button>
-              <Button
-                onClick={e => setOpenNewImageDialog(false)}
-                color="primary"
-              >
-                Cancel
-              </Button>
-            </DialogActions>
-          </Dialog>
-        </Layout>
-      </RouterContextView.Provider>
+            <Uploader multiple onSelected={onImgSelected} />
+            <Typography className={classes.or} variant="h4">
+              -or-
+            </Typography>
+            <DialogContentText>
+              Create an image. You will be able to upload a file afterwards.
+            </DialogContentText>
+            <form onSubmit={onNewImageName}>
+              <TextField
+                autoFocus
+                margin="dense"
+                id="name"
+                label="Image Name"
+                fullWidth
+                onChange={e => setNewImageName(e.target.value)}
+              />
+            </form>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={onNewImageName} color="primary">
+              Submit
+            </Button>
+            <Button onClick={e => setOpenNewImageDialog(false)} color="primary">
+              Cancel
+            </Button>
+          </DialogActions>
+        </Dialog>
+      </Layout>
     );
   }
 );

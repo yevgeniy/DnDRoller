@@ -10,7 +10,6 @@ import MenuIcon from "@material-ui/icons/Menu";
 import Drawer from "@material-ui/core/Drawer";
 import MainOptions from "./components/MainOptions";
 import { useHistoryState } from "./util/hooks";
-import { RouterContextView } from "./util/routerContext";
 
 import { useOpenStream, useMessageStream } from "./util/sync";
 
@@ -33,17 +32,16 @@ interface LayoutProps {
   children: React.ReactNode;
   title: React.ReactNode;
   control: React.ReactNode;
+  historyId?: any;
 }
 export default function Layout(props: LayoutProps) {
   const classes = useStyles(props);
   const [mainMenuOpen, setMainMenuOpen] = useState(false);
-  const router = useContext(RouterContextView);
 
   const { set: setHistory } = useMessageStream("history");
 
   useEffect(() => {
-    const key = router.history.location.key;
-    setHistory(key);
+    setHistory(props.historyId);
   }, []);
 
   useScrollMemory();

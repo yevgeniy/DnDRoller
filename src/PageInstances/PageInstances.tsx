@@ -57,63 +57,62 @@ const PageInstances = React.memo(
     if (!instanceIds) return null;
 
     return (
-      <RouterContextView.Provider value={props}>
-        <Layout
-          title="Instance Respository"
-          control={
-            <>
-              <IconButton onClick={onAdd} color="inherit">
-                <Add />
-              </IconButton>
-            </>
-          }
+      <Layout
+        hisotryId={props.history.location.key}
+        title="Instance Respository"
+        control={
+          <>
+            <IconButton onClick={onAdd} color="inherit">
+              <Add />
+            </IconButton>
+          </>
+        }
+      >
+        <Instances sort="name">
+          {instanceIds.map(v => (
+            <Instance
+              key={v}
+              id={v}
+              deleteInstance={deleteInstance}
+              cloneInstance={cloneInstance}
+            />
+          ))}
+        </Instances>
+        <Dialog
+          open={openNewInstanceDialog}
+          onClose={e => setOpenNewInstanceDialog(false)}
+          aria-labelledby="form-dialog-title"
         >
-          <Instances sort="name">
-            {instanceIds.map(v => (
-              <Instance
-                key={v}
-                id={v}
-                deleteInstance={deleteInstance}
-                cloneInstance={cloneInstance}
+          <DialogTitle id="form-dialog-title">New Instance</DialogTitle>
+          <DialogContent>
+            <DialogContentText>
+              Enter new instance name. You will be able to set other instance
+              variables afterwards.
+            </DialogContentText>
+            <form onSubmit={onNewInstanceName}>
+              <TextField
+                autoFocus
+                margin="dense"
+                id="name"
+                label="Instance Name"
+                fullWidth
+                onChange={e => setNewInstanceName(e.target.value)}
               />
-            ))}
-          </Instances>
-          <Dialog
-            open={openNewInstanceDialog}
-            onClose={e => setOpenNewInstanceDialog(false)}
-            aria-labelledby="form-dialog-title"
-          >
-            <DialogTitle id="form-dialog-title">New Instance</DialogTitle>
-            <DialogContent>
-              <DialogContentText>
-                Enter new instance name. You will be able to set other instance
-                variables afterwards.
-              </DialogContentText>
-              <form onSubmit={onNewInstanceName}>
-                <TextField
-                  autoFocus
-                  margin="dense"
-                  id="name"
-                  label="Instance Name"
-                  fullWidth
-                  onChange={e => setNewInstanceName(e.target.value)}
-                />
-              </form>
-            </DialogContent>
-            <DialogActions>
-              <Button onClick={onNewInstanceName} color="primary">
-                Submit
-              </Button>
-              <Button
-                onClick={e => setOpenNewInstanceDialog(false)}
-                color="primary"
-              >
-                Cancel
-              </Button>
-            </DialogActions>
-          </Dialog>
-        </Layout>
-      </RouterContextView.Provider>
+            </form>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={onNewInstanceName} color="primary">
+              Submit
+            </Button>
+            <Button
+              onClick={e => setOpenNewInstanceDialog(false)}
+              color="primary"
+            >
+              Cancel
+            </Button>
+          </DialogActions>
+        </Dialog>
+      </Layout>
     );
   }
 );
