@@ -33,19 +33,14 @@ import {
   RouterContextView,
   RouterViewContextState
 } from "../util/routerContext";
+import { ModelRoutedPage } from "../models/ModelRoutedPage";
 
 interface PageInstanceLocationState {
   id?: number;
 }
 
 const PageInstance = React.memo(
-  (
-    props: RouteComponentProps<
-      {},
-      {},
-      PageInstanceLocationState & RouterViewContextState
-    >
-  ) => {
+  (props: ModelRoutedPage<PageInstanceLocationState>) => {
     props.location.state = props.location.state || {};
     const [instance, updateInstance, createInstance, cloneActor] = useInstance(
       props.location.state.id || "empty",

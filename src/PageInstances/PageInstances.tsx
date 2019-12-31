@@ -20,20 +20,14 @@ import {
   RouterViewContextState
 } from "../util/routerContext";
 import { RouteComponentProps } from "react-router-dom";
+import { ModelRoutedPage } from "../models/ModelRoutedPage";
 
 interface PageInstancesLocationState {
   discover?: number;
 }
 
 const PageInstances = React.memo(
-  (
-    props: RouteComponentProps<
-      {},
-      {},
-      RouterViewContextState & PageInstancesLocationState
-    >
-  ) => {
-    console.log("from on high");
+  (props: ModelRoutedPage<PageInstancesLocationState>) => {
     const [
       instanceIds,
       createInstance,

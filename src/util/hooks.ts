@@ -35,11 +35,9 @@ export function useDiscover(
 
 const _historyState = [];
 export function useHistoryState(id, initialstate) {
-  const router = useContext(RouterContextView);
-  const key = router.history.location.key;
+  const key = "asdfasdfasdf";
   let historyentry = _historyState.find(v => v.key === key);
   if (!historyentry) {
-    if (router.history.length > 20) _historyState.shift();
     historyentry = {
       key: key,
       state: {}

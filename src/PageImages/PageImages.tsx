@@ -24,6 +24,7 @@ import {
   RouterViewContextState
 } from "../util/routerContext";
 import { RouteComponentProps } from "react-router-dom";
+import { ModelRoutedPage } from "../models/ModelRoutedPage";
 
 const useStyles = makeStyles(theme => {
   return createStyles({
@@ -39,13 +40,7 @@ interface PageImagesLocationState {
 }
 
 const PageInstances = React.memo(
-  (
-    props: RouteComponentProps<
-      {},
-      {},
-      RouterViewContextState & PageImagesLocationState
-    >
-  ) => {
+  (props: ModelRoutedPage<PageImagesLocationState>) => {
     const [imageIds, createImage, deleteImage] = useImageIds();
     const [openNewImageDialog, setOpenNewImageDialog] = useState(false);
     const [newImageName, setNewImageName] = useState("");

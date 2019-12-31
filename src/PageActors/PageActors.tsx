@@ -16,24 +16,15 @@ import Actor from "./Actor";
 import Actors from "./Actors";
 import { useActorIds } from "../util/hooks";
 
-import {
-  RouterContextView,
-  RouterViewContextState
-} from "../util/routerContext";
-import { RouteComponentProps } from "react-router-dom";
+import { ModelRoutedPage } from "../models/ModelRoutedPage";
+import { useOpenStream, useMessageStream } from "../util/sync";
 
 interface PageActorLocationState {
   discover?: number;
 }
 
 const PageActors = React.memo(
-  (
-    props: RouteComponentProps<
-      {},
-      {},
-      RouterViewContextState & PageActorLocationState
-    >
-  ) => {
+  (props: ModelRoutedPage<PageActorLocationState>) => {
     props.location.state = props.location.state || {};
     const [actorIds, createActor, deleteActor, cloneActor] = useActorIds();
     const [openNewActorDialog, setOpenNewActorDialog] = useState(false);
