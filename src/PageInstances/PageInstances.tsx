@@ -52,7 +52,7 @@ const PageInstances = React.memo(
 
     return (
       <Layout
-        hisotryId={props.history.location.key}
+        historyId={props.history.location.key}
         title="Instance Respository"
         control={
           <>

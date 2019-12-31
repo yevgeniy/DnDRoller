@@ -42,9 +42,10 @@ const PageActors = React.memo(
       setOpenNewActorDialog(false);
     };
     if (!actorIds) return null;
+    console.log(props);
     return (
       <Layout
-        hisotryId={props.history.location.key}
+        historyId={props.history.location.key}
         title="Actor Repository"
         control={
           <>

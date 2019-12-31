@@ -93,7 +93,7 @@ const PageInstance = React.memo(
 
     return (
       <Layout
-        hisotryId={props.history.location.key}
+        historyId={props.history.location.key}
         title={
           instance.id ? (
             `Instance: ${instance.name}`

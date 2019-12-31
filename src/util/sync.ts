@@ -15,6 +15,11 @@ const history = {
   key: "history",
   get: () => system.currentHistory,
   set: id => {
+    if (id === null) {
+      system.currentHistory = null;
+      return;
+    }
+
     let current: ModelHistoryEntry = system.history.find(v => v.id === id);
     if (!current) {
       current = {
@@ -26,22 +31,26 @@ const history = {
     system.currentHistory = current;
   }
 };
-const scroll = {
-  key: "scroll",
-  get: () => (system.currentHistory && system.currentHistory.scroll) || 0,
-  set: s => system.currentHistory && (system.currentHistory.scroll = s)
+const historyState = {
+  key: "history-state",
+  get: selector => {
+    const repo = system.currentHistory || {};
+    let state = repo[selector];
+    if (!state) state = repo[selector] = {};
+    return state;
+  }
 };
 
-const dict = NimmSync.create([history, scroll]);
+const dict = NimmSync.create([history, historyState]);
 export const { useOpenStream, useMessageStream } = NimmSync.connect(
   dict,
   React
 );
 
-useOpenStream.scroll = () => {
+useOpenStream.historyState = (selector: string) => {
   const { on } = useMessageStream("history");
-  const [scroll, opers] = useOpenStream("scroll");
+  const [state, opers] = useOpenStream("history-state", selector);
   on(opers.get);
 
-  return [scroll, opers];
+  return [state || {}, opers];
 };

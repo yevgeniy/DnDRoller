@@ -42,12 +42,11 @@ export default function Layout(props: LayoutProps) {
 
   useEffect(() => {
     setHistory(props.historyId);
+    return () => setHistory(null);
   }, []);
-
-  useScrollMemory();
-
   return (
     <div className={classes.container}>
+      <ScrollConstruct />
       <AppBar position="static">
         <Toolbar>
           <IconButton
@@ -97,8 +96,15 @@ function MainMenu({ setMainMenuOpen }: MainMenuProps) {
   );
 }
 
+const ScrollConstruct = React.memo(() => {
+  useScrollMemory();
+  return null;
+});
+
 function useScrollMemory() {
-  const [scroll, { set }] = useOpenStream.scroll();
+  const [historyState, { update }] = useOpenStream.historyState(Layout.name);
+  const scroll = historyState.scroll || 0;
+
   const isScrollHot = useRef(false);
 
   let [scrollHeight, setScrollHeight] = useState(
@@ -111,20 +117,19 @@ function useScrollMemory() {
     /*update scroll after scrolling has stopped*/
     clearTimeout(t);
     t = setTimeout(() => {
-      if (!history) return;
-      console.log("setting scroll", s);
-      set(s);
+      update({ scroll: s });
     }, 100);
 
     isScrollHot.current = true;
   };
 
   useEffect(() => {
+    console.log("ATACH", scroll);
     document.addEventListener("scroll", onScroll);
     return () => {
       document.removeEventListener("scroll", onScroll);
     };
-  }, [history]);
+  }, [update]);
 
   /*while there is scroll to be set we continually poll scrollheight
   for some time as the rest of the app regens it's state*/
@@ -140,7 +145,7 @@ function useScrollMemory() {
       clearInterval(t);
       clearInterval(t1);
     };
-  }, [history]);
+  }, [scroll]);
   useEffect(() => {
     /*for as long as scrollheight is updating due to regen
     effects, regen the scroll top*/
@@ -148,5 +153,5 @@ function useScrollMemory() {
     document.removeEventListener("scroll", onScroll);
     document.querySelector("html").scrollTop = scroll;
     setTimeout(() => document.addEventListener("scroll", onScroll), 500);
-  }, [scrollHeight, history]);
+  }, [scrollHeight, scroll]);
 }
