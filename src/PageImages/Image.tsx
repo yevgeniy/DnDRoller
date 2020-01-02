@@ -123,7 +123,7 @@ const Image = React.memo((props: ImageProps) => {
 
   const { isExpanded, setIsExpanded } = useRouterMemories(props.id);
 
-  const elmRef = useDiscover(props.discover, props.id, () =>
+  const elmRef = useDiscover(props.discover === props.id, () =>
     setIsExpanded(true)
   );
   const { hot: hotDelete, setHot: setHotDelete } = useHot();

@@ -60,12 +60,11 @@ const useStyle = makeStyles(theme => {
 
 type PageActorsActionsProps = { [P in keyof ModelActor]: ModelActor[P] } & {
   /*update any prop of actor*/
-  updateActor: (a: { [P in keyof ModelActor]?: ModelActor[P] }) => void;
-  setOpenAction: (a: boolean) => void;
+  onDone: (a: { [P in keyof ModelActor]?: ModelActor[P] }) => void;
 };
 
 const PageActorsActions = React.memo((props: PageActorsActionsProps) => {
-  const classes = useStyle();
+  const classes = useStyle({});
   const [name, setName] = useState(props.name);
   const [hp, setHp] = useState(props.hp);
   const [cls, setCls] = useState(props.class);
@@ -75,7 +74,7 @@ const PageActorsActions = React.memo((props: PageActorsActionsProps) => {
 
   const onUpdateActor = (e: any) => {
     e.preventDefault();
-    props.updateActor({
+    props.onDone({
       name,
       hp,
       hpCurrent: hpCurrent === null ? hp : hpCurrent,
@@ -83,7 +82,6 @@ const PageActorsActions = React.memo((props: PageActorsActionsProps) => {
       race,
       size
     });
-    props.setOpenAction(false);
   };
   const onReset = e => {
     setName(props.name);
@@ -93,13 +91,11 @@ const PageActorsActions = React.memo((props: PageActorsActionsProps) => {
     setSize(props.size);
   };
   const onResetHpCurrent = e => {
-    props.updateActor({ hpCurrent: hp });
-    props.setOpenAction(false);
+    props.onDone({ hpCurrent: hp });
   };
   const onSetHpCurrent = e => {
     e.preventDefault();
-    props.updateActor({ hpCurrent: hpCurrent });
-    props.setOpenAction(false);
+    props.onDone({ hpCurrent: hpCurrent });
   };
 
   const c: string[] = [];

@@ -14,21 +14,15 @@ import { ModelActor } from "../models/ModelActor";
 import { ModelInstance } from "../models/ModelInstance";
 import { RouterContextView } from "./routerContext";
 
-export function useDiscover(
-  discover: number,
-  id: number,
-  wasDiscovered: () => void
-) {
+export function useDiscover(doDiscover: boolean, wasDiscovered: () => void) {
   const ref = useRef();
 
   useEffect(() => {
-    console.log(ref.current);
-    if (discover !== id) return;
-    if (!ref.current) return;
+    if (!doDiscover) return;
     //@ts-ignore
     ref.current.scrollIntoView();
     wasDiscovered();
-  }, [ref.current]);
+  }, [ref.current, doDiscover]);
 
   return ref;
 }
@@ -381,4 +375,25 @@ export function useHot() {
   }, [hot]);
 
   return { hot, setHot };
+}
+export function useModalState<T>(def: boolean = false) {
+  const [isOpen, setIsOpen] = useState(def);
+  const prom = useRef(null);
+
+  const doOpen = () => {
+    setIsOpen(true);
+    return new Promise<T>(res => {
+      prom.current = res;
+    });
+  };
+  const doClose = () => {
+    prom.current && prom.current(null);
+    setIsOpen(false);
+  };
+  const onDone = (res: T) => {
+    prom.current && prom.current(res);
+    setIsOpen(false);
+  };
+
+  return { isOpen, doOpen, doClose, onDone };
 }

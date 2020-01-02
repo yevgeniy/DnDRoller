@@ -78,7 +78,7 @@ type CardHeaderProps = MuiCardHeaderProps & {
   contextmenu?: React.ReactElement;
 };
 
-const CardHeader = props => {
+const CardHeader = (props: CardHeaderProps) => {
   const cardHeaderClasses = useCardHeaderStyles(props);
 
   if (props.contextmenu)
@@ -95,7 +95,9 @@ const CardHeader = props => {
 
 const SwipeCompWrapper = ({ ...props }) => {
   const classes = useStyles(props);
-  const { open, setOpen, setClose, elmRef } = usecontextmenu();
+
+  const { isOpen, onOpen, onClose } = props.contextmenu.props;
+  const { elmRef } = usecontextmenu({ isOpen, onClose });
   const moveref = useRef({ x: 0, y: 0 });
 
   const clickdetect = e => {
@@ -113,7 +115,7 @@ const SwipeCompWrapper = ({ ...props }) => {
       <Swipeable
         {...props}
         className={clsx(classes.swiper, props.className)}
-        onSwipedLeft={setOpen}
+        onSwipedLeft={onOpen}
         trackMouse
         onSwiping={e => {
           moveref.current = {
@@ -125,40 +127,33 @@ const SwipeCompWrapper = ({ ...props }) => {
       <div className={classes.contextmenu}>
         <div
           className={clsx(classes.contextmenuBackground, {
-            [classes.contextmenuOpen]: open
+            [classes.contextmenuOpen]: isOpen
           })}
           onClick={e => {
             e.stopPropagation();
-            setClose();
+            onClose();
           }}
         />
         <div
           className={clsx(classes.contextmenuItems, {
-            [classes.contextmenuItemOpen]: open
+            [classes.contextmenuItemOpen]: isOpen
           })}
           onClick={e => e.stopPropagation()}
           ref={elmRef}
         >
-          {React.Children.map(props.contextmenu, menu => {
-            if (menu.type === ContextMenu)
-              return React.cloneElement(menu, {
-                setClose,
-                isOpen: open
-              });
-            return menu;
-          })}
+          {props.contextmenu}
         </div>
       </div>
     </div>
   );
 };
 
-function usecontextmenu() {
-  const [open, so] = useState(false);
+function usecontextmenu({ isOpen, onClose }) {
   const elmRef = useRef();
 
   useEffect(() => {
-    if (!open) return;
+    if (!isOpen) return;
+
     const elm = elmRef.current;
     if (!elm) return;
 
@@ -171,7 +166,7 @@ function usecontextmenu() {
         c = false;
         return;
       }
-      so(false);
+      onClose();
     };
 
     // @ts-ignore
@@ -182,11 +177,9 @@ function usecontextmenu() {
       elm.removeEventListener("click", h1);
       document.removeEventListener("click", h2);
     };
-  }, [open]);
+  }, [isOpen]);
 
-  const setOpen = () => so(true);
-  const setClose = () => so(false);
-  return { open, setOpen, setClose, elmRef };
+  return { elmRef };
 }
 
 export default CardHeader;

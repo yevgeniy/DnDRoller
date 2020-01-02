@@ -14,7 +14,15 @@ import Delete from "@material-ui/icons/Delete";
 import FaceIcon from "@material-ui/icons/Face";
 import Clone from "@material-ui/icons/CallSplit";
 
-import { CardHeader, ContextMenu, Chip } from "../components";
+import {
+  CardHeader,
+  ContextMenu,
+  Chip,
+  EntityActions,
+  EntityContent,
+  EntityHeaderActions,
+  Entity
+} from "../components";
 import ActorContent from "./ActorContent";
 import {
   Card,
@@ -28,9 +36,10 @@ import {
 } from "@material-ui/core";
 
 import { ModelActor } from "../models/ModelActor";
-import { useActor, useHot, useDiscover, useHistoryState } from "../util/hooks";
+import { useActor, useHot, useDiscover, useModalState } from "../util/hooks";
 
 import Actions from "./Actions";
+import { useOpenStream, useMessageStream } from "../util/sync";
 
 const useStyles = makeStyles(theme =>
   createStyles({
@@ -128,11 +137,26 @@ const Actor = React.memo((props: ActorProps) => {
   const [actor, updateActor] = useActor(props.id);
   const cmcloser = useRef(function() {});
 
-  const { isExpanded, setIsExpanded } = useRouterMemories(props.id);
-  const [isActionsOpen, setIsActionsOpen] = useState(false);
+  const [
+    { isExpanded },
+    { update: updateHistoryState }
+  ] = useOpenStream.historyState(`${Actor.name}|${props.id}`);
 
-  const elmRef = useDiscover(props.discover, props.id, () =>
-    setIsExpanded(true)
+  const {
+    isOpen: isActionsOpen,
+    doOpen: doActionsOpen,
+    doClose: doActionsClose,
+    onDone: onActionsDone
+  } = useModalState<ModelActor>(false);
+  const {
+    isOpen: isContextMenuOpen,
+    doOpen: doContextmMenuOpen,
+    doClose: doContextMenuClose,
+    onDone: onContextMenuDone
+  } = useModalState(false);
+
+  const elmRef = useDiscover(props.discover === props.id, () =>
+    updateHistoryState({ isExpanded: true })
   );
   const { hot: hotDelete, setHot: setHotDelete } = useHot();
 
@@ -142,11 +166,14 @@ const Actor = React.memo((props: ActorProps) => {
   }, [actor]);
   function handleExpandClick(e) {
     e.stopPropagation();
-    setIsExpanded(!isExpanded);
+    updateHistoryState({ isExpanded: !isExpanded });
   }
   function openActionPanel(e) {
     e.stopPropagation();
-    setIsActionsOpen(true);
+    doActionsOpen().then(actorToUpdate => {
+      if (actorToUpdate) updateActor(actorToUpdate);
+      doActionsClose();
+    });
   }
   function deleteActor(e = null) {
     props.deleteActor(props.id);
@@ -164,6 +191,7 @@ const Actor = React.memo((props: ActorProps) => {
   };
 
   if (!actor) return null;
+  console.log(actor.name, isExpanded);
   const c = [];
   for (let i in actor.class) c.push(`${i} lvl ${actor.class[i]}`);
 
@@ -174,9 +202,9 @@ const Actor = React.memo((props: ActorProps) => {
           <CardHeader
             contextmenu={
               <ContextMenu
-                onOpen={c => {
-                  cmcloser.current = c;
-                }}
+                isOpen={isContextMenuOpen}
+                onOpen={doContextmMenuOpen}
+                onClose={doContextMenuClose}
               >
                 <Fab
                   className={clsx(classes.deleteButton, {
@@ -260,17 +288,9 @@ const Actor = React.memo((props: ActorProps) => {
             </CardContent>
           </Collapse>
         </Card>
-        <Drawer
-          open={isActionsOpen}
-          anchor="right"
-          onClose={() => setIsActionsOpen(false)}
-        >
+        <Drawer open={isActionsOpen} anchor="right" onClose={doActionsClose}>
           <div>
-            <Actions
-              updateActor={updateActor}
-              setOpenAction={setIsActionsOpen}
-              {...actor}
-            />
+            <Actions onDone={onActionsDone} {...actor} />
           </div>
         </Drawer>
       </>
@@ -279,16 +299,5 @@ const Actor = React.memo((props: ActorProps) => {
 
   return renderView();
 });
-
-function useRouterMemories(id: number) {
-  const { state, updateState } = useHistoryState(`actor-${id}`, {
-    isExpanded: false
-  });
-
-  return {
-    ...state,
-    setIsExpanded: f => updateState({ isExpanded: f })
-  };
-}
 
 export default Actor;

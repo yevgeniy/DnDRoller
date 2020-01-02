@@ -15,26 +15,21 @@ const useStyles = makeStyles(
   { name: "ContextMenu" }
 );
 
-type closerfn = () => void;
 interface ContextMenuProps {
-  onOpen?: (closer: closerfn) => void;
   isOpen?: boolean;
-  setClose?: () => void;
+  //onOpen?: () => void
+  onOpen?: any;
+  onClose?: () => void;
   children: React.ReactElement | React.ReactElement[];
   className?: string;
 }
 const ContextMenu = ({
-  onOpen,
   isOpen,
-  setClose,
+  onOpen,
+  onClose,
   ...props
 }: ContextMenuProps) => {
   const classes = useStyles(props);
-
-  useEffect(() => {
-    if (!isOpen) return;
-    onOpen && onOpen(setClose);
-  }, [isOpen, setClose]);
 
   return (
     <div className={clsx(classes.root, props.className)}>{props.children}</div>
