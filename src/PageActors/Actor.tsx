@@ -135,165 +135,57 @@ type ActorProps = { [P in keyof ModelActor]?: ModelActor[P] } & {
 const Actor = React.memo((props: ActorProps) => {
   const classes = useStyles(props);
   const [actor, updateActor] = useActor(props.id);
-  const cmcloser = useRef(function() {});
-
-  const [
-    { isExpanded },
-    { update: updateHistoryState }
-  ] = useOpenStream.historyState(`${Actor.name}|${props.id}`);
-
-  const {
-    isOpen: isActionsOpen,
-    doOpen: doActionsOpen,
-    doClose: doActionsClose,
-    onDone: onActionsDone
-  } = useModalState<ModelActor>(false);
-  const {
-    isOpen: isContextMenuOpen,
-    doOpen: doContextmMenuOpen,
-    doClose: doContextMenuClose,
-    onDone: onContextMenuDone
-  } = useModalState(false);
-
-  const elmRef = useDiscover(props.discover === props.id, () =>
-    updateHistoryState({ isExpanded: true })
-  );
-  const { hot: hotDelete, setHot: setHotDelete } = useHot();
 
   useEffect(() => {
     if (!actor) return;
     props.setSortActor(actor);
   }, [actor]);
-  function handleExpandClick(e) {
-    e.stopPropagation();
-    updateHistoryState({ isExpanded: !isExpanded });
-  }
-  function openActionPanel(e) {
-    e.stopPropagation();
-    doActionsOpen().then(actorToUpdate => {
-      if (actorToUpdate) updateActor(actorToUpdate);
-      doActionsClose();
-    });
-  }
-  function deleteActor(e = null) {
+
+  if (!actor) return null;
+
+  function deleteActor() {
     props.deleteActor(props.id);
   }
 
   const doClone = () => {
     props.cloneActor({ ...actor });
-    cmcloser.current();
-  };
-  const doDelete = () => {
-    if (hotDelete) {
-      deleteActor();
-      cmcloser.current();
-    } else setHotDelete(true);
   };
 
-  if (!actor) return null;
-  console.log(actor.name, isExpanded);
   const c = [];
   for (let i in actor.class) c.push(`${i} lvl ${actor.class[i]}`);
 
   const renderView = () => {
     return (
-      <>
-        <Card className={classes.card} ref={elmRef}>
-          <CardHeader
-            contextmenu={
-              <ContextMenu
-                isOpen={isContextMenuOpen}
-                onOpen={doContextmMenuOpen}
-                onClose={doContextMenuClose}
-              >
-                <Fab
-                  className={clsx(classes.deleteButton, {
-                    [classes.deleteButtonActive]: hotDelete
-                  })}
-                  onClick={doDelete}
-                  variant="extended"
-                  color="default"
-                  size="small"
-                  type="submit"
-                >
-                  <Delete />
-                </Fab>
-                <Fab
-                  className={classes.cloneButton}
-                  onClick={doClone}
-                  variant="extended"
-                  color="default"
-                  size="small"
-                  type="submit"
-                >
-                  <Clone />
-                </Fab>
-              </ContextMenu>
-            }
-            onClick={e =>
-              props.setSelected
-                ? props.setSelected(!props.selected)
-                : openActionPanel(e)
-            }
-            avatar={
-              <>
-                {props.setSelected ? (
-                  <Checkbox
-                    checked={props.selected}
-                    inputProps={{
-                      "aria-label": "primary checkbox"
-                    }}
-                  />
-                ) : (
-                  <Avatar aria-label="Recipe" className={classes.avatar}>
-                    {actor.name[0]}
-                  </Avatar>
-                )}
-              </>
-            }
-            subheader={c.join(", ")}
-            action={
-              <>
-                <Chip
-                  icon={<FaceIcon />}
-                  label={actor.hp ? `${actor.hpCurrent}/${actor.hp}` : "--"}
-                  className={classes.chip}
-                  color="secondary"
-                  variant="outlined"
-                />
-                <IconButton
-                  className={clsx(classes.expand, {
-                    [classes.expandOpen]: isExpanded
-                  })}
-                  onClick={handleExpandClick}
-                  onMouseDown={e => e.stopPropagation()}
-                  onMouseUp={e => e.stopPropagation()}
-                  aria-expanded={isExpanded}
-                  aria-label="Show more"
-                >
-                  <ExpandMoreIcon />
-                </IconButton>
-              </>
-            }
-            title={
-              <Button className={classes.avatarName} onClick={openActionPanel}>
-                {actor.name}
-              </Button>
-            }
+      <Entity
+        id={props.id}
+        cloneEntity={doClone}
+        deleteEntity={deleteActor}
+        discover={props.discover}
+        isSelected={props.selected}
+        setSelected={props.setSelected}
+        title={<Button className={classes.avatarName}>{actor.name}</Button>}
+        subheader={c.join(", ")}
+        updateEntity={updateActor}
+      >
+        <Avatar aria-label="Recipe" className={classes.avatar}>
+          {actor.name[0]}
+        </Avatar>
+        <EntityHeaderActions>
+          <Chip
+            icon={<FaceIcon />}
+            label={actor.hp ? `${actor.hpCurrent}/${actor.hp}` : "--"}
+            className={classes.chip}
+            color="secondary"
+            variant="outlined"
           />
-          <Collapse in={isExpanded} timeout="auto" unmountOnExit>
-            <CardContent>
-              <Divider />
-              <ActorContent updateActor={updateActor} {...actor} />
-            </CardContent>
-          </Collapse>
-        </Card>
-        <Drawer open={isActionsOpen} anchor="right" onClose={doActionsClose}>
-          <div>
-            <Actions onDone={onActionsDone} {...actor} />
-          </div>
-        </Drawer>
-      </>
+        </EntityHeaderActions>
+        <EntityContent>
+          <ActorContent {...actor} />
+        </EntityContent>
+        <EntityActions>
+          <Actions {...actor} />
+        </EntityActions>
+      </Entity>
     );
   };
 

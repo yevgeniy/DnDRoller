@@ -70,6 +70,10 @@ const useCardHeaderStyles = makeStyles(theme => {
       [theme.breakpoints.up("sm")]: {
         padding: ""
       }
+    },
+    action: {
+      display: "flex",
+      alignItems: "center"
     }
   });
 });

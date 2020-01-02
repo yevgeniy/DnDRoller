@@ -60,7 +60,7 @@ const useStyle = makeStyles(theme => {
 
 type PageActorsActionsProps = { [P in keyof ModelActor]: ModelActor[P] } & {
   /*update any prop of actor*/
-  onDone: (a: { [P in keyof ModelActor]?: ModelActor[P] }) => void;
+  onDone?: (a: { [P in keyof ModelActor]?: ModelActor[P] }) => void;
 };
 
 const PageActorsActions = React.memo((props: PageActorsActionsProps) => {

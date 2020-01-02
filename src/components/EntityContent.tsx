@@ -14,12 +14,19 @@ const useStyles = makeStyles(
 interface IEntityContent {
   classes?: any;
   className?: string;
+  updateEntity?: (a: any) => void;
   children: React.ReactElement | React.ReactElement[];
 }
 const EntityContent = (props: IEntityContent) => {
   const classes = useStyles(props);
   return (
-    <div className={clsx(classes.root, props.className)}>{props.children}</div>
+    <div className={clsx(classes.root, props.className)}>
+      {React.Children.map(props.children, v => {
+        return React.cloneElement(v, {
+          update: props.updateEntity
+        });
+      })}
+    </div>
   );
 };
 export default EntityContent;

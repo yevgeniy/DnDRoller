@@ -4,5 +4,5 @@ export { default as TabPanel } from "./TabPanel";
 export { default as Chip } from "./Chip";
 export { default as EntityHeaderActions } from "./EntityHeaderActions";
 export { default as EntityContent } from "./EntityContent";
-export { default as EntityActions } from "./EntityContent";
+export { default as EntityActions } from "./EntityActions";
 export { default as Entity } from "./Entity";

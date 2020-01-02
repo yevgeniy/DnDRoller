@@ -105,12 +105,12 @@ const useStyles = makeStyles(theme => {
 });
 
 type ActorContentProps = { [T in keyof ModelActor]: ModelActor[T] } & {
-  updateActor: (actor: ModelActor) => any;
+  update?: (actor: ModelActor) => any;
 };
 
 const ActorContent = React.memo(
-  ({ updateActor, ...actor }: ActorContentProps) => {
-    const classes = useStyles();
+  ({ update: updateActor, ...actor }: ActorContentProps) => {
+    const classes = useStyles({});
 
     const [isAttachingInstances, setIsAttachingInstances] = useState(false);
     const [isAttachingImages, setIsAttachingImages] = useState(false);
