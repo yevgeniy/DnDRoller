@@ -16,7 +16,7 @@ import {
   Drawer,
   ListSubheader
 } from "@material-ui/core";
-import { TabPanel } from "../components";
+import { EntityContentTabInfo, EntityContentTabRelation } from "../components";
 import { Link } from "react-router-dom";
 import green from "@material-ui/core/colors/green";
 import red from "@material-ui/core/colors/red";
@@ -229,10 +229,10 @@ const ActorContent = React.memo(
 );
 
 interface InstanceEntryProps {
-  id: number;
+  id?: number;
 }
 const InstanceEntry = React.memo((props: InstanceEntryProps) => {
-  const classes = useStyles();
+  const classes = useStyles({});
   const [instance] = useInstance(props.id);
 
   if (!instance) return null;
@@ -273,7 +273,7 @@ interface ImageEntryProps {
   id: number;
 }
 const ImageEntry = React.memo((props: ImageEntryProps) => {
-  const classes = useImageEntryPropsStyles();
+  const classes = useImageEntryPropsStyles({});
   const { image, url } = useImage(props.id);
 
   if (!image) return null;

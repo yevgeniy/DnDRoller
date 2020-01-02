@@ -21,7 +21,8 @@ import {
   EntityActions,
   EntityContent,
   EntityHeaderActions,
-  Entity
+  Entity,
+  EntityTitle
 } from "../components";
 import ActorContent from "./ActorContent";
 import {
@@ -163,13 +164,16 @@ const Actor = React.memo((props: ActorProps) => {
         discover={props.discover}
         isSelected={props.selected}
         setSelected={props.setSelected}
-        title={<Button className={classes.avatarName}>{actor.name}</Button>}
         subheader={c.join(", ")}
         updateEntity={updateActor}
       >
         <Avatar aria-label="Recipe" className={classes.avatar}>
           {actor.name[0]}
         </Avatar>
+        <EntityTitle>
+          <Button>{actor.name}</Button>
+        </EntityTitle>
+
         <EntityHeaderActions>
           <Chip
             icon={<FaceIcon />}

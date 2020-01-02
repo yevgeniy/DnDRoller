@@ -28,25 +28,27 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-interface LayoutProps {
+interface ILayout {
   children: React.ReactNode;
   title: React.ReactNode;
   control: React.ReactNode;
   historyId?: any;
 }
-export default function Layout(props: LayoutProps) {
+export default function Layout(props: ILayout) {
   const classes = useStyles(props);
   const [mainMenuOpen, setMainMenuOpen] = useState(false);
 
   const { set: setHistory } = useMessageStream("history");
 
   useEffect(() => {
+    if (!props.historyId) return;
     setHistory(props.historyId);
     return () => setHistory(null);
   }, []);
   return (
     <div className={classes.container}>
-      <ScrollConstruct />
+      {props.historyId && <ScrollConstruct />}
+
       <AppBar position="static">
         <Toolbar>
           <IconButton

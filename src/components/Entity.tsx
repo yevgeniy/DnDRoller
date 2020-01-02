@@ -19,6 +19,7 @@ import {
   ContextMenu,
   EntityHeaderActions,
   EntityContent,
+  EntityTitle,
   EntityActions
 } from "../components";
 import {
@@ -35,85 +36,89 @@ import { useHot, useDiscover, useModalState } from "../util/hooks";
 
 import { useOpenStream } from "../util/sync";
 
-const useStyles = makeStyles(theme =>
-  createStyles({
-    card: {},
-    deleteButton: {
-      background: "white",
-      "& svg": {
-        transition: "all ease 200ms",
-        transform: "scale(2)",
-        color: purple[600],
-        [theme.breakpoints.up("sm")]: {
-          transform: "scale(1.5)"
+const useStyles = makeStyles(
+  theme =>
+    createStyles({
+      card: {},
+      deleteButton: {
+        background: "white",
+        "& svg": {
+          transition: "all ease 200ms",
+          transform: "scale(2)",
+          color: purple[600],
+          [theme.breakpoints.up("sm")]: {
+            transform: "scale(1.5)"
+          }
         }
-      }
-    },
-    cloneButton: {
-      background: "white",
-      marginLeft: theme.spacing(2),
-      "& svg": {
-        color: purple[600],
-        transform: "scale(2)",
-        [theme.breakpoints.up("sm")]: {
-          transform: "scale(1.5)"
+      },
+      cloneButton: {
+        background: "white",
+        marginLeft: theme.spacing(2),
+        "& svg": {
+          color: purple[600],
+          transform: "scale(2)",
+          [theme.breakpoints.up("sm")]: {
+            transform: "scale(1.5)"
+          }
         }
-      }
-    },
-    deleteButtonActive: {
-      "& svg": {
-        transform: "scale(1)"
-      }
-    },
+      },
+      deleteButtonActive: {
+        "& svg": {
+          transform: "scale(1)"
+        }
+      },
 
-    expand: {
-      transform: "rotate(0deg)",
-      marginLeft: "auto",
-      transition: theme.transitions.create("transform", {
-        duration: theme.transitions.duration.shortest
-      }),
-      [theme.breakpoints.down("xs")]: {
-        padding: theme.spacing(2)
-      }
-    },
-    expandOpen: {
-      transform: "rotate(180deg)"
-    },
-    avatar: {
-      backgroundColor: red[500],
-      [theme.breakpoints.down("xs")]: {
-        width: 30,
-        height: 30
-      }
-    },
+      expand: {
+        transform: "rotate(0deg)",
+        marginLeft: "auto",
+        transition: theme.transitions.create("transform", {
+          duration: theme.transitions.duration.shortest
+        }),
+        [theme.breakpoints.down("xs")]: {
+          padding: theme.spacing(2)
+        }
+      },
+      expandOpen: {
+        transform: "rotate(180deg)"
+      },
+      avatar: {
+        backgroundColor: red[500],
+        [theme.breakpoints.down("xs")]: {
+          width: 30,
+          height: 30
+        }
+      },
 
-    avatarName: {
-      textTransform: "none",
-      padding: 0,
-      background: 0,
-      minWidth: "auto"
-    },
-    content: {
-      marginTop: theme.spacing(1)
-    },
-    chip: {
-      color: red[600],
-      borderColor: orange[600],
-      margin: theme.spacing(1),
-      minWidth: 70,
-      justifyContent: "flex-start",
-      [theme.breakpoints.down("xs")]: {
-        minWidth: "auto",
-        margin: theme.spacing(1 / 2)
+      avatarName: {
+        "& button": {
+          textTransform: "none",
+          padding: 0,
+          background: 0,
+          minWidth: "auto"
+        }
+      },
+      content: {
+        marginTop: theme.spacing(1)
+      },
+      chip: {
+        color: red[600],
+        borderColor: orange[600],
+        margin: theme.spacing(1),
+        minWidth: 70,
+        justifyContent: "flex-start",
+        [theme.breakpoints.down("xs")]: {
+          minWidth: "auto",
+          margin: theme.spacing(1 / 2)
+        }
+      },
+      margin: {
+        margin: theme.spacing(1)
+      },
+      extendedIcon: {
+        marginRight: theme.spacing(1)
       }
-    },
-    margin: {
-      margin: theme.spacing(1)
-    },
-    extendedIcon: {
-      marginRight: theme.spacing(1)
-    }
-  })
+    }),
+  { name: "Entity" }
 );
 //ex = { [P in keyof ActorModel]?: ActorModel[P] }
 
@@ -127,7 +132,6 @@ type IEntity = {
   cloneEntity?: () => any;
   discover?: number;
   subheader: React.ReactElement | React.ReactElement[] | string;
-  title: React.ReactElement | React.ReactElement[] | string;
   children: React.ReactElement | React.ReactElement[];
 };
 const Entity = React.memo(function<T>({
@@ -140,8 +144,7 @@ const Entity = React.memo(function<T>({
   cloneEntity,
   discover,
   children,
-  subheader,
-  title
+  subheader
 }: IEntity) {
   const classes = useStyles({ classes: props_classes });
 
@@ -265,13 +268,14 @@ const Entity = React.memo(function<T>({
                 </IconButton>
               </>
             }
-            title={
-              React.isValidElement(title)
-                ? React.cloneElement(title, {
-                    onClick: doActionsOpen
-                  })
-                : title
-            }
+            title={React.Children.map(children, v => {
+              if (v.type === EntityTitle)
+                return React.cloneElement(v, {
+                  className: clsx(v.props.className, classes.avatarName),
+                  onClick: doActionsOpen
+                });
+              return v;
+            }).find(v => v.type === EntityTitle)}
           />
           <Collapse in={isExpanded} timeout="auto" unmountOnExit>
             <CardContent>
@@ -279,7 +283,8 @@ const Entity = React.memo(function<T>({
               {React.Children.map(children, v => {
                 if (v.type === EntityContent)
                   return React.cloneElement(v, {
-                    updateEntity
+                    updateEntity,
+                    id
                   });
                 return v;
               }).find(v => v.type === EntityContent)}

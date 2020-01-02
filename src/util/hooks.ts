@@ -283,16 +283,18 @@ export function useInstanceIdsForActor(id: number) {
     const instance = await serviceInstance.get(instanceId);
     if (instance.actors.indexOf(id) === -1) {
       instance.actors.push(id);
-      await serviceInstance.save(instance);
-      setInstanceIds([...instanceIds, instanceId]);
+      setInstanceIds(instanceIds => [...instanceIds, instanceId]);
+      serviceInstance.save(instance);
     }
   };
   const detatchInstance = async (instanceId: number) => {
     const instance = await serviceInstance.get(instanceId);
     if (instance.actors.indexOf(id) > -1) {
       instance.actors = instance.actors.filter(v => v !== id);
-      await serviceInstance.save(instance);
-      setInstanceIds([...instanceIds.filter(v => v !== instanceId)]);
+      setInstanceIds(instanceIds => [
+        ...instanceIds.filter(v => v !== instanceId)
+      ]);
+      serviceInstance.save(instance);
     }
   };
 
