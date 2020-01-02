@@ -16,7 +16,11 @@ import {
   Drawer,
   ListSubheader
 } from "@material-ui/core";
-import { EntityContentTabInfo, EntityContentTabRelation } from "../components";
+import {
+  TabPanel,
+  EntityContentTabInfo,
+  EntityContentTabRelation
+} from "../components";
 import { Link } from "react-router-dom";
 import green from "@material-ui/core/colors/green";
 import red from "@material-ui/core/colors/red";
