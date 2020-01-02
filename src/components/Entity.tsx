@@ -265,14 +265,24 @@ const Entity = React.memo(function<T>({
                 </IconButton>
               </>
             }
-            title={title}
+            title={
+              React.isValidElement(title)
+                ? React.cloneElement(title, {
+                    onClick: doActionsOpen
+                  })
+                : title
+            }
           />
           <Collapse in={isExpanded} timeout="auto" unmountOnExit>
             <CardContent>
               <Divider />
-              {React.Children.map(children, v => v).find(
-                v => v.type === EntityContent
-              )}
+              {React.Children.map(children, v => {
+                if (v.type === EntityContent)
+                  return React.cloneElement(v, {
+                    updateEntity
+                  });
+                return v;
+              }).find(v => v.type === EntityContent)}
             </CardContent>
           </Collapse>
         </Card>
