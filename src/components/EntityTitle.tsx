@@ -15,15 +15,17 @@ interface IEntityTitle {
   classes?: any;
   className?: string;
   onClick?: (v: any) => void;
-  children: React.ReactElement | React.ReactElement[];
+  children: React.ReactElement | React.ReactElement[] | "string";
 }
 const EntityTitle = (props: IEntityTitle) => {
   const classes = useStyles(props);
   return (
     <div className={clsx(classes.root, props.className)}>
-      {React.Children.map(props.children, v =>
-        React.cloneElement(v, { onClick: props.onClick })
-      )}
+      {React.isValidElement(props.children)
+        ? React.Children.map(props.children, v =>
+            React.cloneElement(v, { onClick: props.onClick })
+          )
+        : props.children}
     </div>
   );
 };

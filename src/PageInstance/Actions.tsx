@@ -46,34 +46,31 @@ const useStyle = makeStyles(theme => {
 
 type ActionsProps = { [P in keyof ModelActor]: ModelActor[P] } & {
   /*update any prop of actor*/
-  updateActor: (a: { [P in keyof ModelActor]?: ModelActor[P] }) => void;
-  setOpenAction: (a: boolean) => void;
+  onDone: (a: { [P in keyof ModelActor]?: ModelActor[P] }) => void;
 };
 
 const Actions = React.memo((props: ActionsProps) => {
-  const classes = useStyle();
+  const classes = useStyle({});
   const [demage, setDemage] = useState();
   const [initiative, setInitiative] = useState();
 
-  const addDemage = (e: any) => {
+  const addDemage = e => {
     e.preventDefault();
 
-    props.updateActor({ hpCurrent: props.hpCurrent - demage });
-    props.setOpenAction(false);
+    props.onDone({ hpCurrent: props.hpCurrent - demage });
   };
-  const assignInitiative = (e: any) => {
+  const assignInitiative = e => {
     e.preventDefault();
 
-    props.updateActor({ initiative: initiative });
-    props.setOpenAction(false);
+    props.onDone({ initiative: initiative });
   };
   const onResetInitiative = e => {
-    props.updateActor({ initiative: null });
-    props.setOpenAction(false);
+    e.preventDefault();
+    props.onDone({ initiative: null });
   };
   const onResetHp = e => {
-    props.updateActor({ hpCurrent: props.hp });
-    props.setOpenAction(false);
+    e.preventDefault();
+    props.onDone({ hpCurrent: props.hp });
   };
 
   const c: string[] = [];
