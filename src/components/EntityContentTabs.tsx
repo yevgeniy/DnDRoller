@@ -42,27 +42,19 @@ const EntityContentTabs = (props: IEntityContentTabs) => {
   tab = tab || 0;
 
   const renderTabsHeaders = () => {
-    return React.Children.map(props.children, v => v)
-      .filter(
-        v =>
-          v.type === EntityContentTabInfo || v.type === EntityContentTabRelation
-      )
-      .map((v, i) => <Tab key={i} label={v.props.label} icon={v.props.icon} />);
+    return React.Children.map(props.children, (v, i) => (
+      <Tab key={i} label={v.props.label} icon={v.props.icon} />
+    ));
   };
 
   const renderTabs = () => {
-    return React.Children.map(props.children, v => v)
-      .filter(
-        v =>
-          v.type === EntityContentTabInfo || v.type === EntityContentTabRelation
-      )
-      .map((v, i) =>
-        React.cloneElement(v, {
-          key: i,
-          value: tab,
-          index: i
-        })
-      );
+    return React.Children.map(props.children, (v, i) =>
+      React.cloneElement(v, {
+        key: i,
+        value: tab,
+        index: i
+      })
+    );
   };
 
   return (

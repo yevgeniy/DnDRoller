@@ -509,7 +509,7 @@ interface ImageEntryProps {
   id: number;
 }
 const ImageEntry = React.memo((props: ImageEntryProps) => {
-  const classes = useImageEntryPropsStyles();
+  const classes = useImageEntryPropsStyles({});
   const { image, url } = useImage(props.id);
   if (!image) return null;
   if (!url) return null;

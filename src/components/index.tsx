@@ -10,4 +10,5 @@ export { default as Entity } from "./Entity";
 export { default as EntityTitle } from "./EntityTitle";
 export { default as EntityContentTabInfo } from "./EntityContentTabInfo";
 export { default as EntityContentTabRelation } from "./EntityContentTabRelation";
+export { default as EntityContentTabImages } from "./EntityContentTabImages";
 export { default as EntityContentTabs } from "./EntityContentTabs";

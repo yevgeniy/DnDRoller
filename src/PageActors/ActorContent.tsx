@@ -11,6 +11,7 @@ import {
 import {
   EntityContentTabInfo,
   EntityContentTabRelation,
+  EntityContentTabImages,
   EntityContentTabs
 } from "../components";
 import { Link } from "react-router-dom";
@@ -66,7 +67,7 @@ const ActorContent = ({
         listComponent={InstanceEntry}
         updateComponent={PageInstancesAdd}
       />
-      <EntityContentTabRelation
+      <EntityContentTabImages
         label="Images"
         icon={<Photo />}
         listSubheader="Images"
