@@ -57,23 +57,19 @@ const useStyle = makeStyles(theme => {
 });
 
 type PageInstancesActionsProps = {
-  [P in keyof ModelInstance]: ModelInstance[P]
+  [P in keyof ModelInstance]: ModelInstance[P];
 } & {
   /*update any prop of actor*/
-  updateInstance: (
-    a: { [P in keyof ModelInstance]?: ModelInstance[P] }
-  ) => void;
-  setOpenAction: (a: boolean) => void;
+  onDone?: (a: { [P in keyof ModelInstance]?: ModelInstance[P] }) => void;
 };
 
 const PageInstancesActions = React.memo((props: PageInstancesActionsProps) => {
-  const classes = useStyle();
+  const classes = useStyle({});
   const [name, setName] = useState(props.name);
 
   const onUpdateInstance = (e: any) => {
     e.preventDefault();
-    props.updateInstance({ name });
-    props.setOpenAction(false);
+    props.onDone({ name });
   };
   const onReset = e => {
     setName(props.name);

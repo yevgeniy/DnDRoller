@@ -52,14 +52,18 @@ function useSort(
     default:
   }
 
-  const setSortInstance = useCallback(a => {
-    const i = sort.findIndex(v => v.id === a.id);
-    if (i === -1) setSort([...sort, a]);
-    else {
-      sort[i] = { ...a };
-      setSort([...sort]);
-    }
-  }, []);
+  const setSortInstance = useCallback(
+    a => {
+      console.log("ddd", a.id);
+      const i = sort.findIndex(v => v.id === a.id);
+      if (i === -1) setSort([...sort, a]);
+      else {
+        sort[i] = { ...a };
+        setSort([...sort]);
+      }
+    },
+    [sort]
+  );
 
   const elms = React.Children.map(children, v => {
     return React.cloneElement(v, {
@@ -71,9 +75,17 @@ function useSort(
   sort.forEach(v => {
     var id = elms.findIndex(z => z.props.id === v.id);
     var elm = elms.splice(id, 1)[0];
+    console.log("c", v.id, elm);
     if (elm) sortedelms.push(elm);
   });
   sortedelms.push(...elms);
+
+  console.log(
+    "a",
+    by,
+    sortedelms.map(v => v.props.id),
+    sort.map(v => v.id)
+  );
   return [sortedelms];
 }
 

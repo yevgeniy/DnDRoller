@@ -26,16 +26,7 @@ import {
   Entity,
   EntityTitle
 } from "../components";
-import {
-  Card,
-  Fab,
-  Divider,
-  CardContent,
-  Button,
-  Collapse,
-  Drawer,
-  Checkbox
-} from "@material-ui/core";
+import { Button } from "@material-ui/core";
 
 import { ModelActor } from "../models/ModelActor";
 import { useActor, useHot, useDiscover, useModalState } from "../util/hooks";
@@ -45,48 +36,6 @@ import { useOpenStream, useMessageStream } from "../util/sync";
 
 const useStyles = makeStyles(theme =>
   createStyles({
-    card: {},
-    deleteButton: {
-      background: "white",
-      "& svg": {
-        transition: "all ease 200ms",
-        transform: "scale(2)",
-        color: purple[600],
-        [theme.breakpoints.up("sm")]: {
-          transform: "scale(1.5)"
-        }
-      }
-    },
-    cloneButton: {
-      background: "white",
-      marginLeft: theme.spacing(2),
-      "& svg": {
-        color: purple[600],
-        transform: "scale(2)",
-        [theme.breakpoints.up("sm")]: {
-          transform: "scale(1.5)"
-        }
-      }
-    },
-    deleteButtonActive: {
-      "& svg": {
-        transform: "scale(1)"
-      }
-    },
-
-    expand: {
-      transform: "rotate(0deg)",
-      marginLeft: "auto",
-      transition: theme.transitions.create("transform", {
-        duration: theme.transitions.duration.shortest
-      }),
-      [theme.breakpoints.down("xs")]: {
-        padding: theme.spacing(2)
-      }
-    },
-    expandOpen: {
-      transform: "rotate(180deg)"
-    },
     avatar: {
       backgroundColor: red[500],
       [theme.breakpoints.down("xs")]: {
@@ -95,15 +44,6 @@ const useStyles = makeStyles(theme =>
       }
     },
 
-    avatarName: {
-      textTransform: "none",
-      padding: 0,
-      background: 0,
-      minWidth: "auto"
-    },
-    content: {
-      marginTop: theme.spacing(1)
-    },
     chip: {
       color: red[600],
       borderColor: orange[600],
@@ -114,18 +54,12 @@ const useStyles = makeStyles(theme =>
         minWidth: "auto",
         margin: theme.spacing(1 / 2)
       }
-    },
-    margin: {
-      margin: theme.spacing(1)
-    },
-    extendedIcon: {
-      marginRight: theme.spacing(1)
     }
   })
 );
 
 type ActorProps = { [P in keyof ModelActor]?: ModelActor[P] } & {
-  classes?: { card: string };
+  classes?: any;
   setSortActor?: (a: ModelActor) => void;
   setSelected?: (f: boolean) => void;
   deleteActor?: (i: number) => any;

@@ -125,13 +125,13 @@ const useStyles = makeStyles(
 type IEntity = {
   id: number;
   updateEntity?: (a: any) => boolean | void;
-  classes?: { card: string };
+  classes?: any;
   isSelected?: boolean;
   deleteEntity?: () => void;
   setSelected?: (f: boolean) => void;
   cloneEntity?: () => any;
   discover?: number;
-  subheader: React.ReactElement | React.ReactElement[] | string;
+  subheader?: React.ReactElement | React.ReactElement[] | string;
   children: React.ReactElement | React.ReactElement[];
 };
 const Entity = React.memo(function<T>({
