@@ -14,6 +14,7 @@ import {
   ListSubheader
 } from "@material-ui/core";
 import { TabPanel } from "./";
+import Edit from "@material-ui/icons/Edit";
 import { useModalState } from "../util/hooks";
 
 import clsx from "clsx";
@@ -42,9 +43,8 @@ interface IEntityContentTabRelation {
   className?: string;
   label: string;
   icon?: React.ReactElement | React.ReactElement[];
-  children: React.ReactElement | React.ReactElement[];
-  buttonLabel: string;
-  buttonIcon: React.ReactElement | React.ReactElement[];
+  buttonLabel?: string;
+  buttonIcon?: React.ReactElement | React.ReactElement[];
   listSubheader: string;
   ids: number[];
   update: (ids: number[]) => void;
@@ -72,8 +72,8 @@ const EntityContentTabRelation = (props: IEntityContentTabRelation) => {
           button="true"
           onClick={e => doOpen().then(v => props.update(v))}
         >
-          {props.buttonLabel}
-          {props.buttonIcon}
+          {props.buttonLabel || "Update"}
+          {props.buttonIcon || <Edit />}
         </Button>
       </div>
       <Paper>

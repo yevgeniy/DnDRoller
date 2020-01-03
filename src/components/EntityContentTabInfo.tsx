@@ -31,7 +31,7 @@ interface IEntityContentTabInfo {
   className?: string;
   label: string;
   icon?: React.ReactElement | React.ReactElement[];
-  children: React.ReactElement | React.ReactElement[];
+  children: React.ReactElement | React.ReactElement[] | string;
   value?: number;
   index?: number;
 }

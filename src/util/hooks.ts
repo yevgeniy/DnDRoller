@@ -279,26 +279,23 @@ export function useInstanceIdsForActor(id: number) {
     });
   }, [serviceInstance]);
 
-  const attachInstance = async (instanceId: number) => {
-    const instance = await serviceInstance.get(instanceId);
-    if (instance.actors.indexOf(id) === -1) {
-      instance.actors.push(id);
-      setInstanceIds(instanceIds => [...instanceIds, instanceId]);
-      serviceInstance.save(instance);
+  const _setInstanceIds = async (instanceIds: number[]) => {
+    for (let x = 0; x < instanceIds.length; x++) {
+      const instanceId = instanceIds[x];
+      const instance = await serviceInstance.get(instanceId);
+
+      if ((instance.actors || []).indexOf(id) > -1) {
+        instance.actors = instance.actors.filter(v => v !== id);
+        await serviceInstance.save(instance);
+      }
     }
-  };
-  const detatchInstance = async (instanceId: number) => {
-    const instance = await serviceInstance.get(instanceId);
-    if (instance.actors.indexOf(id) > -1) {
-      instance.actors = instance.actors.filter(v => v !== id);
-      setInstanceIds(instanceIds => [
-        ...instanceIds.filter(v => v !== instanceId)
-      ]);
-      serviceInstance.save(instance);
-    }
+    setInstanceIds([...instanceIds]);
   };
 
-  return [instanceIds, attachInstance, detatchInstance];
+  return {
+    instanceIds,
+    setInstanceIds: _setInstanceIds
+  };
 }
 export function useInstanceIdsForImage(id: number) {
   const serviceInstance = useService(ServiceInstance);

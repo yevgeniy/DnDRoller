@@ -14,6 +14,8 @@ import Delete from "@material-ui/icons/Delete";
 import FaceIcon from "@material-ui/icons/Face";
 import Clone from "@material-ui/icons/CallSplit";
 
+import ActorContent from "./ActorContent";
+
 import {
   CardHeader,
   ContextMenu,
@@ -24,7 +26,6 @@ import {
   Entity,
   EntityTitle
 } from "../components";
-import ActorContent from "./ActorContent";
 import {
   Card,
   Fab,
@@ -184,7 +185,7 @@ const Actor = React.memo((props: ActorProps) => {
           />
         </EntityHeaderActions>
         <EntityContent>
-          <ActorContent {...actor} />
+          <ActorContent {...actor} updateActor={updateActor} />
         </EntityContent>
         <EntityActions>
           <Actions {...actor} />
