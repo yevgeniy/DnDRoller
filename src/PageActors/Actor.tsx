@@ -1,24 +1,17 @@
 import * as React from "react";
 import { useState, useEffect, useRef } from "react";
 import { makeStyles, createStyles } from "@material-ui/core/styles";
-import clsx from "clsx";
 
 import Avatar from "@material-ui/core/Avatar";
-import IconButton from "@material-ui/core/IconButton";
 
 import red from "@material-ui/core/colors/red";
 import orange from "@material-ui/core/colors/orange";
-import purple from "@material-ui/core/colors/purple";
-import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
-import Delete from "@material-ui/icons/Delete";
+
 import FaceIcon from "@material-ui/icons/Face";
-import Clone from "@material-ui/icons/CallSplit";
 
 import ActorContent from "./ActorContent";
 
 import {
-  CardHeader,
-  ContextMenu,
   Chip,
   EntityActions,
   EntityContent,
@@ -32,7 +25,6 @@ import { ModelActor } from "../models/ModelActor";
 import { useActor, useHot, useDiscover, useModalState } from "../util/hooks";
 
 import Actions from "./Actions";
-import { useOpenStream, useMessageStream } from "../util/sync";
 
 const useStyles = makeStyles(theme =>
   createStyles({
