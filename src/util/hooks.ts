@@ -269,6 +269,7 @@ export function useImageIds() {
 }
 export function useInstanceIdsForActor(id: number) {
   const serviceInstance = useService(ServiceInstance);
+  const serviceActor = useService(ServiceActor);
   const [instanceIds, setInstanceIds] = useState();
 
   useEffect(() => {
@@ -280,15 +281,20 @@ export function useInstanceIdsForActor(id: number) {
   }, [serviceInstance]);
 
   const _setInstanceIds = async (instanceIds: number[]) => {
-    for (let x = 0; x < instanceIds.length; x++) {
-      const instanceId = instanceIds[x];
-      const instance = await serviceInstance.get(instanceId);
+    let instances = Array.from(
+      new Set([
+        ...(await serviceInstance.getForActor(id)),
+        ...(await serviceInstance.getAll(instanceIds))
+      ])
+    );
 
-      if ((instance.actors || []).indexOf(id) > -1) {
-        instance.actors = instance.actors.filter(v => v !== id);
-        await serviceInstance.save(instance);
-      }
-    }
+    const proms = instances.map(instance => {
+      instance.actors = (instance.actors || []).filter(v => v !== id);
+      if (instanceIds.some(v => instance.id === v)) instance.actors.push(id);
+      return serviceInstance.save(instance);
+    });
+    await Promise.all(proms);
+
     setInstanceIds([...instanceIds]);
   };
 

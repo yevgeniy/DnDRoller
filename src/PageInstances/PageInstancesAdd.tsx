@@ -17,11 +17,11 @@ import Instances from "./Instances";
 
 import { useInstanceIds } from "../util/hooks";
 
-interface PageInstanceAttachProps {
+interface IPageInstanceAdd {
   onDone: (actors: number[]) => void;
   selected: number[];
 }
-const PageInstanceAttach = React.memo((props: PageInstanceAttachProps) => {
+const PageInstanceAdd = React.memo((props: IPageInstanceAdd) => {
   const [instanceIds, createInstance, _, cloneInstance] = useInstanceIds();
   const [openNewInstanceDialog, setOpenNewInstanceDialog] = useState(false);
   const [newInstanceName, setNewInstanceName] = useState("");
@@ -38,7 +38,6 @@ const PageInstanceAttach = React.memo((props: PageInstanceAttachProps) => {
     setOpenNewInstanceDialog(false);
   };
   const onDone = e => {
-    console.log(selected);
     props.onDone(selected);
   };
   const onSetSelected = id => f => {
@@ -109,4 +108,4 @@ const PageInstanceAttach = React.memo((props: PageInstanceAttachProps) => {
   );
 });
 
-export default PageInstanceAttach;
+export default PageInstanceAdd;

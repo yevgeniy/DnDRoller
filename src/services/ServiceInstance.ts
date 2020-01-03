@@ -43,8 +43,10 @@ class ServiceInstance {
       .getAll()
       .then(v => v.filter(z => (z.images || []).some(a => a === id)));
   }
-  async getAll(): Promise<ModelInstance[]> {
-    return await this.record.getAll();
+  async getAll(ids = null): Promise<ModelInstance[]> {
+    const res = await this.record.getAll();
+    if (!ids) return res;
+    return res.filter(v => ids.some(z => z === v.id));
   }
   async createInstance(name: string): Promise<ModelInstance> {
     var newInstance = await this.record.save({

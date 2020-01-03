@@ -153,11 +153,6 @@ const Entity = React.memo(function<T>({
     { update: updateHistoryState }
   ] = useOpenStream.historyState(`Entity|${id}`);
 
-  const { set: setLog } = useMessageStream("log");
-  useEffect(() => {
-    setLog(`isExpanded: ${isExpanded}, Entity|${id}`);
-  }, [isExpanded, id]);
-
   const {
     isOpen: isActionsOpen,
     doOpen: doActionsOpen,
