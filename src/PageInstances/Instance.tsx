@@ -456,7 +456,7 @@ interface ActorEntryProps {
   id: number;
 }
 const ActorEntry = React.memo((props: ActorEntryProps) => {
-  const classes = useStyles();
+  const classes = useStyles({});
   const [actor] = useActor(props.id);
 
   if (!actor) return null;

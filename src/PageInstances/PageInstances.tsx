@@ -19,7 +19,6 @@ import {
   RouterContextView,
   RouterViewContextState
 } from "../util/routerContext";
-import { RouteComponentProps } from "react-router-dom";
 import { ModelRoutedPage } from "../models/ModelRoutedPage";
 
 interface PageInstancesLocationState {
@@ -28,12 +27,12 @@ interface PageInstancesLocationState {
 
 const PageInstances = React.memo(
   (props: ModelRoutedPage<PageInstancesLocationState>) => {
-    const [
+    const {
       instanceIds,
       createInstance,
       deleteInstance,
       cloneInstance
-    ] = useInstanceIds();
+    } = useInstanceIds();
     const [openNewInstanceDialog, setOpenNewInstanceDialog] = useState(false);
     const [newInstanceName, setNewInstanceName] = useState("");
 

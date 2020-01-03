@@ -238,7 +238,7 @@ export function useInstanceIds() {
     setInstanceIds([...instanceIds, newinstance.id]);
   };
 
-  return [instanceIds, createInstance, deleteInstance, cloneInstance];
+  return { instanceIds, createInstance, deleteInstance, cloneInstance };
 }
 
 export function useImageIds() {

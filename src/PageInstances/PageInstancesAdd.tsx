@@ -22,7 +22,7 @@ interface IPageInstanceAdd {
   selected: number[];
 }
 const PageInstanceAdd = React.memo((props: IPageInstanceAdd) => {
-  const [instanceIds, createInstance, _, cloneInstance] = useInstanceIds();
+  const { instanceIds, createInstance, cloneInstance } = useInstanceIds();
   const [openNewInstanceDialog, setOpenNewInstanceDialog] = useState(false);
   const [newInstanceName, setNewInstanceName] = useState("");
   const [selected, setSelected] = useState(props.selected);
