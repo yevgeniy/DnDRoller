@@ -40,8 +40,14 @@ const historyState = {
     return state;
   }
 };
+let _log = "";
+const log = {
+  key: "log",
+  get: () => _log,
+  set: v => (_log = v)
+};
 
-const dict = NimmSync.create([history, historyState]);
+const dict = NimmSync.create([history, historyState, log]);
 export const { useOpenStream, useMessageStream } = NimmSync.connect(
   dict,
   React

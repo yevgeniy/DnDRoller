@@ -42,7 +42,6 @@ const PageActors = React.memo(
       setOpenNewActorDialog(false);
     };
     if (!actorIds) return null;
-    console.log(props);
     return (
       <Layout
         historyId={props.history.location.key}

@@ -126,7 +126,6 @@ function useScrollMemory() {
   };
 
   useEffect(() => {
-    console.log("ATACH", scroll);
     document.addEventListener("scroll", onScroll);
     return () => {
       document.removeEventListener("scroll", onScroll);

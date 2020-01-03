@@ -34,7 +34,7 @@ import {
 
 import { useHot, useDiscover, useModalState } from "../util/hooks";
 
-import { useOpenStream } from "../util/sync";
+import { useOpenStream, useMessageStream } from "../util/sync";
 
 const useStyles = makeStyles(
   theme =>
@@ -151,7 +151,12 @@ const Entity = React.memo(function<T>({
   const [
     { isExpanded },
     { update: updateHistoryState }
-  ] = useOpenStream.historyState(`${Entity.name}|${id}`);
+  ] = useOpenStream.historyState(`Entity|${id}`);
+
+  const { set: setLog } = useMessageStream("log");
+  useEffect(() => {
+    setLog(`isExpanded: ${isExpanded}, Entity|${id}`);
+  }, [isExpanded, id]);
 
   const {
     isOpen: isActionsOpen,

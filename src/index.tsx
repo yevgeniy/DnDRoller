@@ -8,22 +8,25 @@ import PageInstances from "./PageInstances/PageInstances";
 import PageActors from "./PageActors/PageActors";
 import PageImages from "./PageImages/PageImages";
 import PageImage from "./PageImage/PageImage";
-
+import Log from "./Log";
 import { withStyles, StyleRules } from "@material-ui/core/styles";
 import "./util/extends";
 
 function App() {
   return (
-    <BrowserRouter>
-      <Switch>
-        <Route exact path="/" component={PageHome} />
-        <Route exact path="/instances" component={PageInstances} />
-        <Route exact path="/actors" component={PageActors} />
-        <Route exact path="/instance" component={PageInstance} />
-        <Route exact path="/images" component={PageImages} />
-        <Route exact path="/image" component={PageImage} />
-      </Switch>
-    </BrowserRouter>
+    <>
+      <BrowserRouter>
+        <Switch>
+          <Route exact path="/" component={PageHome} />
+          <Route exact path="/instances" component={PageInstances} />
+          <Route exact path="/actors" component={PageActors} />
+          <Route exact path="/instance" component={PageInstance} />
+          <Route exact path="/images" component={PageImages} />
+          <Route exact path="/image" component={PageImage} />
+        </Switch>
+      </BrowserRouter>
+      <Log />
+    </>
   );
 }
 
