@@ -315,26 +315,24 @@ export function useInstanceIdsForImage(id: number) {
     });
   }, [serviceInstance]);
 
-  const attachInstance = async (instanceId: number) => {
-    const instance = await serviceInstance.get(instanceId);
-    if ((instance.images || []).indexOf(id) === -1) {
-      const imgs = instance.images || (instance.images = []);
-      imgs.push(id);
-      await serviceInstance.save(instance);
-      setInstanceIds([...instanceIds, instanceId]);
-    }
-  };
-  const detatchInstance = async (instanceId: number) => {
-    const instance = await serviceInstance.get(instanceId);
-    if ((instance.images || []).indexOf(id) > -1) {
-      instance.images = instance.images.filter(v => v !== id);
-      if (instance.images.length === 0) instance.images = null;
-      await serviceInstance.save(instance);
-      setInstanceIds([...instanceIds.filter(v => v !== instanceId)]);
-    }
-  };
+  const setInstances = async (instanceIds: number[]) => {
+    let instances = Array.from(
+      new Set([
+        ...(await serviceInstance.getForImage(id)),
+        ...(await serviceInstance.getAll(instanceIds))
+      ])
+    );
 
-  return [instanceIds, attachInstance, detatchInstance];
+    const proms = instances.map(instance => {
+      instance.images = (instance.images || []).filter(v => v !== id);
+      if (instanceIds.some(v => instance.id === v)) instance.images.push(id);
+      return serviceInstance.save(instance);
+    });
+    await Promise.all(proms);
+
+    setInstanceIds([...instanceIds]);
+  };
+  return { instanceIds, setInstances };
 }
 export function useActorIdsForImage(id: number) {
   const serviceActor = useService(ServiceActor);
@@ -348,26 +346,25 @@ export function useActorIdsForImage(id: number) {
     });
   }, [serviceActor]);
 
-  const attachActor = async (actorId: number) => {
-    const actor = await serviceActor.get(actorId);
-    if ((actor.images || []).indexOf(id) === -1) {
-      const imgs = actor.images || (actor.images = []);
-      imgs.push(id);
-      await serviceActor.save(actor);
-      setActorIds([...actorIds, actorId]);
-    }
-  };
-  const detatchActor = async (actorId: number) => {
-    const actor = await serviceActor.get(actorId);
-    if ((actor.images || []).indexOf(id) > -1) {
-      actor.images = actor.images.filter(v => v !== id);
-      if (actor.images.length === 0) actor.images = null;
-      await serviceActor.save(actor);
-      setActorIds([...actorIds.filter(v => v !== actorId)]);
-    }
+  const setActors = async (actorIds: number[]) => {
+    let actors = Array.from(
+      new Set([
+        ...(await serviceActor.getForImage(id)),
+        ...(await serviceActor.getAll(actorIds))
+      ])
+    );
+
+    const proms = actors.map(actor => {
+      actor.images = (actor.images || []).filter(v => v !== id);
+      if (actorIds.some(v => actor.id === v)) actor.images.push(id);
+      return serviceActor.save(actor);
+    });
+    await Promise.all(proms);
+
+    setActorIds([...actorIds]);
   };
 
-  return [actorIds, attachActor, detatchActor];
+  return { actorIds, setActors };
 }
 
 export function useHot() {

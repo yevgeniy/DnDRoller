@@ -22,7 +22,15 @@ import {
   Drawer,
   Checkbox
 } from "@material-ui/core";
-import { CardHeader, ContextMenu } from "../components";
+import {
+  Chip,
+  EntityActions,
+  EntityContent,
+  EntityHeaderActions,
+  Entity,
+  EntityTitle,
+  EntitySubheader
+} from "../components";
 
 import { ModelImage } from "../models/ModelImage";
 import { useImage, useDiscover, useHot, useHistoryState } from "../util/hooks";
@@ -31,39 +39,13 @@ import ImageContent from "./ImageContent";
 
 const useStyles = makeStyles(theme =>
   createStyles({
-    card: {},
-    deleteButton: {
-      background: "white",
-      "& svg": {
-        transition: "all ease 200ms",
-        transform: "scale(2)",
-        color: purple[600]
-      }
-    },
-    deleteButtonActive: {
-      "& svg": {
-        transform: "scale(1)"
-      }
-    },
     media: {
       height: 0,
       paddingTop: "25.25%",
       backgroundSize: "contain",
       backgroundColor: "gray"
     },
-    expand: {
-      transform: "rotate(0deg)",
-      marginLeft: "auto",
-      transition: theme.transitions.create("transform", {
-        duration: theme.transitions.duration.shortest
-      }),
-      [theme.breakpoints.down("xs")]: {
-        padding: theme.spacing(2)
-      }
-    },
-    expandOpen: {
-      transform: "rotate(180deg)"
-    },
+
     avatar: {
       backgroundColor: purple[500],
       [theme.breakpoints.down("xs")]: {
@@ -96,18 +78,12 @@ const useStyles = makeStyles(theme =>
         minWidth: "auto",
         margin: theme.spacing(1 / 2)
       }
-    },
-    margin: {
-      margin: theme.spacing(1)
-    },
-    extendedIcon: {
-      marginRight: theme.spacing(1)
     }
   })
 );
 
 type ImageProps = { [P in keyof ModelImage]?: ModelImage[P] } & {
-  classes?: { card: string };
+  classes?: any;
   setSortImage?: (a: ModelImage) => void;
   setSelected?: (f: boolean) => void;
   deleteImage?: (i: number) => void;
@@ -118,140 +94,59 @@ type ImageProps = { [P in keyof ModelImage]?: ModelImage[P] } & {
 const Image = React.memo((props: ImageProps) => {
   const classes = useStyles(props);
   const { image, updateImage, upload, url } = useImage(props.id);
-  const [addInstances, setAddInstances] = useState(false);
-  const [openAction, setOpenAction] = useState(false);
-
-  const { isExpanded, setIsExpanded } = useRouterMemories(props.id);
-
-  const elmRef = useDiscover(props.discover === props.id, () =>
-    setIsExpanded(true)
-  );
-  const { hot: hotDelete, setHot: setHotDelete } = useHot();
-  const cmcloser = useRef(function() {});
 
   useEffect(() => {
     if (!image) return;
     props.setSortImage(image);
   }, [image]);
 
-  function handleExpandClick(e) {
-    e.stopPropagation();
-    setIsExpanded(!isExpanded);
-  }
-  function openActionPanel(e) {
-    e.stopPropagation();
-    setOpenAction(true);
-  }
-  const deleteAct = () => {
-    if (hotDelete) {
-      props.deleteImage(props.id);
-      cmcloser.current();
-    } else setHotDelete(true);
-  };
-
   if (!image) return null;
+
+  const doDelete = () => {
+    props.deleteImage(props.id);
+  };
 
   const renderView = () => {
     return (
       <>
-        <Card className={classes.card} ref={elmRef}>
-          <CardHeader
-            contextmenu={
-              <ContextMenu
-                onOpen={c => {
-                  cmcloser.current = c;
-                }}
-              >
-                <Fab
-                  className={clsx(classes.deleteButton, {
-                    [classes.deleteButtonActive]: hotDelete
-                  })}
-                  onClick={deleteAct}
-                  variant="extended"
-                  color="default"
-                  size="small"
-                  type="submit"
-                >
-                  <Delete />
-                </Fab>
-              </ContextMenu>
-            }
-            onClick={e =>
-              props.setSelected
-                ? props.setSelected(!props.selected)
-                : openActionPanel(e)
-            }
-            avatar={
-              <>
-                {props.setSelected ? (
-                  <Checkbox
-                    checked={props.selected}
-                    inputProps={{
-                      "aria-label": "primary checkbox"
-                    }}
-                  />
-                ) : (
-                  <Avatar aria-label="Recipe" className={classes.avatar}>
-                    {image.name[0]}
-                  </Avatar>
-                )}
-              </>
-            }
-            action={
-              <>
-                <Typography className={classes.fileName} variant="caption">
-                  {image.file}
-                </Typography>
-                <IconButton
-                  className={clsx(classes.expand, {
-                    [classes.expandOpen]: isExpanded
-                  })}
-                  onClick={handleExpandClick}
-                  aria-expanded={isExpanded}
-                  aria-label="Show more"
-                >
-                  <ExpandMoreIcon />
-                </IconButton>
-              </>
-            }
-            title={
-              <Button className={classes.avatarName} onClick={openActionPanel}>
-                {image.name}
-              </Button>
-            }
-            subheader={(image.keywords || []).sort().join(", ")}
-          />
-          {url ? (
-            <CardMedia
-              className={classes.media}
-              component={Link}
-              to={{ pathname: "/image", state: { imageId: image.id } }}
-              image={url}
-              title={image.name}
-            />
-          ) : null}
-
-          <Collapse in={isExpanded} timeout="auto" unmountOnExit>
-            <ImageContent deleteImage={props.deleteImage} {...image} />
-          </Collapse>
-        </Card>
-        <Drawer
-          open={openAction}
-          anchor="right"
-          onClose={() => setOpenAction(false)}
+        <Entity
+          id={props.id}
+          deleteEntity={doDelete}
+          discover={props.discover}
+          isSelected={props.selected}
+          setSelected={props.setSelected}
+          subheader={(image.keywords || []).sort().join(", ")}
+          updateEntity={updateImage}
         >
-          <Actions
-            updateImage={updateImage}
-            setOpenAction={setOpenAction}
-            upload={upload}
-            {...image}
-          />
-        </Drawer>
-        <Drawer
-          anchor="top"
-          open={addInstances}
-          onClose={e => setAddInstances(false)}
-        />
+          <Avatar className={classes.avatar}>{image.name[0]}</Avatar>
+
+          <EntityTitle>
+            <Button>{image.name}</Button>
+          </EntityTitle>
+
+          <EntityHeaderActions>
+            <Typography className={classes.fileName} variant="caption">
+              {image.file}
+            </Typography>
+          </EntityHeaderActions>
+          <EntitySubheader>
+            {url ? (
+              <CardMedia
+                className={classes.media}
+                component={Link}
+                to={{ pathname: "/image", state: { imageId: image.id } }}
+                image={url}
+                title={image.name}
+              />
+            ) : null}
+          </EntitySubheader>
+          <EntityContent>
+            <ImageContent {...image} />
+          </EntityContent>
+          <EntityActions>
+            <Actions {...image} />
+          </EntityActions>
+        </Entity>
       </>
     );
   };

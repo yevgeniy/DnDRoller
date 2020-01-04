@@ -43,25 +43,24 @@ const useStyle = makeStyles(theme => {
 });
 
 type ActorProps = { [P in keyof ModelImage]: ModelImage[P] } & {
-  updateImage: (a: { [P in keyof ModelImage]?: ModelImage[P] }) => void;
+  onDone?: (a: { [P in keyof ModelImage]?: ModelImage[P] }) => void;
   setOpenAction: (a: boolean) => void;
   upload: (f: File) => void;
 };
 
 const Actions = React.memo((props: ActorProps) => {
-  const classes = useStyle();
+  const classes = useStyle({});
   const [name, setName] = useState(props.name);
 
   const onUpdateName = e => {
     e.preventDefault();
-    props.updateImage({ name: name.trim() });
-    props.setOpenAction(false);
+    props.onDone({ name: name.trim() });
   };
   const onReset = e => {
     setName(props.name);
   };
   const onUpdateKeyWords = (keywords: string[]) => {
-    props.updateImage({ keywords });
+    props.onDone({ keywords });
   };
 
   return (

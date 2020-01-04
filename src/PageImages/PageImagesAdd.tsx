@@ -36,7 +36,7 @@ const PageImagesAdd = React.memo((props: PageImageAttachProps) => {
   const [imageIds, createImage, deleteImage] = useImageIds();
   const [openNewImageDialog, setOpenNewImageDialog] = useState(false);
   const [newImageName, setNewImageName] = useState("");
-  const classes = useStyles();
+  const classes = useStyles({});
   const [selected, setSelected] = useState(props.selected);
   const onAdd = e => {
     setNewImageName("");

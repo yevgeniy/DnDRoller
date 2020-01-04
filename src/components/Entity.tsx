@@ -20,7 +20,8 @@ import {
   EntityHeaderActions,
   EntityContent,
   EntityTitle,
-  EntityActions
+  EntityActions,
+  EntitySubheader
 } from "../components";
 import {
   Card,
@@ -124,7 +125,7 @@ const useStyles = makeStyles(
 
 type IEntity = {
   id: number;
-  updateEntity?: (a: any) => boolean | void;
+  updateEntity?: (a: any) => boolean | void | Promise<boolean> | Promise<void>;
   classes?: any;
   isSelected?: boolean;
   deleteEntity?: () => void;
@@ -277,6 +278,9 @@ const Entity = React.memo(function<T>({
               return v;
             }).find(v => v.type === EntityTitle)}
           />
+          {React.Children.map(children, v => v).find(
+            v => v.type === EntitySubheader
+          )}
           <Collapse in={isExpanded} timeout="auto" unmountOnExit>
             <CardContent>
               <Divider />
