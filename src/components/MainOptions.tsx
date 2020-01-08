@@ -16,66 +16,62 @@ import DirectionsRun from "@material-ui/icons/DirectionsRun";
 import Casino from "@material-ui/icons/Casino";
 import SmokingRooms from "@material-ui/icons/SmokingRooms";
 import { Link } from "react-router-dom";
-
-import { RouterContextView } from "../util/routerContext";
-
+import { useOpenStream } from "../util/sync";
 function MainOptions() {
-    const router = useContext(RouterContextView);
-    return (
-        <>
-            {router && router.history.length > 1 ? (
-                <List>
-                    <ListItem
-                        button
-                        onClick={() => {
-                            router.history.goBack();
-                        }}>
-                        <ListItemIcon>{<Reply />}</ListItemIcon>
-                        <ListItemText primary="Back" />
-                    </ListItem>
-                </List>
-            ) : null}
+  const historyHasBack = useOpenStream.historyHasBack();
 
-            <List
-                subheader={
-                    <ListSubheader component="div">Repositories</ListSubheader>
-                }>
-                <ListItem button component={Link} to="/instances">
-                    <ListItemIcon>{<Extension />}</ListItemIcon>
-                    <ListItemText primary="Instances" />
-                </ListItem>
-                <ListItem button component={Link} to="/actors">
-                    <ListItemIcon>{<DirectionsRun />}</ListItemIcon>
-                    <ListItemText primary="Actors" />
-                </ListItem>
-                <ListItem button component={Link} to="/images">
-                    <ListItemIcon>{<Photo />}</ListItemIcon>
-                    <ListItemText primary="Images" />
-                </ListItem>
-            </List>
+  return (
+    <>
+      {historyHasBack && (
+        <List>
+          <ListItem
+            button
+            onClick={() => {
+              window.history.back();
+            }}
+          >
+            <ListItemIcon>{<Reply />}</ListItemIcon>
+            <ListItemText primary="Back" />
+          </ListItem>
+        </List>
+      )}
 
-            <List
-                subheader={
-                    <ListSubheader component="div">Utils</ListSubheader>
-                }>
-                <ListItem button>
-                    <ListItemIcon>{<Casino />}</ListItemIcon>
-                    <ListItemText primary="Roller" />
-                </ListItem>
-                <ListItem button component={Link} to="/instance">
-                    <ListItemIcon>{<SmokingRooms />}</ListItemIcon>
-                    <ListItemText primary="Quick Instance" />
-                </ListItem>
-            </List>
-            <Divider />
-            <List>
-                <ListItem button>
-                    <ListItemIcon>{<Settings />}</ListItemIcon>
-                    <ListItemText primary="Settings" />
-                </ListItem>
-            </List>
-        </>
-    );
+      <List
+        subheader={<ListSubheader component="div">Repositories</ListSubheader>}
+      >
+        <ListItem button component={Link} to="/instances">
+          <ListItemIcon>{<Extension />}</ListItemIcon>
+          <ListItemText primary="Instances" />
+        </ListItem>
+        <ListItem button component={Link} to="/actors">
+          <ListItemIcon>{<DirectionsRun />}</ListItemIcon>
+          <ListItemText primary="Actors" />
+        </ListItem>
+        <ListItem button component={Link} to="/images">
+          <ListItemIcon>{<Photo />}</ListItemIcon>
+          <ListItemText primary="Images" />
+        </ListItem>
+      </List>
+
+      <List subheader={<ListSubheader component="div">Utils</ListSubheader>}>
+        <ListItem button>
+          <ListItemIcon>{<Casino />}</ListItemIcon>
+          <ListItemText primary="Roller" />
+        </ListItem>
+        <ListItem button component={Link} to="/instance">
+          <ListItemIcon>{<SmokingRooms />}</ListItemIcon>
+          <ListItemText primary="Quick Instance" />
+        </ListItem>
+      </List>
+      <Divider />
+      <List>
+        <ListItem button>
+          <ListItemIcon>{<Settings />}</ListItemIcon>
+          <ListItemText primary="Settings" />
+        </ListItem>
+      </List>
+    </>
+  );
 }
 
 export default MainOptions;

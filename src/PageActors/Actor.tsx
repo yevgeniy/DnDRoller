@@ -61,7 +61,7 @@ type ActorProps = { [P in keyof ModelActor]?: ModelActor[P] } & {
 };
 
 const Actor = React.memo((props: ActorProps) => {
-  const classes = useStyles(props);
+  const classes = useStyles({});
   const [actor, updateActor] = useActor(props.id);
 
   useEffect(() => {

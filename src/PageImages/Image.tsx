@@ -92,7 +92,7 @@ type ImageProps = { [P in keyof ModelImage]?: ModelImage[P] } & {
 };
 
 const Image = React.memo((props: ImageProps) => {
-  const classes = useStyles(props);
+  const classes = useStyles({});
   const { image, updateImage, upload, url } = useImage(props.id);
 
   useEffect(() => {

@@ -40,6 +40,7 @@ const historyState = {
     return state;
   }
 };
+
 let _log = "";
 const log = {
   key: "log",
@@ -59,4 +60,13 @@ useOpenStream.historyState = (selector: string) => {
   on(opers.get);
 
   return [state || {}, opers];
+};
+useOpenStream.historyHasBack = () => {
+  let [history] = useOpenStream("history");
+
+  history = history || {};
+  const i = system.history.findIndex(v => v.id === history.id);
+  console.log("a", i, history.key);
+  if (i == 0 || i === -1) return false;
+  return true;
 };
