@@ -53,11 +53,12 @@ const InstanceContent = ({
 }: IInstanceContent) => {
   const classes = useStyles({ classes: _classes });
 
-  const setImageIds = async (ids: number[]) => {
+  const setImageIds = (ids: number[]) => {
     instance.images = ids;
+    console.log("a", instance);
     updateInstance({ ...instance });
   };
-  const setActorIds = async (ids: number[]) => {
+  const setActorIds = (ids: number[]) => {
     instance.actors = ids;
     updateInstance({ ...instance });
   };

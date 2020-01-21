@@ -1,6 +1,6 @@
 import * as React from "react";
 import { useState, useEffect } from "react";
-import Layout from "../Layout";
+import { Layout, LayoutControl } from "../components";
 import Add from "@material-ui/icons/Add";
 import { File } from "../services/ServiceImage";
 import {
@@ -64,17 +64,12 @@ const PageInstances = React.memo(
     if (!imageIds) return null;
 
     return (
-      <Layout
-        historyId={props.history.location.key}
-        title="Image Respository"
-        control={
-          <>
-            <IconButton onClick={onAdd} color="inherit">
-              <Add />
-            </IconButton>
-          </>
-        }
-      >
+      <Layout historyId={props.history.location.key} title="Image Respository">
+        <LayoutControl>
+          <IconButton onClick={onAdd} color="inherit">
+            <Add />
+          </IconButton>
+        </LayoutControl>
         <Images sort="name">
           {imageIds.map(v => (
             <Image key={v} id={v} deleteImage={deleteImage} />

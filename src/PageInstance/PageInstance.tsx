@@ -26,7 +26,7 @@ import Actors from "./Actors";
 import { SortActorsBy } from "../enums";
 
 import PageActorsAdd from "../PageActors/PageActorsAdd";
-import Layout from "../Layout";
+import { Layout, LayoutControl } from "../components";
 import { useInstance } from "../util/hooks";
 
 import { ModelRoutedPage } from "../models/ModelRoutedPage";
@@ -90,30 +90,32 @@ const PageInstance = React.memo(
     return (
       <Layout
         historyId={props.history.location.key}
-        title={
-          instance.id ? (
-            `Instance: ${instance.name}`
-          ) : (
+        title={instance.id && `Instance: ${instance.name}`}
+        router={props}
+      >
+        {!instance.id && (
+          <LayoutControl>
             <Button variant="contained" color="default" onClick={onSave}>
               Save
             </Button>
-          )
-        }
-        router={props}
-        control={
-          <>
-            <IconButton onClick={e => setSelectActors(true)} color="inherit">
-              <Add />
-            </IconButton>
-            <IconButton onClick={onReset} color="inherit">
-              <Replay />
-            </IconButton>
-            <IconButton onClick={onShowSort} color="inherit" ref={buttonRef}>
-              <Sort />
-            </IconButton>
-          </>
-        }
-      >
+          </LayoutControl>
+        )}
+        <LayoutControl>
+          <IconButton onClick={e => setSelectActors(true)} color="inherit">
+            <Add />
+          </IconButton>
+        </LayoutControl>
+        <LayoutControl>
+          <IconButton onClick={onReset} color="inherit">
+            <Replay />
+          </IconButton>
+        </LayoutControl>
+        <LayoutControl>
+          <IconButton onClick={onShowSort} color="inherit" ref={buttonRef}>
+            <Sort />
+          </IconButton>
+        </LayoutControl>
+
         <Actors sort={sort}>
           {instance.actors.map(v => (
             <Actor

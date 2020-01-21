@@ -116,7 +116,11 @@ class Record {
       cacheInstance[i] = instance;
     }
     await this.db.save("instance", JSON.stringify(cacheInstance));
-    return { ...instance, actors: [...(instance.actors && instance.actors)] };
+    return {
+      ...instance,
+      actors: [...(instance.actors || [])],
+      images: [...(instance.images || [])]
+    };
   }
   async delete(id: number): Promise<void> {
     cacheInstance = cacheInstance.filter(v => v.id !== id);

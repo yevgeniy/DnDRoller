@@ -1,6 +1,6 @@
 import * as React from "react";
 import { useState, useEffect } from "react";
-import Layout from "../Layout";
+import { Layout, LayoutControl } from "../components";
 import Add from "@material-ui/icons/Add";
 import { IconButton, Typography } from "@material-ui/core";
 import Image from "../PageImages/Image";
@@ -66,19 +66,17 @@ const PageImagesAdd = React.memo((props: PageImageAttachProps) => {
   if (!imageIds) return null;
 
   return (
-    <Layout
-      title="Attach Image..."
-      control={
-        <>
-          <Button variant="contained" color="secondary" onClick={onDone}>
-            Done
-          </Button>
-          <IconButton onClick={onAdd} color="inherit">
-            <Add />
-          </IconButton>
-        </>
-      }
-    >
+    <Layout title="Attach Image...">
+      <LayoutControl>
+        <Button variant="contained" color="secondary" onClick={onDone}>
+          Done
+        </Button>
+      </LayoutControl>
+      <LayoutControl>
+        <IconButton onClick={onAdd} color="inherit">
+          <Add />
+        </IconButton>
+      </LayoutControl>
       <Images sort="name">
         {imageIds.map(v => (
           <Image

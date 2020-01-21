@@ -82,12 +82,14 @@ export function useInstance(id: number | "empty", history: any = null) {
     const newInstance = { ...instance, ...updateInstance };
     /*if instance has an id save it in db*/
     if (newInstance.id) await serviceInstance.save(newInstance);
-    /*else save it in history if use backs up*/ else
+    else {
+      /*else save it in history if use backs up*/
       history &&
         history.replace(history.location.pathname, {
           ...(history.location.state || {}),
           instance: newInstance
         });
+    }
     setInstance(newInstance);
   }
   /*save adhock instance in a db*/

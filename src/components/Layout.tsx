@@ -8,10 +8,11 @@ import IconButton from "@material-ui/core/IconButton";
 import MenuIcon from "@material-ui/icons/Menu";
 
 import Drawer from "@material-ui/core/Drawer";
-import MainOptions from "./components/MainOptions";
-import { useHistoryState } from "./util/hooks";
+import MainOptions from "./MainOptions";
+import { useHistoryState } from "../util/hooks";
 
-import { useOpenStream, useMessageStream } from "./util/sync";
+import { useOpenStream, useMessageStream } from "../util/sync";
+import { LayoutControl } from "./";
 
 const useStyles = makeStyles(theme => ({
   container: {
@@ -29,9 +30,9 @@ const useStyles = makeStyles(theme => ({
 }));
 
 interface ILayout {
-  children: React.ReactNode;
+  children: React.ReactElement | React.ReactElement[];
   title: React.ReactNode;
-  control: React.ReactNode;
+  control?: React.ReactNode;
   historyId?: any;
 }
 export default function Layout(props: ILayout) {
@@ -39,6 +40,13 @@ export default function Layout(props: ILayout) {
   const [mainMenuOpen, setMainMenuOpen] = useState(false);
 
   const { set: setHistory } = useMessageStream("history");
+
+  const layoutControls = [];
+  const other = [];
+  React.Children.map(props.children, v => v).forEach(v => {
+    if (v.type === LayoutControl) layoutControls.push(v);
+    else other.push(v);
+  });
 
   useEffect(() => {
     if (!props.historyId) return;
@@ -63,10 +71,10 @@ export default function Layout(props: ILayout) {
           <Typography variant="h6" className={classes.title}>
             {props.title}
           </Typography>
-          {props.control}
+          {layoutControls}
         </Toolbar>
       </AppBar>
-      <div className={classes.content}>{props.children}</div>
+      <div className={classes.content}>{other}</div>
       <Drawer open={mainMenuOpen} onClose={() => setMainMenuOpen(false)}>
         <MainMenu {...{ classes, setMainMenuOpen }} />
       </Drawer>

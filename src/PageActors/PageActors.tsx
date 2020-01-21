@@ -1,6 +1,6 @@
 import * as React from "react";
 import { useState } from "react";
-import Layout from "../Layout";
+import { Layout, LayoutControl } from "../components";
 import Add from "@material-ui/icons/Add";
 import {
   IconButton,
@@ -43,17 +43,13 @@ const PageActors = React.memo(
     };
     if (!actorIds) return null;
     return (
-      <Layout
-        historyId={props.history.location.key}
-        title="Actor Repository"
-        control={
-          <>
-            <IconButton onClick={onAdd} color="inherit">
-              <Add />
-            </IconButton>
-          </>
-        }
-      >
+      <Layout historyId={props.history.location.key} title="Actor Repository">
+        <LayoutControl>
+          <IconButton onClick={onAdd} color="inherit">
+            <Add />
+          </IconButton>
+        </LayoutControl>
+
         <Actors sort="name">
           {actorIds.map(v => (
             <Actor

@@ -1,6 +1,6 @@
 import * as React from "react";
 import { useState, useContext } from "react";
-import Layout from "../Layout";
+import { Layout, LayoutControl } from "../components";
 import Add from "@material-ui/icons/Add";
 import { IconButton } from "@material-ui/core";
 import Instances from "./Instances";
@@ -53,14 +53,12 @@ const PageInstances = React.memo(
       <Layout
         historyId={props.history.location.key}
         title="Instance Respository"
-        control={
-          <>
-            <IconButton onClick={onAdd} color="inherit">
-              <Add />
-            </IconButton>
-          </>
-        }
       >
+        <LayoutControl>
+          <IconButton onClick={onAdd} color="inherit">
+            <Add />
+          </IconButton>
+        </LayoutControl>
         <Instances sort="name">
           {instanceIds.map(v => (
             <Instance

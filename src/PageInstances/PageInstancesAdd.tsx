@@ -1,6 +1,6 @@
 import * as React from "react";
 import { useState } from "react";
-import Layout from "../Layout";
+import { Layout, LayoutControl } from "../components";
 import Add from "@material-ui/icons/Add";
 import {
   IconButton,
@@ -46,19 +46,17 @@ const PageInstanceAdd = React.memo((props: IPageInstanceAdd) => {
   };
   if (!instanceIds) return null;
   return (
-    <Layout
-      title="Attach Instances..."
-      control={
-        <>
-          <Button variant="contained" color="secondary" onClick={onDone}>
-            Done
-          </Button>
-          <IconButton onClick={onAdd} color="inherit">
-            <Add />
-          </IconButton>
-        </>
-      }
-    >
+    <Layout title="Attach Instances...">
+      <LayoutControl>
+        <Button variant="contained" color="secondary" onClick={onDone}>
+          Done
+        </Button>
+      </LayoutControl>
+      <LayoutControl>
+        <IconButton onClick={onAdd} color="inherit">
+          <Add />
+        </IconButton>
+      </LayoutControl>
       <Instances sort="name">
         {instanceIds.map(v => (
           <Instance

@@ -13,3 +13,5 @@ export { default as EntityContentTabRelation } from "./EntityContentTabRelation"
 export { default as EntityContentTabImages } from "./EntityContentTabImages";
 export { default as EntityContentTabs } from "./EntityContentTabs";
 export { default as EntitySubheader } from "./EntitySubheader";
+export { default as LayoutControl } from "./LayoutControl";
+export { default as Layout } from "./Layout";

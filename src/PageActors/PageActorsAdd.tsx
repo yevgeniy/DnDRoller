@@ -1,6 +1,6 @@
 import * as React from "react";
 import { useState } from "react";
-import Layout from "../Layout";
+import { Layout, LayoutControl } from "../components";
 import Add from "@material-ui/icons/Add";
 import {
   IconButton,
@@ -42,26 +42,22 @@ const PageActorsAdd = React.memo((props: PageActorAddProps) => {
     props.onDone(selected);
   };
   const onSetSelected = id => f => {
-    console.log("a", id, f, selected);
     if (f && selected.indexOf(id) === -1) setSelected([...selected, id]);
     else setSelected([...selected.filter(v => v !== id)]);
-    console.log("b", id, f, selected);
   };
   if (!actorIds) return null;
   return (
-    <Layout
-      title="Add Actors..."
-      control={
-        <>
-          <Button variant="contained" color="secondary" onClick={onDone}>
-            Done
-          </Button>
-          <IconButton onClick={onAdd} color="inherit">
-            <Add />
-          </IconButton>
-        </>
-      }
-    >
+    <Layout title="Add Actors...">
+      <LayoutControl>
+        <Button variant="contained" color="secondary" onClick={onDone}>
+          Done
+        </Button>
+      </LayoutControl>
+      <LayoutControl>
+        <IconButton onClick={onAdd} color="inherit">
+          <Add />
+        </IconButton>
+      </LayoutControl>
       <Actors sort="name">
         {actorIds.map(v => (
           <Actor
