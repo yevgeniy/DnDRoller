@@ -149,10 +149,17 @@ const Entity = React.memo(function<T>({
 }: IEntity) {
   const classes = useStyles({ classes: props_classes });
 
-  const [
-    { isExpanded },
-    { update: updateHistoryState }
-  ] = useOpenStream.historyState(`Entity|${id}`);
+  let isExpanded;
+  let updateHistoryState;
+  if (setSelected) {
+    [{ isExpanded }, updateHistoryState] = useState({
+      isExpanded: false
+    });
+  } else
+    [
+      { isExpanded },
+      { update: updateHistoryState }
+    ] = useOpenStream.historyState(`Entity|${id}`);
 
   const {
     isOpen: isActionsOpen,
