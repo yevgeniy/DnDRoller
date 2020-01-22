@@ -102,7 +102,6 @@ const Image = React.memo((props: ImageProps) => {
   }, [image]);
 
   const [showThumbOnImages] = useOpenStream("showThumbOnImages");
-  console.log("a", showThumbOnImages);
 
   if (!image) return null;
 

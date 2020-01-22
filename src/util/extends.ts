@@ -4,6 +4,8 @@ declare global {
   }
   interface EventTarget {
     id: any;
+    value: any;
+    querySelector: any;
   }
 }
 

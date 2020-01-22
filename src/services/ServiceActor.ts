@@ -33,6 +33,10 @@ class ServiceActor {
 
     return res.filter(v => ids.some(z => v.id === z));
   }
+  async getKeyWords(): Promise<string[]> {
+    const res = await this.getAll();
+    return Array.from(new Set(res.map(v => v.keywords || []).flat()));
+  }
   async createActor(name: string): Promise<ModelActor> {
     return await this.record.save({
       id: null,

@@ -48,6 +48,10 @@ class ServiceInstance {
     if (!ids) return res;
     return res.filter(v => ids.some(z => z === v.id));
   }
+  async getKeyWords(): Promise<string[]> {
+    const res = await this.getAll();
+    return Array.from(new Set(res.map(v => v.keywords || []).flat()));
+  }
   async createInstance(name: string): Promise<ModelInstance> {
     var newInstance = await this.record.save({
       id: null,

@@ -401,3 +401,22 @@ export function useModalState<T>(def: boolean = false) {
 
   return { isOpen, doOpen, doClose, onDone };
 }
+export function useKeywords() {
+  const serviceActor = useService(ServiceActor);
+  const serviceInstance = useService(ServiceInstance);
+  const serviceImage = useService(ServiceImage);
+
+  const [keywords, setkeywords] = useState([]);
+
+  const set = v => {
+    setkeywords(keywords => Array.from(new Set([...keywords, ...v])).sort());
+  };
+
+  useEffect(() => {
+    serviceActor && serviceActor.getKeyWords().then(set);
+    serviceInstance && serviceInstance.getKeyWords().then(set);
+    serviceImage && serviceImage.getKeyWords().then(set);
+  }, [serviceActor, serviceInstance, serviceImage]);
+
+  return keywords;
+}

@@ -55,7 +55,6 @@ const InstanceContent = ({
 
   const setImageIds = (ids: number[]) => {
     instance.images = ids;
-    console.log("a", instance);
     updateInstance({ ...instance });
   };
   const setActorIds = (ids: number[]) => {
