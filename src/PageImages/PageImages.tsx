@@ -1,6 +1,6 @@
 import * as React from "react";
 import { useState, useEffect } from "react";
-import { Layout, LayoutControl } from "../components";
+import { Layout, LayoutControl, LayoutMenu } from "../components";
 import Add from "@material-ui/icons/Add";
 import { File } from "../services/ServiceImage";
 import {
@@ -18,6 +18,7 @@ import { makeStyles, useTheme, createStyles } from "@material-ui/core/styles";
 import { useImageIds } from "../util/hooks";
 import Images from "./Images";
 import Image from "./Image";
+import Menu from "./Menu";
 import Uploader from "../components/Uploader";
 import {
   RouterContextView,
@@ -70,6 +71,9 @@ const PageInstances = React.memo(
             <Add />
           </IconButton>
         </LayoutControl>
+        <LayoutMenu>
+          <Menu />
+        </LayoutMenu>
         <Images sort="name">
           {imageIds.map(v => (
             <Image key={v} id={v} deleteImage={deleteImage} />

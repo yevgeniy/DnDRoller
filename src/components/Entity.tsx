@@ -121,6 +121,7 @@ const useStyles = makeStyles(
     }),
   { name: "Entity" }
 );
+
 //ex = { [P in keyof ActorModel]?: ActorModel[P] }
 
 type IEntity = {
@@ -241,27 +242,27 @@ const Entity = React.memo(function<T>({
               setSelected ? setSelected(!isSelected) : openActionPanel(e)
             }
             avatar={
-              <>
-                {setSelected ? (
+              <div style={{ display: "flex" }}>
+                {setSelected && (
                   <Checkbox
                     checked={isSelected}
                     inputProps={{
                       "aria-label": "primary checkbox"
                     }}
                   />
-                ) : (
-                  React.Children.map(children, v => v).find(
-                    v => v.type === Avatar
-                  )
                 )}
-              </>
+                {React.Children.map(children, v => v)
+                  .filter(v => !!v)
+                  .find(v => v.type === Avatar)}
+              </div>
             }
             subheader={subheader}
             action={
               <>
-                {React.Children.map(children, v => v).find(
-                  v => v.type === EntityHeaderActions
-                )}
+                {!setSelected &&
+                  React.Children.map(children, v => v)
+                    .filter(v => !!v)
+                    .find(v => v.type === EntityHeaderActions)}
                 <IconButton
                   className={clsx(classes.expand, {
                     [classes.expandOpen]: isExpanded
@@ -277,6 +278,7 @@ const Entity = React.memo(function<T>({
               </>
             }
             title={React.Children.map(children, v => {
+              if (!v) return v;
               if (v.type === EntityTitle)
                 return React.cloneElement(v, {
                   className: clsx(v.props.className, classes.avatarName),
@@ -292,6 +294,7 @@ const Entity = React.memo(function<T>({
             <CardContent>
               <Divider />
               {React.Children.map(children, v => {
+                if (!v) return v;
                 if (v.type === EntityContent)
                   return React.cloneElement(v, {
                     updateEntity,
@@ -305,6 +308,7 @@ const Entity = React.memo(function<T>({
         <Drawer open={isActionsOpen} anchor="right" onClose={doActionsClose}>
           <div>
             {React.Children.map(children, v => {
+              if (!v) return v;
               if (v.type === EntityActions) {
                 return React.cloneElement(v, {
                   onDone: onActionsDone

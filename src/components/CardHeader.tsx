@@ -74,7 +74,8 @@ const useCardHeaderStyles = makeStyles(theme => {
     action: {
       display: "flex",
       alignItems: "center"
-    }
+    },
+    avatar: {}
   });
 });
 

@@ -34,6 +34,7 @@ import {
 
 import { ModelImage } from "../models/ModelImage";
 import { useImage, useDiscover, useHot, useHistoryState } from "../util/hooks";
+import { useOpenStream } from "../util/sync";
 import Actions from "./Actions";
 import ImageContent from "./ImageContent";
 
@@ -100,6 +101,9 @@ const Image = React.memo((props: ImageProps) => {
     props.setSortImage(image);
   }, [image]);
 
+  const [showThumbOnImages] = useOpenStream("showThumbOnImages");
+  console.log("a", showThumbOnImages);
+
   if (!image) return null;
 
   const doDelete = () => {
@@ -118,7 +122,13 @@ const Image = React.memo((props: ImageProps) => {
           subheader={(image.keywords || []).sort().join(", ")}
           updateEntity={updateImage}
         >
-          <Avatar className={classes.avatar}>{image.name[0]}</Avatar>
+          <Avatar className={classes.avatar}>
+            {url ? (
+              <img src={url} style={{ maxWidth: "30px", maxHeight: "30px" }} />
+            ) : (
+              image.name[0]
+            )}
+          </Avatar>
 
           <EntityTitle>
             <Button>{image.name}</Button>
@@ -129,17 +139,19 @@ const Image = React.memo((props: ImageProps) => {
               {image.file}
             </Typography>
           </EntityHeaderActions>
-          <EntitySubheader>
-            {url ? (
-              <CardMedia
-                className={classes.media}
-                component={Link}
-                to={{ pathname: "/image", state: { imageId: image.id } }}
-                image={url}
-                title={image.name}
-              />
-            ) : null}
-          </EntitySubheader>
+          {showThumbOnImages && (
+            <EntitySubheader>
+              {url ? (
+                <CardMedia
+                  className={classes.media}
+                  component={Link}
+                  to={{ pathname: "/image", state: { imageId: image.id } }}
+                  image={url}
+                  title={image.name}
+                />
+              ) : null}
+            </EntitySubheader>
+          )}
           <EntityContent>
             <ImageContent {...image} />
           </EntityContent>

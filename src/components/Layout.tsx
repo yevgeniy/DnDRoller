@@ -9,10 +9,10 @@ import MenuIcon from "@material-ui/icons/Menu";
 
 import Drawer from "@material-ui/core/Drawer";
 import MainOptions from "./MainOptions";
-import { useHistoryState } from "../util/hooks";
+import { useHistoryState, useModalState } from "../util/hooks";
 
 import { useOpenStream, useMessageStream } from "../util/sync";
-import { LayoutControl } from "./";
+import { LayoutControl, LayoutMenu } from "./";
 
 const useStyles = makeStyles(theme => ({
   container: {
@@ -42,9 +42,11 @@ export default function Layout(props: ILayout) {
   const { set: setHistory } = useMessageStream("history");
 
   const layoutControls = [];
+  let layoutMenu;
   const other = [];
   React.Children.map(props.children, v => v).forEach(v => {
     if (v.type === LayoutControl) layoutControls.push(v);
+    else if (v.type === LayoutMenu) layoutMenu = v;
     else other.push(v);
   });
 
@@ -53,6 +55,7 @@ export default function Layout(props: ILayout) {
     setHistory(props.historyId);
     return () => setHistory(null);
   }, []);
+
   return (
     <div className={classes.container}>
       {props.historyId && <ScrollConstruct />}
@@ -69,7 +72,7 @@ export default function Layout(props: ILayout) {
             <MenuIcon />
           </IconButton>
           <Typography variant="h6" className={classes.title}>
-            {props.title}
+            <TitleControl layoutMenu={layoutMenu}>{props.title}</TitleControl>
           </Typography>
           {layoutControls}
         </Toolbar>
@@ -81,6 +84,21 @@ export default function Layout(props: ILayout) {
     </div>
   );
 }
+
+const TitleControl = props => {
+  const { isOpen, doOpen, doClose, onDone } = useModalState();
+
+  return (
+    <>
+      <div onClick={doOpen}>{props.children}</div>
+      {props.layoutMenu && (
+        <Drawer anchor="top" open={isOpen} onClose={doClose}>
+          {props.layoutMenu}
+        </Drawer>
+      )}
+    </>
+  );
+};
 
 const useMainMenuStyles = makeStyles(theme => {
   return {

@@ -32,7 +32,7 @@ const history = {
   }
 };
 const historyState = {
-  key: "history-state",
+  key: "historyState",
   get: selector => {
     const repo = system.currentHistory || {};
     let state = repo[selector];
@@ -48,7 +48,20 @@ const log = {
   set: v => (_log = v)
 };
 
-const dict = NimmSync.create([history, historyState, log]);
+let _showThumbOnImages = !!JSON.parse(
+  window.localStorage.getItem("showThumbOnImages")
+);
+console.log("aaaa", _showThumbOnImages);
+const showThumbOnImages = {
+  key: "showThumbOnImages",
+  get: () => _showThumbOnImages,
+  set: v => {
+    _showThumbOnImages = v;
+    window.localStorage.setItem("showThumbOnImages", v);
+  }
+};
+
+const dict = NimmSync.create([history, historyState, log, showThumbOnImages]);
 export const { useOpenStream, useMessageStream } = NimmSync.connect(
   dict,
   React
@@ -56,7 +69,7 @@ export const { useOpenStream, useMessageStream } = NimmSync.connect(
 
 useOpenStream.historyState = (selector: string) => {
   const { on } = useMessageStream("history");
-  const [state, opers] = useOpenStream("history-state", selector);
+  const [state, opers] = useOpenStream("historyState", selector);
   on(opers.get);
 
   return [state || {}, opers];
