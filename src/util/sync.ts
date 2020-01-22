@@ -51,7 +51,6 @@ const log = {
 let _showThumbOnImages = !!JSON.parse(
   window.localStorage.getItem("showThumbOnImages")
 );
-console.log("aaaa", _showThumbOnImages);
 const showThumbOnImages = {
   key: "showThumbOnImages",
   get: () => _showThumbOnImages,
@@ -79,7 +78,6 @@ useOpenStream.historyHasBack = () => {
 
   history = history || {};
   const i = system.history.findIndex(v => v.id === history.id);
-  console.log("a", i, history.key);
   if (i == 0 || i === -1) return false;
   return true;
 };
