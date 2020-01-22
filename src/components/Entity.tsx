@@ -282,7 +282,10 @@ const Entity = React.memo(function<T>({
               if (v.type === EntityTitle)
                 return React.cloneElement(v, {
                   className: clsx(v.props.className, classes.avatarName),
-                  onClick: doActionsOpen
+                  onClick: e => {
+                    e.stopPropagation();
+                    doActionsOpen();
+                  }
                 });
               return v;
             }).find(v => v.type === EntityTitle)}
