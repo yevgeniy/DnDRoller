@@ -53,24 +53,19 @@ interface KeywordListInputProps {
 function KeywordListInput(props: KeywordListInputProps) {
   const classes = useStyles({});
   const autoCompleteClasses = useAutocompleteStyles({});
-  const [keywords, setKeywords] = useState(props.keywords || []);
+  const keywords = props.keywords || [];
   const allKeywords = useKeywords();
   const ref = useRef({});
 
-  const doAdd = () => {
+  const update = e => {
     setTimeout(() => {
-      const v = document.querySelector("#free-solo-demo").value;
-      if (v) {
-        document.querySelector("#free-solo-demo").blur();
-        setKeywords(keywords => Array.from(new Set([v, ...keywords])));
-      }
+      //@ts-ignore
+      const kw = [...ref.current.querySelectorAll(".MuiChip-label")].map(
+        v => v.innerHTML
+      );
+
+      props.onUpdate(Array.from(new Set(kw)));
     });
-  };
-  const doRemove = (name: string) => e => {
-    setKeywords(Array.from(new Set(keywords.filter(v => v !== name))));
-  };
-  const doDone = () => {
-    props.onUpdate([...keywords]);
   };
 
   return (
@@ -79,11 +74,13 @@ function KeywordListInput(props: KeywordListInputProps) {
       <div className={classes.label}>keywords:</div>
       <div className={classes.container}>
         <Autocomplete
+          ref={ref}
           classes={autoCompleteClasses}
           multiple
           id="tags-filled"
-          options={allKeywords}
+          options={allKeywords.filter(v => !keywords.some(z => z === v))}
           defaultValue={keywords}
+          onChange={update}
           freeSolo
           renderTags={(value, getTagProps) =>
             value.map((option, index) => (
@@ -95,7 +92,6 @@ function KeywordListInput(props: KeywordListInputProps) {
             ))
           }
           renderInput={params => {
-            console.log("a", params);
             return (
               <TextField
                 {...params}

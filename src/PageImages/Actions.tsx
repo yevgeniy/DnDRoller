@@ -48,6 +48,7 @@ const useStyle = makeStyles(theme => {
 
 type ActorProps = { [P in keyof ModelImage]: ModelImage[P] } & {
   onDone?: (a: { [P in keyof ModelImage]?: ModelImage[P] }) => void;
+  quickUpdateAction: (a: { [P in keyof ModelImage]?: ModelImage[P] }) => void;
   setOpenAction: (a: boolean) => void;
   upload: (f: File) => void;
 };
@@ -64,7 +65,7 @@ const Actions = React.memo((props: ActorProps) => {
     setName(props.name);
   };
   const onUpdateKeyWords = (keywords: string[]) => {
-    props.onDone({ keywords });
+    props.quickUpdateAction({ keywords });
   };
 
   return (
