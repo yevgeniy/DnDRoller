@@ -3,13 +3,18 @@ import { useState, useRef } from "react";
 import { makeStyles, createStyles } from "@material-ui/core/styles";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 
-import TextField from "@material-ui/core/TextField";
+import {
+  TextField,
+  Chip,
+  IconButton,
+  Button,
+  Divider,
+  Typography
+} from "@material-ui/core";
 import Add from "@material-ui/icons/Add";
 import RemoveCircle from "@material-ui/icons/RemoveCircle";
 import red from "@material-ui/core/colors/red";
 import green from "@material-ui/core/colors/green";
-import IconButton from "@material-ui/core/IconButton";
-import Button from "@material-ui/core/Button";
 
 import { useKeywords } from "../util/hooks";
 
@@ -20,44 +25,25 @@ const useStyles = makeStyles(theme =>
       marginBottom: theme.spacing(1)
     },
     container: {
-      display: "flex",
-      flexWrap: "wrap"
+      paddingTop: theme.spacing(1)
     },
-    formControl: {
-      margin: theme.spacing(1)
-    },
-    class: {
-      "& input": {
-        fontSize: ".8em",
-        padding: theme.spacing(1),
-        width: 80
-      }
-    },
-    lvl: {
-      marginLeft: theme.spacing(1),
-      "& input": {
-        fontSize: ".8em",
-        padding: theme.spacing(1),
-        width: 30
-      }
-    },
-    removeIcon: {
-      marginLeft: theme.spacing(1),
-      color: red[600]
-    },
-    addIcon: {
-      marginLeft: theme.spacing(1),
-      color: green[600]
+    label: {
+      fontSize: ".8em",
+      fontStyle: "italic",
+      color: theme.palette.grey[400]
     }
   })
 );
 
-const useAutocompleteStyles = makeStyles(theme =>
-  createStyles({
-    root: { padding: 0, width: "100%" },
-    inputRoot: { padding: "0 !important" },
-    endAdornment: { display: "none" }
-  })
+const useAutocompleteStyles = makeStyles(
+  theme =>
+    createStyles({
+      root: { padding: 0, width: "100%" },
+      inputRoot: { padding: "0 !important" },
+      endAdornment: { display: "none" },
+      input: { width: "auto !important" }
+    }),
+  { name: "autocomplete-overrides" }
 );
 
 interface KeywordListInputProps {
@@ -66,6 +52,7 @@ interface KeywordListInputProps {
 }
 function KeywordListInput(props: KeywordListInputProps) {
   const classes = useStyles({});
+  const autoCompleteClasses = useAutocompleteStyles({});
   const [keywords, setKeywords] = useState(props.keywords || []);
   const allKeywords = useKeywords();
   const ref = useRef({});
@@ -88,48 +75,36 @@ function KeywordListInput(props: KeywordListInputProps) {
 
   return (
     <div className={classes.root}>
-      {keywords.map((v, i) => (
-        <div key={v}>
-          {v}
-          <IconButton
-            className={classes.removeIcon}
-            size="small"
-            onClick={doRemove(v)}
-          >
-            <RemoveCircle />
-          </IconButton>
-        </div>
-      ))}
+      <Divider />
+      <div className={classes.label}>keywords:</div>
       <div className={classes.container}>
         <Autocomplete
-          ref={ref}
-          classes={useAutocompleteStyles({})}
-          id="free-solo-demo"
+          classes={autoCompleteClasses}
+          multiple
+          id="tags-filled"
+          options={allKeywords}
+          defaultValue={keywords}
           freeSolo
-          blurOnSelect
-          onChange={e => doAdd()}
-          options={allKeywords.filter(v => !keywords.some(z => z === v))}
-          renderInput={params => (
-            <TextField
-              {...params}
-              className={classes.class}
-              label="keyword"
-              value=""
-              InputLabelProps={{
-                shrink: true
-              }}
-              margin="normal"
-              variant="outlined"
-              fullWidth
-            />
-          )}
+          renderTags={(value, getTagProps) =>
+            value.map((option, index) => (
+              <Chip
+                variant="outlined"
+                label={option}
+                {...getTagProps({ index })}
+              />
+            ))
+          }
+          renderInput={params => {
+            console.log("a", params);
+            return (
+              <TextField
+                {...params}
+                placeholder="-- ADD KEYWORD --"
+                fullWidth
+              />
+            );
+          }}
         />
-      </div>
-      <div>
-        <Button variant="contained" size="small" onClick={doDone}>
-          <Add />
-          Update Keywords
-        </Button>
       </div>
     </div>
   );

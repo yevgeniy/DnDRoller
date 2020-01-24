@@ -38,6 +38,10 @@ const useStyle = makeStyles(theme => {
     },
     divider: {
       margin: theme.spacing(2)
+    },
+    uploaderContainer: {
+      paddingTop: theme.spacing(1),
+      paddingBottom: theme.spacing(1)
     }
   });
 });
@@ -90,9 +94,12 @@ const Actions = React.memo((props: ActorProps) => {
           <Replay />
         </Fab>
       </form>
+
+      <div className={classes.uploaderContainer}>
+        <Uploader onSelected={props.upload} />
+      </div>
+
       <KeywordListInput keywords={props.keywords} onUpdate={onUpdateKeyWords} />
-      <Divider className={classes.divider} />
-      <Uploader onSelected={props.upload} />
     </div>
   );
 });
