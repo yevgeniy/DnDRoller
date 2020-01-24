@@ -53,18 +53,21 @@ interface KeywordListInputProps {
 function KeywordListInput(props: KeywordListInputProps) {
   const classes = useStyles({});
   const autoCompleteClasses = useAutocompleteStyles({});
-  const keywords = props.keywords || [];
+
+  const [keywords, setKeywords] = useState(props.keywords || []);
   const allKeywords = useKeywords();
   const ref = useRef({});
 
   const update = e => {
     setTimeout(() => {
       //@ts-ignore
-      const kw = [...ref.current.querySelectorAll(".MuiChip-label")].map(
+      let kw = [...ref.current.querySelectorAll(".MuiChip-label")].map(
         v => v.innerHTML
       );
+      kw = Array.from(new Set(kw));
 
-      props.onUpdate(Array.from(new Set(kw)));
+      setKeywords(kw);
+      props.onUpdate(kw);
     });
   };
 
