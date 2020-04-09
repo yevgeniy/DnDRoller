@@ -54,7 +54,7 @@ function MainOptions() {
       </List>
 
       <List subheader={<ListSubheader component="div">Utils</ListSubheader>}>
-        <ListItem button>
+        <ListItem button component={Link} to="/roller">
           <ListItemIcon>{<Casino />}</ListItemIcon>
           <ListItemText primary="Roller" />
         </ListItem>

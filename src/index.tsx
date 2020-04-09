@@ -8,6 +8,7 @@ import PageInstances from "./PageInstances/PageInstances";
 import PageActors from "./PageActors/PageActors";
 import PageImages from "./PageImages/PageImages";
 import PageImage from "./PageImage/PageImage";
+import PageRoller from "./Roller/PageRoller";
 import Log from "./Log";
 import { withStyles, StyleRules } from "@material-ui/core/styles";
 import "./util/extends";
@@ -23,6 +24,7 @@ function App() {
           <Route exact path="/instance" component={PageInstance} />
           <Route exact path="/images" component={PageImages} />
           <Route exact path="/image" component={PageImage} />
+          <Route exact page="/roller" component={PageRoller} />
         </Switch>
       </BrowserRouter>
       <Log />
