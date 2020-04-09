@@ -33,6 +33,7 @@ const useStyles = makeStyles(theme =>
     root: {},
     die: {
       fill: "white",
+      padding: theme.spacing(1),
 
       "& svg": {
         width: "30px",
