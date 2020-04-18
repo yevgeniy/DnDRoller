@@ -155,7 +155,11 @@ const Image = React.memo((props: ImageProps) => {
             <ImageContent {...image} />
           </EntityContent>
           <EntityActions>
-            <Actions {...image} quickUpdateAction={updateImage} />
+            <Actions
+              {...image}
+              quickUpdateAction={updateImage}
+              upload={upload}
+            />
           </EntityActions>
         </Entity>
       </>
