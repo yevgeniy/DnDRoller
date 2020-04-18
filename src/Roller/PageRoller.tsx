@@ -78,6 +78,8 @@ const PageRoller = (props: ModelRoutedPage<IPageRoller>) => {
   const [setBack, setSetBack] = useState(0);
   const [rollResult, setRollResult] = useState(null);
 
+  const peerId = usePeer();
+
   const onReset = () => {};
   const doRoll = () => {
     ServiceRoller.init().then(v => {
@@ -105,6 +107,7 @@ const PageRoller = (props: ModelRoutedPage<IPageRoller>) => {
         </IconButton>
       </LayoutControl>
       <div>
+        {peerId && <div> Your ID: {peerId}</div>}
         <div>
           <PaintX
             count={6}
@@ -217,6 +220,7 @@ const PageRoller = (props: ModelRoutedPage<IPageRoller>) => {
       {rollResult && (
         <>
           <Divider />
+
           <div>Success: {rollResult.trueSuccess}</div>
           <div>Advantage: {rollResult.trueAdvantage}</div>
           <div>Triumph: {rollResult.triumph}</div>
@@ -248,5 +252,17 @@ const PaintX = (props: {
     </>
   );
 };
+
+function usePeer() {
+  const [id, setid] = useState(null);
+  id && console.log("ID: ", id);
+  useEffect(() => {
+    //@ts-ignore
+    const peer = new Peer();
+    peer.on("open", setid);
+  }, []);
+
+  return id;
+}
 
 export default PageRoller;

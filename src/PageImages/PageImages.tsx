@@ -1,9 +1,14 @@
 import * as React from "react";
 import { useState, useEffect } from "react";
+import clsx from "clsx";
 import { Layout, LayoutControl, LayoutMenu } from "../components";
 import Add from "@material-ui/icons/Add";
+import SearchIcon from "@material-ui/icons/Search";
 import { File } from "../services/ServiceImage";
+import orange from "@material-ui/core/colors/orange";
+
 import {
+  Drawer,
   DialogTitle,
   DialogContentText,
   DialogContent,
@@ -15,10 +20,11 @@ import {
   Typography
 } from "@material-ui/core";
 import { makeStyles, useTheme, createStyles } from "@material-ui/core/styles";
-import { useImageIds } from "../util/hooks";
+import { useImageIds, useModalState } from "../util/hooks";
 import Images from "./Images";
 import Image from "./Image";
 import Menu from "./Menu";
+import Search from "./Search";
 import Uploader from "../components/Uploader";
 import {
   RouterContextView,
@@ -32,6 +38,9 @@ const useStyles = makeStyles(theme => {
     or: {
       textAlign: "center",
       margin: theme.spacing(3)
+    },
+    hasFilter: {
+      color: orange[600]
     }
   });
 });
@@ -42,14 +51,26 @@ interface PageImagesLocationState {
 
 const PageInstances = React.memo(
   (props: ModelRoutedPage<PageImagesLocationState>) => {
-    const [imageIds, createImage, deleteImage] = useImageIds();
+    const [currentKeyWords, setCurrentKeyWords] = useState([]);
+    const [imageIds, createImage, deleteImage] = useImageIds(
+      currentKeyWords.length ? currentKeyWords : null
+    );
     const [openNewImageDialog, setOpenNewImageDialog] = useState(false);
     const [newImageName, setNewImageName] = useState("");
+    const {
+      isOpen: searchIsOpen,
+      doOpen: searchDoOpen,
+      doClose: searchDoClose
+    } = useModalState();
+
     const classes = useStyles({});
 
     const onAdd = e => {
       setNewImageName("");
       setOpenNewImageDialog(true);
+    };
+    const onSearch = () => {
+      searchDoOpen();
     };
     const onNewImageName = e => {
       e.preventDefault();
@@ -67,6 +88,14 @@ const PageInstances = React.memo(
     return (
       <Layout historyId={props.history.location.key} title="Image Respository">
         <LayoutControl>
+          <IconButton onClick={onSearch} color="inherit">
+            <SearchIcon
+              className={clsx({
+                [classes.hasFilter]: currentKeyWords.length
+              })}
+            />
+          </IconButton>
+
           <IconButton onClick={onAdd} color="inherit">
             <Add />
           </IconButton>
@@ -116,6 +145,13 @@ const PageInstances = React.memo(
             </Button>
           </DialogActions>
         </Dialog>
+
+        <Drawer open={searchIsOpen} onClose={searchDoClose} anchor="top">
+          <Search
+            onUpdate={setCurrentKeyWords}
+            currentKeyWords={currentKeyWords}
+          />
+        </Drawer>
       </Layout>
     );
   }

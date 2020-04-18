@@ -243,31 +243,31 @@ export function useInstanceIds() {
   return { instanceIds, createInstance, deleteInstance, cloneInstance };
 }
 
-export function useImageIds() {
+export function useImageIds(keyWords?: string[] | null) {
   const serviceImage = useService(ServiceImage);
-  const [imageIds, setImageIds] = useState();
+  let [images, setImages] = useState();
 
   useEffect(() => {
     if (!serviceImage) return;
 
-    serviceImage.getAll().then(res => {
-      setImageIds(res.map(v => v.id));
-    });
-  }, [serviceImage]);
+    serviceImage.getAll().then(setImages);
+  }, [serviceImage, keyWords]);
 
   const createImage = async (name: string, file: File = null) => {
     const newid = (await serviceImage.createImage(name)).id;
     if (file) await serviceImage.upload(newid, file);
-    serviceImage.getAll().then(res => {
-      setImageIds(res.map(v => v.id));
-    });
+    serviceImage.getAll().then(setImages);
   };
   const deleteImage = async id => {
     await serviceImage.deleteImage(id);
-    setImageIds([...imageIds.filter(v => v !== id)]);
+    serviceImage.getAll().then(setImages);
   };
 
-  return [imageIds, createImage, deleteImage];
+  if (keyWords)
+    images = images.filter(v =>
+      (v.keywords || []).some(w => keyWords.some(z => z === w))
+    );
+  return [(images || []).map(v => v.id), createImage, deleteImage];
 }
 export function useInstanceIdsForActor(id: number) {
   const serviceInstance = useService(ServiceInstance);
