@@ -83,6 +83,16 @@ const useStyles = makeStyles(theme =>
   })
 );
 
+const useStylesButtonLabel = makeStyles(
+  theme =>
+    createStyles({
+      label: {
+        textAlign: "left"
+      }
+    }),
+  { name: "Image-Button-Label" }
+);
+
 type ImageProps = { [P in keyof ModelImage]?: ModelImage[P] } & {
   classes?: any;
   setSortImage?: (a: ModelImage) => void;
@@ -94,6 +104,7 @@ type ImageProps = { [P in keyof ModelImage]?: ModelImage[P] } & {
 
 const Image = React.memo((props: ImageProps) => {
   const classes = useStyles({});
+  const buttonLabelClasses = useStylesButtonLabel({});
   const { image, updateImage, upload, url } = useImage(props.id);
 
   useEffect(() => {
@@ -122,22 +133,22 @@ const Image = React.memo((props: ImageProps) => {
           updateEntity={updateImage}
         >
           <Avatar className={classes.avatar}>
-            {url ? (
-              <img src={url} style={{ maxWidth: "30px", maxHeight: "30px" }} />
-            ) : (
-              image.name[0]
-            )}
+            <Link to={{ pathname: "/image", state: { imageId: image.id } }}>
+              {url ? (
+                <img
+                  src={url}
+                  style={{ maxWidth: "30px", maxHeight: "30px" }}
+                />
+              ) : (
+                image.name[0]
+              )}
+            </Link>
           </Avatar>
 
           <EntityTitle>
-            <Button>{image.name}</Button>
+            <Button classes={buttonLabelClasses}>{image.name}</Button>
           </EntityTitle>
 
-          <EntityHeaderActions>
-            <Typography className={classes.fileName} variant="caption">
-              {image.file}
-            </Typography>
-          </EntityHeaderActions>
           {showThumbOnImages && (
             <EntitySubheader>
               {url ? (
