@@ -27,6 +27,25 @@
 //   //URL.revokeObjectURL(objectURL);
 // });
 
+import {
+  Stitch,
+  RemoteMongoClient,
+  UserApiKeyCredential
+} from "mongodb-stitch-browser-sdk";
+var Client = Stitch.initializeDefaultAppClient("rend-app-nczgz");
+const Mongodb = Client.getServiceClient(
+  RemoteMongoClient.factory,
+  "mongodb-atlas"
+);
+const credential = new UserApiKeyCredential(
+  "vw2VXfikom72Czi3pyUHjoMXvmjTUEEuh5aNJ6rPgAVGd2Da9u9XTHc3BFguxcBe"
+);
+
+import { ModelInstance } from "../models/ModelInstance";
+import { ModelImage } from "../models/ModelImage";
+import { ModelActor } from "../models/ModelActor";
+import { genId } from "../util";
+
 const APP = "dnd_app_data";
 const IMAGES = "images";
 const ACTOR_REPOSITORY = "actorRepository.json";
@@ -35,6 +54,7 @@ const IMAGE_REPOSITORY = "imageRepository.json";
 
 type file = "actor" | "image" | "instance" | "file";
 let instance = null;
+let mongodb = null;
 class ServiceDB {
   static async init() {
     if (!instance) {
@@ -42,11 +62,70 @@ class ServiceDB {
         const serv = new ServiceDB();
         await checkDnDAppNS();
         await checkDnDAppDir();
-        res(serv);
+
+        Client.auth.loginWithCredential(credential).then(user => {
+          mongodb = Mongodb.db("dnd");
+          res(serv);
+        });
       });
     }
     return instance;
   }
+  async saveInstance(instance: ModelInstance) {
+    if (!instance.id) {
+      instance.id = genId();
+      await mongodb.collection("instances").insertOne(instance);
+    } else
+      await mongodb
+        .collection("instances")
+        .updateOne({ id: instance.id }, instance);
+    return instance;
+  }
+  getInstances() {
+    return mongodb
+      .collection("instances")
+      .find({})
+      .toArray();
+  }
+  deleteInstace(id) {
+    return mongodb.collection("instances").deleteOne({ id });
+  }
+  async saveImage(image: ModelImage) {
+    if (!image.id) {
+      image.id = genId();
+      await mongodb.collection("images").insertOne(image);
+    } else mongodb.collection("images").updateOne({ id: image.id }, image);
+
+    return image;
+  }
+  getImages() {
+    return mongodb
+      .collection("images")
+      .find({})
+      .toArray();
+  }
+  deleteImage(id) {
+    return mongodb.collection("images").deleteOne({ id });
+  }
+  async saveActor(actor: ModelActor) {
+    if (!actor.id) {
+      actor.id = genId();
+      await mongodb.collection("actors").insertOne(actor);
+    } else
+      await mongodb.collection("actors").updateOne({ id: actor.id }, actor);
+
+    return actor;
+  }
+  getActors() {
+    return mongodb
+      .collection("actors")
+      .find({})
+      .toArray();
+  }
+  deleteActor(id) {
+    return mongodb.collection("actors").deleteOne({ id });
+  }
+
   async getUrl(file: string): Promise<string> {
     const path = `/${APP}/${IMAGES}/${file}`;
     const res = await fetch(
@@ -87,7 +166,7 @@ class ServiceDB {
     });
     return await res.text();
   }
-  async deleteImg(name: string): Promise<void> {
+  async deleteFile(name: string): Promise<void> {
     const path = `/${APP}/${IMAGES}/${name}`;
     await fetch("https://api.dropboxapi.com/2/files/delete_v2", {
       method: "post",

@@ -68,10 +68,14 @@ export const { useOpenStream, useMessageStream } = NimmSync.connect(
 
 useOpenStream.historyState = (selector: string) => {
   const { on } = useMessageStream("history");
-  const [state, opers] = useOpenStream("historyState", selector);
+  let [state, opers] = useOpenStream("historyState", selector);
+
   on(opers.get);
 
-  return [state || {}, opers];
+  state = state || {};
+  state.currentKeyWords = [];
+
+  return [state, opers];
 };
 useOpenStream.historyHasBack = () => {
   let [history] = useOpenStream("history");
