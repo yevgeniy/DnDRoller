@@ -32,6 +32,7 @@ import {
 } from "../util/routerContext";
 import { RouteComponentProps } from "react-router-dom";
 import { ModelRoutedPage } from "../models/ModelRoutedPage";
+import { useOpenStream } from "../util/sync";
 
 const useStyles = makeStyles(theme => {
   return createStyles({
@@ -51,7 +52,11 @@ interface PageImagesLocationState {
 
 const PageInstances = React.memo(
   (props: ModelRoutedPage<PageImagesLocationState>) => {
-    const [currentKeyWords, setCurrentKeyWords] = useState([]);
+    let [
+      { currentKeyWords },
+      { update: updatePageImages }
+    ] = useOpenStream.historyState("PageImages");
+
     const [imageIds, createImage, deleteImage] = useImageIds(
       currentKeyWords.length ? currentKeyWords : null
     );
@@ -148,7 +153,7 @@ const PageInstances = React.memo(
 
         <Drawer open={searchIsOpen} onClose={searchDoClose} anchor="top">
           <Search
-            onUpdate={setCurrentKeyWords}
+            onUpdate={v => updatePageImages({ currentKeyWords: v })}
             currentKeyWords={currentKeyWords}
           />
         </Drawer>
