@@ -2,7 +2,6 @@ import { ModelImage } from "../models/ModelImage";
 import ServiceDB from "./ServiceDB";
 import ServiceActor from "./ServiceActor";
 import ServiceInstance from "./ServiceInstance";
-import { genId } from "../util";
 
 export interface File {
   name: string;

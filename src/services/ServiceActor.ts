@@ -1,7 +1,6 @@
 import { ModelActor } from "../models/ModelActor";
 import ServiceDB from "./ServiceDB";
 import ServiceInstance from "./ServiceInstance";
-import { genId } from "../util";
 
 let inst: Promise<ServiceActor> = null;
 class ServiceActor {

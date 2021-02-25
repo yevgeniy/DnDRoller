@@ -3,9 +3,6 @@ import { ModelInstance } from "../models/ModelInstance";
 import ServiceDB from "./ServiceDB";
 
 import "../util/extends";
-import { genId } from "../util";
-
-let cacheInstance: ModelInstance[] = null;
 
 let instance: Promise<ServiceInstance>;
 class ServiceInstance {
