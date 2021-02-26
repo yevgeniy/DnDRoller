@@ -160,22 +160,47 @@ export function useActorIds() {
 
   return [actorIds, createActor, deleteActor, cloneActor];
 }
-export function useActor(id: number): [ModelActor, (f: ModelActor) => void] {
+
+const repo = {};
+function useCommonHook(id, fn) {}
+
+export function useActor(
+  id: number
+): [
+  ModelActor,
+  (f: { [P in keyof ModelActor]?: ModelActor[P] }) => void,
+  () => void,
+  number?
+] {
   const serviceActor = useService(ServiceActor);
   const [actor, setActor] = useState(null);
+  const bufferActor = useRef(null);
+  const [resetToken, setResetToken] = useState(+new Date());
+
+  const [actor, resetToken, setActor, doReset] = useCommonHook(id, () => {});
 
   useEffect(() => {
     if (!serviceActor) return;
-    serviceActor.get(id).then(setActor);
-  }, [serviceActor]);
+    serviceActor.get(id).then(v => {
+      setActor(v);
+      bufferActor.current = v;
+    });
+  }, [serviceActor, id]);
 
   async function updateActor(updateActor) {
-    const newActor = { ...actor, ...updateActor };
-    await serviceActor.save(newActor);
-    setActor(newActor);
+    console.log("a", updateActor);
+    await serviceActor.save({ id, ...updateActor });
+    setActor(actor => ({ ...actor, ...updateActor }));
+  }
+  async function resetActor() {
+    if (bufferActor.current) {
+      await serviceActor.save({ ...bufferActor.current });
+      setActor(actor => ({ ...bufferActor.current }));
+      setResetToken(+new Date());
+    }
   }
 
-  return [actor, updateActor];
+  return [actor, updateActor, resetActor, resetToken];
 }
 export function useImage(id: number) {
   const serviceImage = useService(ServiceImage);
