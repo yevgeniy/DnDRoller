@@ -7,6 +7,7 @@ import {
   useMemo,
   useRef
 } from "react";
+import ReactDOM from "react-dom";
 import ServiceActor from "../services/ServiceActor";
 import ServiceInstance from "../services/ServiceInstance";
 import ServiceImage, { File } from "../services/ServiceImage";
@@ -80,8 +81,9 @@ export function useInstance(id: number | "empty", history: any = null) {
 
   async function updateInstance(updateInstance) {
     const newInstance = { ...instance, ...updateInstance };
+    setInstance(instance => ({ ...instance, ...newInstance }));
     /*if instance has an id save it in db*/
-    if (newInstance.id) await serviceInstance.save(newInstance);
+    if (newInstance.id) await serviceInstance.save({ id, ...updateInstance });
     else {
       /*else save it in history if use backs up*/
       history &&
@@ -90,7 +92,6 @@ export function useInstance(id: number | "empty", history: any = null) {
           instance: newInstance
         });
     }
-    setInstance(newInstance);
   }
   /*save adhock instance in a db*/
   async function createInstance(name: string, data: ModelInstance = null) {
@@ -112,9 +113,8 @@ export function useInstance(id: number | "empty", history: any = null) {
     setInstance(newInstance);
   }
   async function cloneActor(actor: ModelActor) {
-    let newactor = await serviceActor.createActor(`${actor.name} -- Clone`);
-    let name, id;
-    await serviceActor.save({ ...actor, name: newactor.name, id: newactor.id });
+    let newactor = await serviceActor.cloneActorFrom(actor);
+
     const newinstance = await serviceInstance.save({
       ...instance,
       actors: [...instance.actors, newactor.id]
@@ -153,54 +153,105 @@ export function useActorIds() {
     setActorIds([...actorIds.filter(v => v !== id)]);
   }
   async function cloneActor(actor: ModelActor) {
-    let newactor = await serviceActor.createActor(`${actor.name} -- Clone`);
-    await serviceActor.save({ ...actor, name: newactor.name, id: newactor.id });
+    let newactor = await serviceActor.cloneActorFrom(actor);
     setActorIds([...actorIds, newactor.id]);
   }
 
   return [actorIds, createActor, deleteActor, cloneActor];
 }
 
-const repo = {};
-function useCommonHook(id, fn) {}
+let repos = [];
+export function useCommonHook(hook, ...args) {
+  const [rel, setrel] = useState(+new Date());
+
+  let commonrepo = repos.find(v => v.isSame(hook, args));
+  if (!commonrepo) {
+    commonrepo = new repoobject(hook, args);
+    repos.push(commonrepo);
+    commonrepo.wire();
+  }
+
+  useEffect(() => {
+    const c = commonrepo.attach(() => setrel(+new Date()));
+
+    return () => {
+      c();
+      if (!commonrepo.listeners.length) {
+        commonrepo.destruct();
+        repos = repos.filter(v => v !== commonrepo);
+      }
+    };
+  }, [commonrepo]);
+
+  return commonrepo.res;
+}
+
+class repoobject {
+  args: any[] = null;
+  hook: any = null;
+  listeners: any[];
+  elm: any = null;
+  res: any = null;
+  constructor(hook, args) {
+    this.hook = hook;
+    this.args = args || [];
+    this.listeners = [];
+    this.elm = document.createElement("div");
+  }
+  wire() {
+    //@ts-ignore
+    ReactDOM.render(
+      React.createElement(() => {
+        const res = this.hook(...this.args);
+
+        this.res = res;
+        this.listeners.forEach(fn => fn(res));
+        return null;
+      }, {}),
+      this.elm
+    );
+  }
+  destruct() {
+    console.log("destro");
+    ReactDOM.unmountComponentAtNode(this.elm);
+  }
+  isSame(hook, args = []) {
+    if (hook !== this.hook) return false;
+
+    if (args.length !== this.args.length) return false;
+
+    for (let x = 0; x < args.length; x++) {
+      if (args[x] !== this.args[x]) return false;
+    }
+
+    return true;
+  }
+  attach(fn) {
+    this.listeners.push(fn);
+    return () => {
+      this.listeners = this.listeners.filter(v => v !== fn);
+    };
+  }
+}
 
 export function useActor(
   id: number
-): [
-  ModelActor,
-  (f: { [P in keyof ModelActor]?: ModelActor[P] }) => void,
-  () => void,
-  number?
-] {
+): [ModelActor, (f: { [P in keyof ModelActor]?: ModelActor[P] }) => void] {
   const serviceActor = useService(ServiceActor);
   const [actor, setActor] = useState(null);
-  const bufferActor = useRef(null);
-  const [resetToken, setResetToken] = useState(+new Date());
-
-  const [actor, resetToken, setActor, doReset] = useCommonHook(id, () => {});
 
   useEffect(() => {
     if (!serviceActor) return;
     serviceActor.get(id).then(v => {
       setActor(v);
-      bufferActor.current = v;
     });
   }, [serviceActor, id]);
-
   async function updateActor(updateActor) {
-    console.log("a", updateActor);
-    await serviceActor.save({ id, ...updateActor });
     setActor(actor => ({ ...actor, ...updateActor }));
-  }
-  async function resetActor() {
-    if (bufferActor.current) {
-      await serviceActor.save({ ...bufferActor.current });
-      setActor(actor => ({ ...bufferActor.current }));
-      setResetToken(+new Date());
-    }
+    await serviceActor.save({ id, ...updateActor });
   }
 
-  return [actor, updateActor, resetActor, resetToken];
+  return [actor, updateActor];
 }
 export function useImage(id: number) {
   const serviceImage = useService(ServiceImage);
@@ -223,15 +274,15 @@ export function useImage(id: number) {
 
   async function updateImage(updateImage) {
     const newImage = { ...image, ...updateImage };
-    await serviceImage.save(newImage);
     setImage(newImage);
+    await serviceImage.save(newImage);
   }
   async function upload(f: File) {
     const newimage = await serviceImage.upload(id, f);
     setImage({ ...newimage });
   }
 
-  return { image, updateImage, upload, url };
+  return [image, updateImage, upload, url];
 }
 export function useInstanceIds() {
   const serviceInstance = useService(ServiceInstance);
@@ -254,8 +305,11 @@ export function useInstanceIds() {
     setInstanceIds([...instanceIds.filter(v => v !== id)]);
   };
   const cloneInstance = async (instance: ModelInstance) => {
+    const lastNumber = +instance.name.split("").slice(-1)[0];
+    const newNumber = isNaN(lastNumber) ? 1 : lastNumber + 1;
+
     const newinstance = await serviceInstance.createInstance(
-      `${instance.name} -- Clone`
+      `${instance.name}${newNumber}`
     );
     await serviceInstance.save({
       ...instance,
@@ -392,6 +446,27 @@ export function useActorIdsForImage(id: number) {
   };
 
   return { actorIds, setActors };
+}
+export function useResetable(hook, id) {
+  const [ent, updateEnt, ...other] = useCommonHook(hook, id) || [null, null];
+
+  const [resetToken, setResetToken] = useState(+new Date());
+  const buffer = useRef(null);
+
+  useEffect(() => {
+    if (!ent) return;
+
+    buffer.current = ent;
+  }, [!!ent]);
+
+  async function resetEnt() {
+    if (buffer.current) {
+      updateEnt({ ...buffer.current });
+      setResetToken(+new Date());
+    }
+  }
+
+  return [ent, updateEnt, resetEnt, resetToken, ...(other || [])];
 }
 
 export function useHot() {

@@ -186,6 +186,7 @@ const Entity = React.memo(function<T>({
   }
   function openActionPanel(e) {
     e.stopPropagation();
+
     doActionsOpen().then(updates => {
       if (updates) updateEntity(updates);
       doActionsClose();
@@ -283,8 +284,7 @@ const Entity = React.memo(function<T>({
                 return React.cloneElement(v, {
                   className: clsx(v.props.className, classes.avatarName),
                   onClick: e => {
-                    e.stopPropagation();
-                    doActionsOpen();
+                    openActionPanel(e);
                   }
                 });
               return v;

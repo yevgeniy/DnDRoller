@@ -12,6 +12,8 @@ import ReplyAll from "@material-ui/icons/ReplyAll";
 import { Link } from "react-router-dom";
 
 import { ModelInstance } from "../models/ModelInstance";
+import { useResetable, useInstance } from "../util/hooks";
+import { Input } from "../components";
 
 const useStyle = makeStyles(theme => {
   return createStyles({
@@ -57,32 +59,38 @@ const useStyle = makeStyles(theme => {
 });
 
 type PageInstancesActionsProps = {
-  [P in keyof ModelInstance]: ModelInstance[P];
-} & {
-  /*update any prop of actor*/
-  onDone?: (a: { [P in keyof ModelInstance]?: ModelInstance[P] }) => void;
+  id: number;
+  onDone?: (a?: { [P in keyof ModelInstance]?: ModelInstance[P] }) => void;
 };
 
 const PageInstancesActions = React.memo((props: PageInstancesActionsProps) => {
   const classes = useStyle({});
-  const [name, setName] = useState(props.name);
+
+  const [instance, updateInstance, resetInstance, resetToken] = useResetable(
+    useInstance,
+    props.id
+  ) || [null, null, null, null];
 
   const onUpdateInstance = (e: any) => {
     e.preventDefault();
-    props.onDone({ name });
+    props.onDone();
   };
   const onReset = e => {
-    setName(props.name);
+    resetInstance();
   };
+
+  if (!instance) return null;
+
+  const { name, created } = instance;
 
   return (
     <div className={classes.container}>
       <Card className={classes.nameCard}>
         <CardHeader
           avatar={<AccessTime />}
-          title={props.name}
+          title={name}
           subheader={moment()
-            .subtract(+new Date() - props.created, "ms")
+            .subtract(+new Date() - created, "ms")
             .calendar()}
           action={
             <>
@@ -104,29 +112,15 @@ const PageInstancesActions = React.memo((props: PageInstancesActionsProps) => {
       </Card>
 
       <form onSubmit={onUpdateInstance}>
-        <TextField
+        <Input
           className={classes.mainEntry}
           label="Name"
-          value={name}
-          onChange={e => setName(e.target.value)}
-          InputLabelProps={{
-            shrink: true
-          }}
-          margin="dense"
-          variant="filled"
+          defaultValue={name}
+          onChange={v => updateInstance({ name: v })}
+          resetToken={resetToken}
         />
 
         <div>
-          <Fab
-            className={classes.reset}
-            variant="extended"
-            color="primary"
-            size="small"
-            type="submit"
-          >
-            <SaveAlt />
-            Save
-          </Fab>
           <Fab
             className={classes.reset}
             variant="extended"

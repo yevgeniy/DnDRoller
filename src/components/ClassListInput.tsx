@@ -53,10 +53,10 @@ interface ClassListInputProps {
   onUpdate: (v: { [k: string]: number }) => void;
 }
 function ClassListInput(props: ClassListInputProps) {
-  const [clss, setClss] = useState(props.classes || {});
+  const [clss, setClss] = useState({ ...props.classes } || {});
   const elm = useRef();
   useEffect(() => {
-    setClss(props.classes);
+    setClss({ ...props.classes });
   }, [props.classes]);
   const classes = useStyles({});
   const [newClass, setNewClass] = useState();

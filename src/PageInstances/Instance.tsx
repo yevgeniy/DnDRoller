@@ -13,7 +13,7 @@ import { Chip } from "../components";
 import moment from "moment";
 import Actions from "./Actions";
 
-import { useInstance } from "../util/hooks";
+import { useInstance, useCommonHook } from "../util/hooks";
 
 import { ModelInstance } from "../models/ModelInstance";
 import InstanceContent from "./InstanceContent";
@@ -62,7 +62,10 @@ type InstanceProps = { [P in keyof ModelInstance]?: ModelInstance[P] } & {
 
 const Instance = React.memo((props: InstanceProps) => {
   const classes = useStyles({});
-  const [instance, updateInstance] = useInstance(props.id);
+  const [instance, updateInstance] = useCommonHook(useInstance, props.id) || [
+    null,
+    null
+  ];
 
   useEffect(() => {
     if (!instance) return;

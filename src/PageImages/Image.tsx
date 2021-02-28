@@ -33,7 +33,13 @@ import {
 } from "../components";
 
 import { ModelImage } from "../models/ModelImage";
-import { useImage, useDiscover, useHot, useHistoryState } from "../util/hooks";
+import {
+  useImage,
+  useDiscover,
+  useHot,
+  useHistoryState,
+  useCommonHook
+} from "../util/hooks";
 import { useOpenStream } from "../util/sync";
 import Actions from "./Actions";
 import ImageContent from "./ImageContent";
@@ -105,7 +111,10 @@ type ImageProps = { [P in keyof ModelImage]?: ModelImage[P] } & {
 const Image = React.memo((props: ImageProps) => {
   const classes = useStyles({});
   const buttonLabelClasses = useStylesButtonLabel({});
-  const { image, updateImage, upload, url } = useImage(props.id);
+  const [image, updateImage, upload, url] = useCommonHook(
+    useImage,
+    props.id
+  ) || [null, null, null, null];
 
   useEffect(() => {
     if (!image) return;
@@ -166,11 +175,7 @@ const Image = React.memo((props: ImageProps) => {
             <ImageContent {...image} />
           </EntityContent>
           <EntityActions>
-            <Actions
-              {...image}
-              quickUpdateAction={updateImage}
-              upload={upload}
-            />
+            <Actions {...image} />
           </EntityActions>
         </Entity>
       </>

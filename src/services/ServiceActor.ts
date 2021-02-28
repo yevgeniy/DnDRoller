@@ -48,6 +48,21 @@ class ServiceActor {
     newActor = await this.save(newActor);
     return newActor;
   }
+  async cloneActorFrom(actor: ModelActor): Promise<ModelActor> {
+    const lastNumber = +(actor.name.match(/\d+$/) || [])[0];
+
+    let newactor = await this.save({
+      ...actor,
+      name: isNaN(lastNumber)
+        ? `${actor.name}1`
+        : actor.name.replace(/\d+$/, lastNumber + 1 + ""),
+      id: undefined,
+      //@ts-ignore
+      _id: undefined
+    });
+
+    return newactor;
+  }
   async getForImage(imageId: number): Promise<ModelActor[]> {
     const actors = await this.getAll();
     return actors.filter(actor =>

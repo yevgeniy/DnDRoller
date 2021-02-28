@@ -5,11 +5,12 @@ import Divider from "@material-ui/core/Divider";
 import Replay from "@material-ui/icons/Replay";
 import Photo from "@material-ui/icons/Photo";
 import { Card, TextField, Fab } from "@material-ui/core";
-import { CardHeader } from "../components";
+import { CardHeader, Input } from "../components";
 import { ModelImage } from "../models/ModelImage";
 import KeywordListInput from "../components/KeywordListInput";
 import Uploader from "../components/Uploader";
 import File from "../services/ServiceImage";
+import { useImage, useResetable } from "../util/hooks";
 
 const useStyle = makeStyles(theme => {
   return createStyles({
@@ -47,44 +48,42 @@ const useStyle = makeStyles(theme => {
 });
 
 type ActorProps = { [P in keyof ModelImage]: ModelImage[P] } & {
-  onDone?: (a: { [P in keyof ModelImage]?: ModelImage[P] }) => void;
-  quickUpdateAction: (a: { [P in keyof ModelImage]?: ModelImage[P] }) => void;
-  setOpenAction: (a: boolean) => void;
-  upload: (f: File) => void;
+  id: number;
 };
 
 const Actions = React.memo((props: ActorProps) => {
   const classes = useStyle({});
-  const [name, setName] = useState(props.name);
 
-  const onUpdateName = e => {
-    e.preventDefault();
-    props.onDone({ name: name.trim() });
-  };
+  const [image, updateImage, reset, resetToken, upload] = useResetable(
+    useImage,
+    props.id
+  ) || [null, null, null, null, null];
+
+  console.log(resetToken);
   const onReset = e => {
-    setName(props.name);
+    reset();
   };
   const onUpdateKeyWords = (keywords: string[]) => {
-    props.quickUpdateAction({ keywords });
+    updateImage({ keywords });
   };
+
+  if (!image) return null;
+
+  const { name, keywords } = image;
 
   return (
     <div className={classes.container}>
       <Card className={classes.nameCard}>
-        <CardHeader avatar={<Photo />} title={props.name} />
+        <CardHeader avatar={<Photo />} title={name} />
       </Card>
 
-      <form onSubmit={onUpdateName}>
-        <TextField
+      <form onSubmit={e => e.preventDefault()}>
+        <Input
           className={classes.mainEntry}
           label="Name"
-          value={name || ""}
-          onChange={e => setName(e.target.value)}
-          InputLabelProps={{
-            shrink: true
-          }}
-          margin="dense"
-          variant="filled"
+          defaultValue={name || ""}
+          onChange={v => updateImage({ name: v.trim() })}
+          resetToken={resetToken}
         />
         <Fab
           className={classes.reset}
@@ -97,10 +96,10 @@ const Actions = React.memo((props: ActorProps) => {
       </form>
 
       <div className={classes.uploaderContainer}>
-        <Uploader onSelected={props.upload} />
+        <Uploader onSelected={upload} />
       </div>
 
-      <KeywordListInput keywords={props.keywords} onUpdate={onUpdateKeyWords} />
+      <KeywordListInput keywords={keywords} onUpdate={onUpdateKeyWords} />
     </div>
   );
 });

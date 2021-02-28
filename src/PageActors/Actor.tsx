@@ -22,7 +22,13 @@ import {
 import { Button } from "@material-ui/core";
 
 import { ModelActor } from "../models/ModelActor";
-import { useActor, useHot, useDiscover, useModalState } from "../util/hooks";
+import {
+  useActor,
+  useHot,
+  useDiscover,
+  useModalState,
+  useCommonHook
+} from "../util/hooks";
 
 import Actions from "./Actions";
 
@@ -62,7 +68,10 @@ type ActorProps = { [P in keyof ModelActor]?: ModelActor[P] } & {
 
 const Actor = React.memo((props: ActorProps) => {
   const classes = useStyles({});
-  const [actor, updateActor] = useActor(props.id);
+  const [actor, updateActor] = useCommonHook(useActor, props.id) || [
+    null,
+    null
+  ];
 
   useEffect(() => {
     if (!actor) return;

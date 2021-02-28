@@ -1,5 +1,5 @@
 import * as React from "react";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { makeStyles, createStyles } from "@material-ui/core/styles";
 
 import FaceIcon from "@material-ui/icons/Face";
@@ -17,11 +17,12 @@ import {
   Fab,
   FormControl
 } from "@material-ui/core";
-import { CardHeader } from "../components";
+import { CardHeader, Input } from "../components";
 
 import { ActorSize } from "../enums";
 import ClassListInput from "../components/ClassListInput";
 import { ModelActor } from "../models/ModelActor";
+import { useActor, useResetable } from "../util/hooks";
 
 const useStyle = makeStyles(theme => {
   return createStyles({
@@ -58,88 +59,62 @@ const useStyle = makeStyles(theme => {
   });
 });
 
-type PageActorsActionsProps = { [P in keyof ModelActor]: ModelActor[P] } & {
+type PageActorsActionsProps = {
   /*update any prop of actor*/
-  onDone?: (a: { [P in keyof ModelActor]?: ModelActor[P] }) => void;
+  id: number;
+  onDone?: (a?: { [P in keyof ModelActor]?: ModelActor[P] }) => void;
 };
 
 const PageActorsActions = React.memo((props: PageActorsActionsProps) => {
   const classes = useStyle({});
-  const [name, setName] = useState(props.name);
-  const [hp, setHp] = useState(props.hp);
-  const [cls, setCls] = useState(props.class);
-  const [race, setRace] = useState(props.race);
-  const [size, setSize] = useState(props.size);
-  const [hpCurrent, setHpCurrent] = useState(props.hpCurrent);
+  const [actor, updateActor, resetActor, resetToken] = useResetable(
+    useActor,
+    props.id
+  ) || [null, null, null, null];
 
-  const onUpdateActor = (e: any) => {
-    e.preventDefault();
-    props.onDone({
-      name,
-      hp,
-      hpCurrent: hpCurrent === null ? hp : hpCurrent,
-      class: cls,
-      race,
-      size
-    });
-  };
-  const onReset = e => {
-    setName(props.name);
-    setHp(props.hp);
-    setCls(props.class);
-    setRace(props.race);
-    setSize(props.size);
-  };
+  if (!actor) return null;
+
+  const { name, hp, class: cl, race, size, hpCurrent } = actor;
+
   const onResetHpCurrent = e => {
-    props.onDone({ hpCurrent: hp });
-  };
-  const onSetHpCurrent = e => {
-    e.preventDefault();
-    props.onDone({ hpCurrent: hpCurrent });
+    updateActor({ hpCurrent: hp });
+    props.onDone();
   };
 
   const c: string[] = [];
-  for (let i in props.class) c.push(`${i} lvl ${props.class[i]}`);
+  for (let i in cl) c.push(`${i} lvl ${cl[i]}`);
 
   return (
     <div className={classes.container}>
       <Card className={classes.nameCard}>
         <CardHeader
           avatar={<FaceIcon />}
-          title={props.name}
+          title={name}
           subheader={c.join(", ")}
         />
       </Card>
 
-      <form onSubmit={onUpdateActor}>
-        <TextField
+      <form>
+        <Input
           className={classes.mainEntry}
           label="Name"
-          value={name}
-          onChange={e => setName(e.target.value)}
-          InputLabelProps={{
-            shrink: true
-          }}
-          margin="dense"
-          variant="filled"
+          defaultValue={name}
+          onChange={v => updateActor({ name: v })}
+          resetToken={resetToken}
         />
-        <TextField
+        <Input
           className={classes.mainEntry}
           label="Hp"
-          value={hp || ""}
+          defaultValue={hp || ""}
           type="number"
-          onChange={e => setHp(+e.target.value)}
-          InputLabelProps={{
-            shrink: true
-          }}
-          margin="dense"
-          variant="filled"
+          onChange={v => updateActor({ hp: +v })}
+          resetToken={resetToken}
         />
         <FormControl variant="filled" className={classes.formControl}>
           <InputLabel htmlFor="filled-size-simple">Size</InputLabel>
           <Select
-            value={size}
-            onChange={e => setSize(e.target.value as ActorSize)}
+            defaultValue={size}
+            onChange={e => updateActor({ size: e.target.value as ActorSize })}
             input={<FilledInput name="size" id="filled-size-simple" />}
           >
             <MenuItem value={null}>
@@ -153,54 +128,37 @@ const PageActorsActions = React.memo((props: PageActorsActionsProps) => {
             <MenuItem value={"huge"}>huge</MenuItem>
           </Select>
         </FormControl>
-        <TextField
+        <Input
           className={classes.mainEntry}
           label="Race"
-          value={race || ""}
-          onChange={e => setRace(e.target.value)}
-          InputLabelProps={{
-            shrink: true
-          }}
-          margin="dense"
-          variant="filled"
+          defaultValue={race || ""}
+          onChange={v => updateActor({ race: v })}
+          resetToken={resetToken}
         />
-        <ClassListInput classes={cls} onUpdate={setCls} />
-        <div>
-          <Fab
-            className={classes.reset}
-            variant="extended"
-            color="primary"
-            size="small"
-            type="submit"
-          >
-            <SaveAlt />
-            Save
-          </Fab>
-          <Fab
-            className={classes.reset}
-            variant="extended"
-            color="secondary"
-            size="small"
-            onClick={onReset}
-          >
-            <Replay />
-            Reset
-          </Fab>
-        </div>
+        <ClassListInput
+          classes={cl}
+          onUpdate={v => updateActor({ class: v })}
+        />
       </form>
+
+      <Fab
+        className={classes.reset}
+        color="secondary"
+        variant="extended"
+        size="small"
+        onClick={resetActor}
+      >
+        <Replay />
+        Reset
+      </Fab>
       <Divider />
-      <form onSubmit={onSetHpCurrent}>
-        <TextField
+      <form onSubmit={e => e.preventDefault()}>
+        <Input
           className={classes.entry2}
           label="Current Hp"
-          value={hpCurrent || ""}
+          defaultValue={hpCurrent || ""}
           type="number"
-          onChange={e => setHpCurrent(+e.target.value)}
-          InputLabelProps={{
-            shrink: true
-          }}
-          margin="dense"
-          variant="filled"
+          onChange={v => updateActor({ hpCurrent: +v })}
         />
         <Fab
           className={classes.reset}

@@ -108,7 +108,7 @@ interface IImageEntry {
 }
 const ImageEntry = React.memo((props: IImageEntry) => {
   const classes = useImageEntryStyles({});
-  const { image, url } = useImage(props.id);
+  const [image, , , url] = useImage(props.id);
 
   if (!image) return null;
   if (!url) return null;

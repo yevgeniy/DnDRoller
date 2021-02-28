@@ -79,7 +79,7 @@ const PageImage = React.memo(
       RouterViewContextState & PageImageLocationState
     >
   ) => {
-    const { url } = useImage(props.location.state.imageId);
+    const [, , , url] = useImage(props.location.state.imageId);
     const classes = useStyles({});
 
     const imgRef = useRef();

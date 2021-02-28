@@ -78,7 +78,7 @@ class ServiceDB {
     } else
       await mongodb
         .collection("instances")
-        .updateOne({ id: instance.id }, instance);
+        .updateOne({ id: instance.id }, { $set: instance });
     return instance;
   }
   getInstances() {
@@ -94,7 +94,8 @@ class ServiceDB {
     if (!image.id) {
       image.id = genId();
       await mongodb.collection("images").insertOne(image);
-    } else mongodb.collection("images").updateOne({ id: image.id }, image);
+    } else
+      mongodb.collection("images").updateOne({ id: image.id }, { $set: image });
 
     return image;
   }
@@ -112,7 +113,9 @@ class ServiceDB {
       actor.id = genId();
       await mongodb.collection("actors").insertOne(actor);
     } else
-      await mongodb.collection("actors").updateOne({ id: actor.id }, actor);
+      await mongodb
+        .collection("actors")
+        .updateOne({ id: actor.id }, { $set: actor });
 
     return actor;
   }
