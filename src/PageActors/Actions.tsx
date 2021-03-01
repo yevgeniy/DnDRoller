@@ -25,6 +25,7 @@ import { ActorSize } from "../enums";
 import ClassListInput from "../components/ClassListInput";
 import { ModelActor } from "../models/ModelActor";
 import { useActor, useResetable } from "../util/hooks";
+import KeywordListInput from "../components/KeywordListInput";
 
 const useStyle = makeStyles(theme => {
   return createStyles({
@@ -76,11 +77,24 @@ const PageActorsActions = React.memo((props: PageActorsActionsProps) => {
 
   if (!actor) return null;
 
-  const { name, hp, class: cl, race, size, hpCurrent, isTemplate } = actor;
+  const {
+    name,
+    hp,
+    class: cl,
+    race,
+    size,
+    hpCurrent,
+    isTemplate,
+    keywords
+  } = actor;
 
   const onResetHpCurrent = e => {
     updateActor({ hpCurrent: hp });
     props.onDone();
+  };
+
+  const onUpdateKeyWords = (keywords: string[]) => {
+    updateActor({ keywords });
   };
 
   const c: string[] = [];
@@ -153,6 +167,7 @@ const PageActorsActions = React.memo((props: PageActorsActionsProps) => {
           classes={cl}
           onUpdate={v => updateActor({ class: v })}
         />
+        <KeywordListInput keywords={keywords} onUpdate={onUpdateKeyWords} />
       </form>
 
       <Fab
