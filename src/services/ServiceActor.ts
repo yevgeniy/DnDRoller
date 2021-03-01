@@ -60,14 +60,15 @@ class ServiceActor {
     return newActor;
   }
   async cloneActorFrom(actor: ModelActor): Promise<ModelActor> {
-    const lastNumber = +(actor.name.match(/\d+$/) || [])[0];
+    const predicate = actor.name.match(/(\w*?)\d*?$/)[1];
+    const counts = await this.getAll().then(actors=>actors.filter(v=>v.name.match(new RegExp(`^${predicate}`))))
+      .then(v=>v.length);
+
 
     let newactor = await this.save({
       ...actor,
       isTemplate: false,
-      name: isNaN(lastNumber)
-        ? `${actor.name}1`
-        : actor.name.replace(/\d+$/, lastNumber + 1 + ""),
+      name: actor.name + counts,
       id: undefined,
       //@ts-ignore
       _id: undefined

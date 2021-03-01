@@ -38,10 +38,13 @@ interface PageInstanceLocationState {
 const PageInstance = React.memo(
   (props: ModelRoutedPage<PageInstanceLocationState>) => {
     props.location.state = props.location.state || {};
-    const [instance, updateInstance, createInstance, cloneActor] = useInstance(
-      props.location.state.id || "empty",
-      props.history
-    );
+    const [
+      instance,
+      updateInstance,
+      createInstance,
+      cloneActor,
+      updateActors
+    ] = useInstance(props.location.state.id || "empty", props.history);
     const [menuOpen, setMenuOpen] = useState(false);
     const [resetDialogConfirOpen, setResetDialogConfirOpen] = useState(false);
     const [resetActors, setResetActors] = useState();
@@ -55,7 +58,7 @@ const PageInstance = React.memo(
     };
     const onAddActors = a => {
       console.log(a);
-      updateInstance({ actors: [...a] });
+      updateActors(a);
       setSelectActors(false);
     };
     const onSetSort = (by: SortActorsBy) => {

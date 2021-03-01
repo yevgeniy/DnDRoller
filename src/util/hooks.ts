@@ -120,13 +120,13 @@ export function useInstance(id: number | "empty", history: any = null) {
       actors: [...instance.actors, newactor.id]
     });
 
-    setInstance(newinstance);
+    updateInstance(newinstance);
   }
 
   async function updateActors(ids: number[]) {
     const idsToAdd = await serviceActor.cloneTemplates(ids);
 
-    setInstance({ ...instance, actors: idsToAdd });
+    updateInstance({ ...instance, actors: idsToAdd });
   }
 
   return [instance, updateInstance, createInstance, cloneActor, updateActors];
