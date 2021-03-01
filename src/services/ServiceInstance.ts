@@ -3,6 +3,7 @@ import { ModelInstance } from "../models/ModelInstance";
 import ServiceDB from "./ServiceDB";
 
 import "../util/extends";
+import ServiceActor from "./ServiceActor";
 
 let instance: Promise<ServiceInstance>;
 class ServiceInstance {
@@ -35,6 +36,7 @@ class ServiceInstance {
       v.filter(z => (z.actors || []).some(a => a === id))
     );
   }
+
   async getForImage(id: number): Promise<ModelInstance[]> {
     return await this.getAll().then(v =>
       v.filter(z => (z.images || []).some(a => a === id))

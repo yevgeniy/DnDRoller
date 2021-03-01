@@ -27,7 +27,8 @@ import {
   useInstance,
   useImage,
   useInstanceIdsForActor,
-  useActor
+  useActor,
+  useCommonHook
 } from "../util/hooks";
 import { ModelInstance } from "../models/ModelInstance";
 
@@ -40,27 +41,34 @@ const useStyles = makeStyles(
   { name: "InstanceContent" }
 );
 
-type IInstanceContent = { [P in keyof ModelInstance]: ModelInstance[P] } & {
-  updateInstance: (instance: ModelInstance) => any;
+type IInstanceContent = {
+  id: number;
   className?: string;
   classes?: any;
 };
 const InstanceContent = ({
   className,
   classes: _classes,
-  updateInstance,
-  ...instance
+  id
 }: IInstanceContent) => {
   const classes = useStyles({ classes: _classes });
+
+  const [
+    instance,
+    updateInstance,
+    createInstance,
+    cloneActor,
+    updateActors
+  ] = useCommonHook(useInstance, id) || [null, null, null, null, null];
 
   const setImageIds = (ids: number[]) => {
     instance.images = ids;
     updateInstance({ ...instance });
   };
   const setActorIds = (ids: number[]) => {
-    instance.actors = ids;
-    updateInstance({ ...instance });
+    updateActors(ids);
   };
+  if (!instance) return null;
   return (
     <EntityContentTabs
       className={clsx(classes.root, className)}

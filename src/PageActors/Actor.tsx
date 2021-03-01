@@ -1,11 +1,13 @@
 import * as React from "react";
 import { useState, useEffect, useRef } from "react";
 import { makeStyles, createStyles } from "@material-ui/core/styles";
+import clsx from "clsx";
 
 import Avatar from "@material-ui/core/Avatar";
 
 import red from "@material-ui/core/colors/red";
 import orange from "@material-ui/core/colors/orange";
+import grey from "@material-ui/core/colors/grey";
 
 import FaceIcon from "@material-ui/icons/Face";
 
@@ -52,6 +54,9 @@ const useStyles = makeStyles(theme =>
         minWidth: "auto",
         margin: theme.spacing(1 / 2)
       }
+    },
+    isTemplate: {
+      backgroundColor: grey[700]
     }
   })
 );
@@ -103,7 +108,11 @@ const Actor = React.memo((props: ActorProps) => {
         subheader={c.join(", ")}
         updateEntity={updateActor}
       >
-        <Avatar aria-label="Recipe" className={classes.avatar}>
+        <Avatar
+          className={clsx(classes.avatar, {
+            [classes.isTemplate]: actor.isTemplate
+          })}
+        >
           {actor.name[0]}
         </Avatar>
         <EntityTitle>

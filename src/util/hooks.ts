@@ -123,7 +123,13 @@ export function useInstance(id: number | "empty", history: any = null) {
     setInstance(newinstance);
   }
 
-  return [instance, updateInstance, createInstance, cloneActor];
+  async function updateActors(ids: number[]) {
+    const idsToAdd = await serviceActor.cloneTemplates(ids);
+
+    setInstance({ ...instance, actors: idsToAdd });
+  }
+
+  return [instance, updateInstance, createInstance, cloneActor, updateActors];
 }
 export function useActorIds() {
   const serviceActor = useService(ServiceActor);

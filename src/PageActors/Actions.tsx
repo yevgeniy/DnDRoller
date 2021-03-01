@@ -15,6 +15,8 @@ import {
   Card,
   TextField,
   Fab,
+  FormControlLabel,
+  Switch,
   FormControl
 } from "@material-ui/core";
 import { CardHeader, Input } from "../components";
@@ -74,7 +76,7 @@ const PageActorsActions = React.memo((props: PageActorsActionsProps) => {
 
   if (!actor) return null;
 
-  const { name, hp, class: cl, race, size, hpCurrent } = actor;
+  const { name, hp, class: cl, race, size, hpCurrent, isTemplate } = actor;
 
   const onResetHpCurrent = e => {
     updateActor({ hpCurrent: hp });
@@ -95,6 +97,18 @@ const PageActorsActions = React.memo((props: PageActorsActionsProps) => {
       </Card>
 
       <form>
+        <FormControlLabel
+          control={
+            <Switch
+              checked={isTemplate}
+              onChange={e => updateActor({ isTemplate: e.target.checked })}
+              name="checkedB"
+              color="primary"
+            />
+          }
+          label="Is Template"
+        />
+
         <Input
           className={classes.mainEntry}
           label="Name"

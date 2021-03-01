@@ -30,6 +30,17 @@ class ServiceActor {
 
     return res.filter(v => ids.some(z => v.id === z));
   }
+  async cloneTemplates(actorIds: number[]): Promise<number[]> {
+    const prospectiveActors = await this.getAll(actorIds);
+    const res = [];
+    for (let actor of prospectiveActors) {
+      if (actor.isTemplate)
+        res.push(await this.cloneActorFrom(actor).then(v => v.id));
+      else res.push(actor.id);
+    }
+
+    return res;
+  }
   async getKeyWords(): Promise<string[]> {
     const res = await this.getAll();
     return Array.from(new Set(res.map(v => v.keywords || []).flat()));
@@ -53,6 +64,7 @@ class ServiceActor {
 
     let newactor = await this.save({
       ...actor,
+      isTemplate: false,
       name: isNaN(lastNumber)
         ? `${actor.name}1`
         : actor.name.replace(/\d+$/, lastNumber + 1 + ""),

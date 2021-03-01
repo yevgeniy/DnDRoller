@@ -113,7 +113,7 @@ const Instance = React.memo((props: InstanceProps) => {
         />
       </EntityHeaderActions>
       <EntityContent>
-        <InstanceContent {...instance} updateInstance={updateInstance} />
+        <InstanceContent id={instance.id} />
       </EntityContent>
       <EntityActions>
         <Actions {...instance} />
