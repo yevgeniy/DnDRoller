@@ -4,7 +4,16 @@ import { makeStyles, createStyles } from "@material-ui/core/styles";
 import Divider from "@material-ui/core/Divider";
 import Replay from "@material-ui/icons/Replay";
 import Photo from "@material-ui/icons/Photo";
-import { Card, TextField, Fab } from "@material-ui/core";
+import {
+  Card,
+  TextField,
+  Fab,
+  FormControl,
+  FormLabel,
+  Radio,
+  RadioGroup,
+  FormControlLabel
+} from "@material-ui/core";
 import { CardHeader, Input } from "../components";
 import { ModelImage } from "../models/ModelImage";
 import KeywordListInput from "../components/KeywordListInput";
@@ -69,7 +78,7 @@ const Actions = React.memo((props: ActorProps) => {
 
   if (!image) return null;
 
-  const { name, keywords } = image;
+  const { name, keywords, type } = image;
 
   return (
     <div className={classes.container}>
@@ -85,13 +94,27 @@ const Actions = React.memo((props: ActorProps) => {
           onChange={v => updateImage({ name: v.trim() })}
           resetToken={resetToken}
         />
+        <FormControl component="fieldset">
+          <RadioGroup
+            row
+            aria-label="type"
+            name="type"
+            value={type || "image"}
+            onChange={e => updateImage({ type: e.target.value })}
+          >
+            <FormControlLabel value="image" control={<Radio />} label="Image" />
+            <FormControlLabel value="site" control={<Radio />} label="Site" />
+          </RadioGroup>
+        </FormControl>
         <Fab
           className={classes.reset}
           color="secondary"
+          variant="extended"
           size="small"
           onClick={onReset}
         >
           <Replay />
+          Reset
         </Fab>
       </form>
 

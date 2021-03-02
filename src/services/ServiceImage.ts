@@ -49,7 +49,8 @@ class ServiceImage {
       id: null,
       name: name,
       created: +new Date(),
-      keywords: null
+      keywords: null,
+      type: "image"
     });
   }
   async deleteImage(imageId: number): Promise<void> {

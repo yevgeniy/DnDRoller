@@ -45,7 +45,7 @@ function useSort(
 
   switch (by) {
     case "initiative":
-      sortActors.sort((a, b) => (a.initiative > b.initiative ? -1 : 1));
+      sortActors.sort((a, b) => (+a.initiative > +b.initiative ? -1 : 1));
       break;
     case "name":
       sortActors.sort((a, b) => (a.name > b.name ? 1 : -1));

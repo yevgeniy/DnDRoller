@@ -60,15 +60,17 @@ class ServiceActor {
     return newActor;
   }
   async cloneActorFrom(actor: ModelActor): Promise<ModelActor> {
-    const predicate = actor.name.match(/(\w*?)\d*?$/)[1];
-    const counts = await this.getAll().then(actors=>actors.filter(v=>v.name.match(new RegExp(`^${predicate}`))))
-      .then(v=>v.length);
-
+    const predicate = actor.name.match(/([\w\W]*?)\d*?$/)[1];
+    const counts = await this.getAll()
+      .then(actors =>
+        actors.filter(v => v.name.match(new RegExp(`^${predicate}`)))
+      )
+      .then(v => v.length);
 
     let newactor = await this.save({
       ...actor,
       isTemplate: false,
-      name: actor.name + counts,
+      name: predicate + counts,
       id: undefined,
       //@ts-ignore
       _id: undefined
