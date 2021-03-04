@@ -271,12 +271,13 @@ export function useImage(id: number) {
   useEffect(() => {
     if (!serviceImage) return;
     if (!image) return;
+    if (image.type !== "image") return;
     if (!image.file && url) {
       setUrl(null);
     } else if (image.file) {
       serviceImage.getUrl(image.file).then(url => setUrl(url));
     }
-  }, [image && image.file, serviceImage]);
+  }, [image && image.file, serviceImage, image && image.type]);
 
   async function updateImage(updateImage) {
     const newImage = { ...image, ...updateImage };
@@ -497,7 +498,6 @@ export function useModalState<T>(def: boolean = false) {
     });
   };
   const doClose = () => {
-    prom.current && prom.current(null);
     setIsOpen(false);
   };
   const onDone = (res: T) => {

@@ -5,6 +5,6 @@ export interface ModelImage {
   keywords?: string[];
   file?: string;
   url?: string;
-  data?: string;
-  type: "image" | "site";
+  text?: string;
+  type: "image" | "site" | "text";
 }

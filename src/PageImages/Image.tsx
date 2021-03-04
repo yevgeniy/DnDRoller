@@ -143,7 +143,7 @@ const Image = React.memo((props: ImageProps) => {
         >
           <Avatar className={classes.avatar}>
             <Link to={{ pathname: "/image", state: { imageId: image.id } }}>
-              {url ? (
+              {image.type === "image" && url ? (
                 <img
                   src={url}
                   style={{ maxWidth: "30px", maxHeight: "30px" }}
