@@ -32,7 +32,11 @@ class ServiceImage {
 
   async get(id: number): Promise<ModelImage> {
     let res = await this.getAll();
-    return res.find(v => v.id === id);
+    const img = res.find(v => v.id === id);
+    if (!img) return null;
+
+    img.type = img.type || "image";
+    return img;
   }
   async getUrl(file: string): Promise<string> {
     return this.db.getUrl(file);
