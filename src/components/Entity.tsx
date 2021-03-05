@@ -290,9 +290,14 @@ const Entity = React.memo(function<T>({
               return v;
             }).find(v => v.type === EntityTitle)}
           />
-          {React.Children.map(children, v => v).find(
-            v => v.type === EntitySubheader
-          )}
+          {React.Children.map(children, v => v)
+            .filter(v => v.type === EntitySubheader)
+            .map(v =>
+              React.cloneElement(v, {
+                show: isExpanded
+              })
+            )
+            .find(v => !!v)}
           <Collapse in={isExpanded} timeout="auto" unmountOnExit>
             <CardContent>
               <Divider />

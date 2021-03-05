@@ -158,19 +158,18 @@ const Image = React.memo((props: ImageProps) => {
             <Button classes={buttonLabelClasses}>{image.name}</Button>
           </EntityTitle>
 
-          {showThumbOnImages && (
-            <EntitySubheader>
-              {url ? (
-                <CardMedia
-                  className={classes.media}
-                  component={Link}
-                  to={{ pathname: "/image", state: { imageId: image.id } }}
-                  image={url}
-                  title={image.name}
-                />
-              ) : null}
-            </EntitySubheader>
-          )}
+          <EntitySubheader show={showThumbOnImages}>
+            {url ? (
+              <CardMedia
+                className={classes.media}
+                component={Link}
+                to={{ pathname: "/image", state: { imageId: image.id } }}
+                image={url}
+                title={image.name}
+              />
+            ) : null}
+          </EntitySubheader>
+
           <EntityContent>
             <ImageContent {...image} />
           </EntityContent>

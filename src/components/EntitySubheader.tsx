@@ -33,9 +33,12 @@ interface IEntitySubheader {
   id?: number;
   updateEntity?: (a: any) => void;
   children: React.ReactElement | React.ReactElement[];
+  show?: boolean;
 }
 const EntitySubheader = (props: IEntitySubheader) => {
   const classes = useStyles(props);
+
+  if (!props.show) return null;
 
   return (
     <div className={clsx(classes.root, props.className)}>{props.children}</div>
