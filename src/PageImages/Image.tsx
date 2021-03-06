@@ -52,6 +52,11 @@ const useStyles = makeStyles(theme =>
       backgroundSize: "contain",
       backgroundColor: "gray"
     },
+    textSubheader: {
+      padding: theme.spacing(1),
+      paddingLeft: theme.spacing(2),
+      fontStyle: "italic"
+    },
 
     avatar: {
       backgroundColor: purple[500],
@@ -159,15 +164,9 @@ const Image = React.memo((props: ImageProps) => {
           </EntityTitle>
 
           <EntitySubheader show={showThumbOnImages}>
-            {url ? (
-              <CardMedia
-                className={classes.media}
-                component={Link}
-                to={{ pathname: "/image", state: { imageId: image.id } }}
-                image={url}
-                title={image.name}
-              />
-            ) : null}
+            <ImageSubheader {...{ classes, ...image }} />
+            <TextSubheader {...{ classes, ...image }} />
+            <SiteSubheader />
           </EntitySubheader>
 
           <EntityContent>
@@ -183,6 +182,36 @@ const Image = React.memo((props: ImageProps) => {
 
   return renderView();
 });
+
+function ImageSubheader({ classes, id, name, type, url }) {
+  if (type !== "image") return null;
+
+  if (!url) return null;
+
+  return (
+    <CardMedia
+      className={classes.media}
+      component={Link}
+      to={{ pathname: "/image", state: { imageId: id } }}
+      image={url}
+      title={name}
+    />
+  );
+}
+function TextSubheader({ classes, type, text }) {
+  if (type !== "text") return null;
+
+  return (
+    <div className={classes.textSubheader}>
+      <Typography variant="body2" component="p" color="textSecondary">
+        {text}
+      </Typography>
+    </div>
+  );
+}
+function SiteSubheader() {
+  return null;
+}
 
 function useRouterMemories(id: number) {
   const { state, updateState } = useHistoryState(`image-${id}`, {
