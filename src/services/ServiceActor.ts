@@ -6,6 +6,7 @@ let inst: Promise<ServiceActor> = null;
 class ServiceActor {
   serviceInstance: ServiceInstance = null;
   db: ServiceDB = null;
+  actors: ModelActor[] = null;
 
   static async init(): Promise<ServiceActor> {
     if (!inst) {
@@ -25,7 +26,7 @@ class ServiceActor {
     return res.find(v => v.id === id);
   }
   async getAll(ids: number[] = null): Promise<ModelActor[]> {
-    const res = await this.db.getActors();
+    const res = this.actors || (this.actors = await this.db.getActors());
     if (!ids) return res;
 
     return res.filter(v => ids.some(z => v.id === z));
@@ -57,6 +58,7 @@ class ServiceActor {
       size: "medium"
     };
     newActor = await this.save(newActor);
+    this.actors.push(newActor);
     return newActor;
   }
   async cloneActorFrom(actor: ModelActor): Promise<ModelActor> {
@@ -76,6 +78,8 @@ class ServiceActor {
       _id: undefined
     });
 
+    this.actors.push(newactor);
+
     return newactor;
   }
   async getForImage(imageId: number): Promise<ModelActor[]> {
@@ -90,13 +94,27 @@ class ServiceActor {
         return this.serviceInstance.removeActor(instance.id, actorId);
       })
     );
+
+    this.actors = this.actors.filter(v => v.id !== actorId);
+
     await this.db.deleteActor(actorId);
   }
   async save(actor: ModelActor): Promise<ModelActor> {
-    return await this.db.saveActor(actor);
+    const updatedActor = await this.db.saveActor(actor);
+
+    this.actors = this.actors.map(v => {
+      if (v.id === updatedActor.id)
+        return {
+          ...v,
+          ...updatedActor
+        };
+      return v;
+    });
+
+    return updatedActor;
   }
   async removeImage(id: number, imageId: number): Promise<ModelActor> {
-    let actor = await this.getAll().then(v => v.find(actor => actor.id === id));
+    let actor = await this.get(id);
 
     actor.images = (actor.images || []).filter(v => v !== imageId);
     if (!actor.images.length) delete actor.images;
