@@ -17,3 +17,4 @@ export { default as LayoutControl } from "./LayoutControl";
 export { default as Layout } from "./Layout";
 export { default as LayoutMenu } from "./LayoutMenu";
 export { default as Input } from "./Input";
+export { default as HistoryWrapper } from "./HistoryWrapper";

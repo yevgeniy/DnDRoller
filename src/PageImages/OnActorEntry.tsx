@@ -37,7 +37,7 @@ interface onActorEntryProps {
   detatchActor: (a: number) => void;
 }
 const OnActorEntry = React.memo((props: onActorEntryProps) => {
-  const classes = useStyles();
+  const classes = useStyles({});
   const [actor] = useActor(props.id);
 
   if (!actor) return null;
@@ -47,7 +47,7 @@ const OnActorEntry = React.memo((props: onActorEntryProps) => {
       button
       component={Link}
       to={{
-        pathname: "/instances",
+        pathname: "/actors",
         state: {
           discover: props.id
         }

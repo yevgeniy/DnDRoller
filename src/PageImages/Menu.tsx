@@ -6,7 +6,7 @@ import {
   Checkbox
 } from "@material-ui/core";
 import clsx from "clsx";
-import { useOpenStream } from "../util/sync";
+import { useCommonHook, useShowThumbOnImages } from "../util/hooks";
 
 const useStyles = makeStyles(
   theme =>
@@ -26,9 +26,9 @@ interface IMenu {
 
 const Menu = (props: IMenu) => {
   const classes = useStyles({ classes: props.classes });
-  const [showThumbOnImages, { set: set_showThumbOnImages }] = useOpenStream(
-    "showThumbOnImages"
-  );
+  const [showThumbOnImages, { set: set_showThumbOnImages }] = useCommonHook(
+    useShowThumbOnImages
+  ) || [null, { set: null }];
 
   return (
     <div className={clsx(classes.root, props.className)}>

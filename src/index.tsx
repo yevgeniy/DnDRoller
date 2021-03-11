@@ -9,25 +9,24 @@ import PageActors from "./PageActors/PageActors";
 import PageImages from "./PageImages/PageImages";
 import PageImage from "./PageImage/PageImage";
 import PageRoller from "./Roller/PageRoller";
-import Log from "./Log";
 import { withStyles, StyleRules } from "@material-ui/core/styles";
 import "./util/extends";
+import { HistoryWrapper } from "./components";
 
 function App() {
   return (
     <>
       <BrowserRouter>
         <Switch>
-          <Route exact path="/" component={PageHome} />
-          <Route exact path="/instances" component={PageInstances} />
-          <Route exact path="/actors" component={PageActors} />
-          <Route exact path="/instance" component={PageInstance} />
-          <Route exact path="/images" component={PageImages} />
-          <Route exact path="/image" component={PageImage} />
-          <Route exact page="/roller" component={PageRoller} />
+          <HistoryWrapper exact path="/" component={PageHome} />
+          <HistoryWrapper exact path="/instances" component={PageInstances} />
+          <HistoryWrapper exact path="/actors" component={PageActors} />
+          <HistoryWrapper exact path="/instance" component={PageInstance} />
+          <HistoryWrapper exact path="/images" component={PageImages} />
+          <HistoryWrapper exact path="/image" component={PageImage} />
+          <HistoryWrapper exact page="/roller" component={PageRoller} />
         </Switch>
       </BrowserRouter>
-      <Log />
     </>
   );
 }

@@ -20,19 +20,18 @@ import {
   Typography
 } from "@material-ui/core";
 import { makeStyles, useTheme, createStyles } from "@material-ui/core/styles";
-import { useImageIds, useModalState } from "../util/hooks";
+import {
+  useImageIds,
+  useModalState,
+  usePageImagesHistory
+} from "../util/hooks";
 import Images from "./Images";
 import Image from "./Image";
 import Menu from "./Menu";
 import Search from "./Search";
 import Uploader from "../components/Uploader";
-import {
-  RouterContextView,
-  RouterViewContextState
-} from "../util/routerContext";
-import { RouteComponentProps } from "react-router-dom";
+
 import { ModelRoutedPage } from "../models/ModelRoutedPage";
-import { useOpenStream } from "../util/sync";
 
 const useStyles = makeStyles(theme => {
   return createStyles({
@@ -55,7 +54,7 @@ const PageInstances = React.memo(
     let [
       { currentKeyWords },
       { update: updatePageImages }
-    ] = useOpenStream.historyState("PageImages");
+    ] = usePageImagesHistory();
 
     const [imageIds, createImage, deleteImage] = useImageIds(
       currentKeyWords.length ? currentKeyWords : null

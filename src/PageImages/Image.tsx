@@ -33,14 +33,7 @@ import {
 } from "../components";
 
 import { ModelImage } from "../models/ModelImage";
-import {
-  useImage,
-  useDiscover,
-  useHot,
-  useHistoryState,
-  useCommonHook
-} from "../util/hooks";
-import { useOpenStream } from "../util/sync";
+import { useImage, useCommonHook, useShowThumbOnImages } from "../util/hooks";
 import Actions from "./Actions";
 import ImageContent from "./ImageContent";
 
@@ -126,7 +119,7 @@ const Image = React.memo((props: ImageProps) => {
     props.setSortImage(image);
   }, [image]);
 
-  const [showThumbOnImages] = useOpenStream("showThumbOnImages");
+  const [showThumbOnImages] = useCommonHook(useShowThumbOnImages) || [null];
 
   if (!image) return null;
 
@@ -164,7 +157,7 @@ const Image = React.memo((props: ImageProps) => {
           </EntityTitle>
 
           <EntitySubheader show={showThumbOnImages}>
-            <ImageSubheader {...{ classes, ...image }} />
+            <ImageSubheader {...{ classes, url, ...image }} />
             <TextSubheader {...{ classes, ...image }} />
             <SiteSubheader />
           </EntitySubheader>
@@ -184,7 +177,7 @@ const Image = React.memo((props: ImageProps) => {
 });
 
 function ImageSubheader({ classes, id, name, type, url }) {
-  if (type !== "image") return null;
+  if (type !== "image" || !type) return null;
 
   if (!url) return null;
 
@@ -211,17 +204,6 @@ function TextSubheader({ classes, type, text }) {
 }
 function SiteSubheader() {
   return null;
-}
-
-function useRouterMemories(id: number) {
-  const { state, updateState } = useHistoryState(`image-${id}`, {
-    isExpanded: false
-  });
-
-  return {
-    ...state,
-    setIsExpanded: f => updateState({ isExpanded: f })
-  };
 }
 
 export default Image;

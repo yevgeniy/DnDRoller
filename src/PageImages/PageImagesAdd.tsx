@@ -59,7 +59,6 @@ const PageImagesAdd = React.memo((props: PageImageAttachProps) => {
     else setSelected([...selected.filter(v => v !== id)]);
   };
   const onDone = e => {
-    console.log(selected);
     props.onDone(selected);
   };
 

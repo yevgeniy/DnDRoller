@@ -38,7 +38,6 @@ const PageActorsAdd = React.memo((props: PageActorAddProps) => {
     setOpenNewActorDialog(false);
   };
   const onDone = e => {
-    console.log(selected);
     props.onDone(selected);
   };
   const onSetSelected = id => f => {

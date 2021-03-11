@@ -124,7 +124,7 @@ class ServiceRoller {
         const matches = dictionary.filter(
           ([dieType, number]) => dieType === die && number === r
         );
-        console.log(die, r, matches);
+
         out.push(...matches.map(([, , resultType]) => resultType));
       });
       return [...p, ...out];
@@ -165,7 +165,7 @@ class ServiceRoller {
         despair: 0
       }
     );
-    console.log("a", reducedresults);
+
     return reducedresults;
   }
 }

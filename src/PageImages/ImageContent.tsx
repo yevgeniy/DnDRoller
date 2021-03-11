@@ -39,11 +39,7 @@ import { TabPanel } from "../components";
 import PageInstancesAdd from "../PageInstances/PageInstancesAdd";
 import PageActorsAdd from "../PageActors/PageActorsAdd";
 import { makeStyles, createStyles } from "@material-ui/core/styles";
-import {
-  useInstanceIdsForImage,
-  useActorIdsForImage,
-  useHistoryState
-} from "../util/hooks";
+import { useInstanceIdsForImage, useActorIdsForImage } from "../util/hooks";
 import OnInstanceEntry from "./OnInstanceEntry";
 import OnActorEntry from "./OnActorEntry";
 import {

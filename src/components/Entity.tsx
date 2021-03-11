@@ -33,9 +33,12 @@ import {
   Checkbox
 } from "@material-ui/core";
 
-import { useHot, useDiscover, useModalState } from "../util/hooks";
-
-import { useOpenStream, useMessageStream } from "../util/sync";
+import {
+  useHot,
+  useDiscover,
+  useModalState,
+  useEntityHistory
+} from "../util/hooks";
 
 const useStyles = makeStyles(
   theme =>
@@ -157,10 +160,7 @@ const Entity = React.memo(function<T>({
       isExpanded: false
     });
   } else
-    [
-      { isExpanded },
-      { update: updateHistoryState }
-    ] = useOpenStream.historyState(`Entity|${id}`);
+    [{ isExpanded }, { update: updateHistoryState }] = useEntityHistory(id);
 
   const {
     isOpen: isActionsOpen,
@@ -294,7 +294,7 @@ const Entity = React.memo(function<T>({
             .filter(v => v.type === EntitySubheader)
             .map(v =>
               React.cloneElement(v, {
-                show: isExpanded
+                isExpanded
               })
             )
             .find(v => !!v)}

@@ -1,22 +1,6 @@
 import * as React from "react";
 import clsx from "clsx";
-import { EntityContentTabInfo, EntityContentTabRelation } from "./";
-import { useOpenStream } from "../util/sync";
-import {
-  Avatar,
-  ListItemText,
-  ListItem,
-  ListItemAvatar,
-  makeStyles,
-  createStyles,
-  Tab,
-  Tabs,
-  Button,
-  Paper,
-  List,
-  Drawer,
-  ListSubheader
-} from "@material-ui/core";
+import { makeStyles, createStyles } from "@material-ui/core";
 
 const useStyles = makeStyles(
   theme => {

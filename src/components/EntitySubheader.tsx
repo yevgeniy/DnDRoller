@@ -1,22 +1,6 @@
 import * as React from "react";
 import clsx from "clsx";
-import { EntityContentTabInfo, EntityContentTabRelation } from "./";
-import { useOpenStream } from "../util/sync";
-import {
-  Avatar,
-  ListItemText,
-  ListItem,
-  ListItemAvatar,
-  makeStyles,
-  createStyles,
-  Tab,
-  Tabs,
-  Button,
-  Paper,
-  List,
-  Drawer,
-  ListSubheader
-} from "@material-ui/core";
+import { makeStyles, createStyles } from "@material-ui/core";
 
 const useStyles = makeStyles(
   theme => {
@@ -34,11 +18,14 @@ interface IEntitySubheader {
   updateEntity?: (a: any) => void;
   children: React.ReactElement | React.ReactElement[];
   show?: boolean;
+  isExpanded?: boolean;
 }
 const EntitySubheader = (props: IEntitySubheader) => {
   const classes = useStyles(props);
 
-  if (!props.show) return null;
+  const show = props.isExpanded || props.show;
+
+  if (!show) return null;
 
   return (
     <div className={clsx(classes.root, props.className)}>{props.children}</div>

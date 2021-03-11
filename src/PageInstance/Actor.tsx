@@ -17,7 +17,7 @@ import ActorContent from "./ActorContent";
 
 import Actions from "./Actions";
 import { ModelActor } from "../models/ModelActor";
-import { useHistoryState, useService, useImage, useHot } from "../util/hooks";
+import { useService, useImage, useHot } from "../util/hooks";
 import ServiceActor from "../services/ServiceActor";
 
 import {

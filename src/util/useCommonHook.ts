@@ -9,8 +9,10 @@ import React, {
 } from "react";
 
 let repos = [];
+let c = 0;
 export default function useCommonHook(hook, ...args) {
   const [rel, setrel] = useState(+new Date());
+  const r = useRef(++c);
 
   let commonrepo = repos.find(v => v.isSame(hook, args));
   if (!commonrepo) {
@@ -20,14 +22,18 @@ export default function useCommonHook(hook, ...args) {
   }
 
   useEffect(() => {
-    const c = commonrepo.attach(() => setrel(+new Date()));
+    const c = commonrepo.attach(() => {
+      setrel(+new Date());
+    });
 
     return () => {
       c();
-      if (!commonrepo.listeners.length) {
-        commonrepo.destruct();
-        repos = repos.filter(v => v !== commonrepo);
-      }
+      setTimeout(() => {
+        if (!commonrepo.listeners.length) {
+          commonrepo.destruct();
+          repos = repos.filter(v => v !== commonrepo);
+        }
+      }, 2000);
     };
   }, [commonrepo]);
 
@@ -60,7 +66,6 @@ class repoobject {
     );
   }
   destruct() {
-    console.log("destro");
     ReactDOM.unmountComponentAtNode(this.elm);
   }
   isSame(hook, args = []) {

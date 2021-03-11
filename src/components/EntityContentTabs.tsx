@@ -1,7 +1,7 @@
 import * as React from "react";
 import clsx from "clsx";
 import { EntityContentTabInfo, EntityContentTabRelation } from "./";
-import { useOpenStream } from "../util/sync";
+import { useEntityContentTabsHistory } from "../util/hooks";
 import {
   Avatar,
   ListItemText,
@@ -36,10 +36,7 @@ interface IEntityContentTabs {
 }
 const EntityContentTabs = (props: IEntityContentTabs) => {
   const classes = useStyles(props);
-  let [{ tab }, { update: setTab }] = useOpenStream.historyState(
-    `${EntityContentTabs.name}|${props.id}`
-  );
-  tab = tab || 0;
+  let [{ tab }, { update: setTab }] = useEntityContentTabsHistory(props.id);
 
   const renderTabsHeaders = () => {
     return React.Children.map(props.children, (v, i) => (

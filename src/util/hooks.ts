@@ -15,6 +15,8 @@ import { ModelInstance } from "../models/ModelInstance";
 
 import useCommonHook from "./useCommonHook";
 export { default as useCommonHook } from "./useCommonHook";
+export { default as useHistory } from "./useHistory";
+export * from "./historyHooks";
 
 export function useDiscover(doDiscover: boolean, wasDiscovered: () => void) {
   const ref = useRef();
@@ -28,31 +30,6 @@ export function useDiscover(doDiscover: boolean, wasDiscovered: () => void) {
 
   return ref;
 }
-
-const _historyState = [];
-export function useHistoryState(id, initialstate) {
-  const key = "asdfasdfasdf";
-  let historyentry = _historyState.find(v => v.key === key);
-  if (!historyentry) {
-    historyentry = {
-      key: key,
-      state: {}
-    };
-    _historyState.push(historyentry);
-  }
-  const [state, setState] = useState(
-    historyentry[id] || (historyentry[id] = initialstate)
-  );
-  const updateState = u => {
-    historyentry[id] = {
-      ...historyentry[id],
-      ...u
-    };
-    setState(historyentry[id]);
-  };
-  return { state, updateState };
-}
-
 export function useService(S) {
   const [service, setService] = useState(null);
   useEffect(() => {
@@ -452,4 +429,16 @@ export function useKeywords() {
   }, [serviceActor, serviceInstance, serviceImage]);
 
   return keywords;
+}
+export function useShowThumbOnImages() {
+  const [show, setshow] = useState(
+    !!JSON.parse(window.localStorage.getItem("showThumbOnImages"))
+  );
+
+  const set = v => {
+    window.localStorage.setItem("showThumbOnImages", v);
+    setshow(v);
+  };
+
+  return [show, { set }];
 }

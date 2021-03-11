@@ -6,12 +6,12 @@ import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
 import IconButton from "@material-ui/core/IconButton";
 import MenuIcon from "@material-ui/icons/Menu";
+import clsx from "clsx";
 
 import Drawer from "@material-ui/core/Drawer";
 import MainOptions from "./MainOptions";
-import { useHistoryState, useModalState } from "../util/hooks";
+import { useModalState, useLayoutHistory } from "../util/hooks";
 
-import { useOpenStream, useMessageStream } from "../util/sync";
 import { LayoutControl, LayoutMenu } from "./";
 
 const useStyles = makeStyles(theme => ({
@@ -39,8 +39,6 @@ export default function Layout(props: ILayout) {
   const classes = useStyles(props);
   const [mainMenuOpen, setMainMenuOpen] = useState(false);
 
-  const { set: setHistory } = useMessageStream("history");
-
   const layoutControls = [];
   let layoutMenu;
   const other = [];
@@ -49,12 +47,6 @@ export default function Layout(props: ILayout) {
     else if (v.type === LayoutMenu) layoutMenu = v;
     else other.push(v);
   });
-
-  useEffect(() => {
-    if (!props.historyId) return;
-    setHistory(props.historyId);
-    return () => setHistory(null);
-  }, []);
 
   return (
     <div className={classes.container}>
@@ -71,7 +63,7 @@ export default function Layout(props: ILayout) {
           >
             <MenuIcon />
           </IconButton>
-          <Typography variant="h6" className={classes.title}>
+          <Typography variant="h6" className={clsx("foo", classes.title)}>
             <TitleControl layoutMenu={layoutMenu}>{props.title}</TitleControl>
           </Typography>
           {layoutControls}
@@ -130,55 +122,60 @@ const ScrollConstruct = React.memo(() => {
 });
 
 function useScrollMemory() {
-  const [historyState, { update }] = useOpenStream.historyState(Layout.name);
-  const scroll = historyState.scroll || 0;
-
+  const [historyState, { update }] = useLayoutHistory();
+  const scroll = historyState ? historyState.scroll || 0 : null;
   const isScrollHot = useRef(false);
-
-  let [scrollHeight, setScrollHeight] = useState(
-    document.querySelector("html").scrollHeight
-  );
-
-  let t;
-  const onScroll = () => {
-    let s = document.querySelector("html").scrollTop;
-    /*update scroll after scrolling has stopped*/
-    clearTimeout(t);
-    t = setTimeout(() => {
-      update({ scroll: s });
-    }, 100);
-
-    isScrollHot.current = true;
-  };
+  const totalHeight = useTotalHeight(isScrollHot.current);
+  const ignoreScrollEvent = useRef(null);
 
   useEffect(() => {
-    document.addEventListener("scroll", onScroll);
+    if (isScrollHot.current) return;
+    ignoreScrollEvent.current = true;
+    document.querySelector("html").scrollTop = scroll;
+  }, [totalHeight, isScrollHot.current]);
+
+  useEffect(() => {
+    let t;
+    function onScroll() {
+      if (ignoreScrollEvent.current) {
+        ignoreScrollEvent.current = false;
+        return;
+      }
+
+      isScrollHot.current = true;
+      let s = document.querySelector("html").scrollTop;
+      clearTimeout(t);
+      t = setTimeout(() => {
+        update({ scroll: s });
+      }, 100);
+    }
+    /*after 1 sec of no reruns start updating scroll*/
+    let t1 = setTimeout(
+      () => document.addEventListener("scroll", onScroll),
+      1000
+    );
     return () => {
+      clearTimeout(t);
+      clearTimeout(t1);
       document.removeEventListener("scroll", onScroll);
     };
-  }, [update]);
+  });
+}
 
-  /*while there is scroll to be set we continually poll scrollheight
-  for some time as the rest of the app regens it's state*/
+function useTotalHeight(isAlreadyHot) {
+  const [height, setheight] = useState(
+    document.querySelector("html").scrollHeight
+  );
   useEffect(() => {
+    if (isAlreadyHot) return;
     let t = setInterval(
-      () =>
-        isScrollHot.current === false &&
-        setScrollHeight(document.querySelector("html").scrollHeight),
-      100
+      () => setheight(document.querySelector("html").scrollHeight),
+      200
     );
-    let t1 = setTimeout(() => clearInterval(t), 5000);
-    return () => {
+    setTimeout(() => {
       clearInterval(t);
-      clearInterval(t1);
-    };
-  }, [scroll]);
-  useEffect(() => {
-    /*for as long as scrollheight is updating due to regen
-    effects, regen the scroll top*/
-    if (isScrollHot.current) return;
-    document.removeEventListener("scroll", onScroll);
-    document.querySelector("html").scrollTop = scroll;
-    setTimeout(() => document.addEventListener("scroll", onScroll), 500);
-  }, [scrollHeight, scroll]);
+    }, 10000);
+    return () => clearInterval(t);
+  }, [isAlreadyHot]);
+  return height;
 }

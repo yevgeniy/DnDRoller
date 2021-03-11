@@ -1,6 +1,4 @@
 import * as React from "react";
-import { useContext } from "react";
-import { makeStyles } from "@material-ui/core/styles";
 
 import List from "@material-ui/core/List";
 import Divider from "@material-ui/core/Divider";
@@ -16,13 +14,16 @@ import DirectionsRun from "@material-ui/icons/DirectionsRun";
 import Casino from "@material-ui/icons/Casino";
 import SmokingRooms from "@material-ui/icons/SmokingRooms";
 import { Link } from "react-router-dom";
-import { useOpenStream } from "../util/sync";
+import { useCommonHook, useHistory } from "../util/hooks";
 function MainOptions() {
-  const historyHasBack = useOpenStream.historyHasBack();
+  const [, { hasBack }] = useCommonHook(useHistory) || [
+    null,
+    { hasBack: null }
+  ];
 
   return (
     <>
-      {historyHasBack && (
+      {hasBack && (
         <List>
           <ListItem
             button

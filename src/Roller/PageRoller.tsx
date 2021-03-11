@@ -255,7 +255,6 @@ const PaintX = (props: {
 
 function usePeer() {
   const [id, setid] = useState(null);
-  id && console.log("ID: ", id);
   useEffect(() => {
     //@ts-ignore
     const peer = new Peer();

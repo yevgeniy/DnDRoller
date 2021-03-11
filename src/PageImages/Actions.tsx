@@ -84,7 +84,6 @@ const Actions = React.memo((props: ActorProps) => {
     props.id
   ) || [null, null, null, null, null];
 
-  console.log(resetToken);
   const onReset = e => {
     reset();
   };
@@ -201,7 +200,6 @@ const TextContext = ({ classes, type, updateImage, text }) => {
 
   const onClick = () => {
     doOpen().then(v => {
-      console.log(v);
       updateImage({ text: v });
     });
   };
