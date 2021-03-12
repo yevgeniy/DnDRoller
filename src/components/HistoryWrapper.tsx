@@ -22,7 +22,7 @@ function Wrapper({ component, historyProps }) {
   const id = historyProps.history.location.key;
   useEffect(() => {
     if (!setHistory) return;
-    setHistory(id);
+    setHistory(id || +new Date() + "");
     return () => {
       setHistory(null);
     };

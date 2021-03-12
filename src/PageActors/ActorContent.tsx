@@ -146,6 +146,7 @@ const ImageEntry = React.memo((props: ImageEntryProps) => {
   return (
     <div className={classes.entry}>
       <Link to={{ pathname: "/image", state: { imageId: image.id } }}>
+        <div>{image.name}</div>
         <img src={url} alt="" />
       </Link>
     </div>
