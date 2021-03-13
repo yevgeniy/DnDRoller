@@ -12,7 +12,9 @@ import {
   EntityContentTabInfo,
   EntityContentTabRelation,
   EntityContentTabImages,
-  EntityContentTabs
+  EntityContentTabs,
+  InstanceEntry,
+  ImageEntry
 } from "../components";
 import { Link } from "react-router-dom";
 import blue from "@material-ui/core/colors/blue";
@@ -55,9 +57,9 @@ const ActorContent = ({
   };
   return (
     <EntityContentTabs className={clsx(classes.root, className)} id={actor.id}>
-      <EntityContentTabInfo label="Info" icon={<Info />}>
+      {/* <EntityContentTabInfo label="Info" icon={<Info />}>
         Item One
-      </EntityContentTabInfo>
+      </EntityContentTabInfo> */}
       <EntityContentTabRelation
         label="Instances"
         icon={<Extension />}
@@ -67,7 +69,7 @@ const ActorContent = ({
         listComponent={InstanceEntry}
         updateComponent={PageInstancesAdd}
       />
-      <EntityContentTabImages
+      <EntityContentTabRelation
         label="Images"
         icon={<Photo />}
         listSubheader="Images"
@@ -80,74 +82,3 @@ const ActorContent = ({
   );
 };
 export default ActorContent;
-
-const useInstanceEntryStyles = makeStyles(
-  theme =>
-    createStyles({
-      root: {},
-      avatar: {
-        backgroundColor: blue[500],
-        [theme.breakpoints.down("xs")]: {
-          width: 30,
-          height: 30
-        }
-      }
-    }),
-  { name: "InstanceEntry" }
-);
-interface InstanceEntryProps {
-  id?: number;
-}
-const InstanceEntry = React.memo((props: InstanceEntryProps) => {
-  const classes = useInstanceEntryStyles({});
-  const [instance] = useInstance(props.id);
-
-  if (!instance) return null;
-
-  return (
-    <ListItem
-      button
-      component={Link}
-      to={{
-        pathname: "/instances",
-        state: {
-          discover: props.id
-        }
-      }}
-    >
-      <ListItemAvatar>
-        <Avatar className={classes.avatar}>{instance.name[0]}</Avatar>
-      </ListItemAvatar>
-      <ListItemText primary={instance.name} />
-    </ListItem>
-  );
-});
-
-const useImageEntryPropsStyles = makeStyles(theme => {
-  return createStyles({
-    entry: {
-      padding: theme.spacing(1 / 2),
-      position: "relative",
-      "& img": {
-        height: "200px"
-      }
-    }
-  });
-});
-interface ImageEntryProps {
-  id: number;
-}
-const ImageEntry = React.memo((props: ImageEntryProps) => {
-  const classes = useImageEntryPropsStyles({});
-  const [image, , , url] = useImage(props.id);
-
-  if (!image) return null;
-  if (!url) return null;
-  return (
-    <div className={classes.entry}>
-      <Link to={{ pathname: "/image", state: { imageId: image.id } }}>
-        <img src={url} alt="" />
-      </Link>
-    </div>
-  );
-});

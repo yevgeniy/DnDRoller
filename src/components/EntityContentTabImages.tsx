@@ -37,7 +37,6 @@ const useStyles = makeStyles(
       imageContainer: {
         display: "flex",
         flexWrap: "nowrap",
-        width: "90vw",
         overflow: "auto"
       }
     });

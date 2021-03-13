@@ -1,6 +1,13 @@
 import * as React from "react";
 import { useState, useEffect, useRef } from "react";
-import { IconButton, makeStyles, createStyles } from "@material-ui/core";
+import {
+  IconButton,
+  makeStyles,
+  createStyles,
+  Typography,
+  Paper,
+  Divider
+} from "@material-ui/core";
 import MenuIcon from "@material-ui/icons/Menu";
 import BackIcon from "@material-ui/icons/Reply";
 import { useImage } from "../util/hooks";
@@ -79,80 +86,110 @@ const PageImage = React.memo(
       RouterViewContextState & PageImageLocationState
     >
   ) => {
-    const [, , , url] = useImage(props.location.state.imageId);
-    const classes = useStyles({});
+    const [image, , , url] = useImage(props.location.state.imageId);
 
-    const imgRef = useRef();
-    const [zoom, setZoom] = useState(1);
-    const back = () => {
-      props.history.goBack();
-    };
+    if (!image) return null;
 
-    useEffect(() => {
-      const work = e => e.preventDefault();
-      document.addEventListener("touchmove", work);
-      document.body.style.touchAction = "none";
-      document.body.style.overflow = "hidden";
-      return () => {
-        document.removeEventListener("touchmove", work);
-        document.body.style.touchAction = "";
-        document.body.style.overflow = "";
-      };
-    }, []);
-
-    useEffect(() => {
-      let instance;
-      let zoom = 1;
-      const loaded = () => {
-        instance = panzoom(document.querySelector("#panthis"), {
-          onTouch: function(e) {
-            let paths = [...e.composedPath()].map(v => {
-              return v.id;
-            });
-            if (paths.some(v => v === "backButton" || v === "menuButton"))
-              return false;
-            return true;
-          },
-          minZoom: 1,
-          smoothScroll: false
-        });
-        // @ts-ignore
-        const origWidth = imgRef.current.getBoundingClientRect().width;
-        const work = e => {
-          setTimeout(() => {
-            // @ts-ignore
-            zoom = imgRef.current.getBoundingClientRect().width / origWidth;
-            setZoom(zoom);
-            if (1.05 > zoom && zoom >= 1) e.moveTo(0, 0);
-          }, 100);
-        };
-        instance.on("zoom", work);
-        instance.on("panend", work);
-      };
-      // @ts-ignore
-      imgRef.current.addEventListener("load", loaded);
-      return () => {
-        // @ts-ignore
-        imgRef.current.removeEventListener("load", loaded);
-        instance && instance.dispose();
-      };
-    }, []);
-
-    return (
-      <div className={classes.root}>
-        <div id="panthis" className={classes.imgContainer}>
-          <img ref={imgRef} className={classes.img} src={url} alt="" />
-        </div>
-        <IconButton
-          id="backButton"
-          className={classes.backButton}
-          onClick={back}
-        >
-          <BackIcon />
-        </IconButton>
-      </div>
+    return image.type === "image" ? (
+      <Image {...props} url={url} />
+    ) : (
+      <Text {...props} image={image} />
     );
   }
 );
+
+function Image({ url, ...props }) {
+  const classes = useStyles({});
+
+  const imgRef = useRef();
+  const [zoom, setZoom] = useState(1);
+  const back = () => {
+    props.history.goBack();
+  };
+
+  useEffect(() => {
+    const work = e => e.preventDefault();
+    document.addEventListener("touchmove", work);
+    document.body.style.touchAction = "none";
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.removeEventListener("touchmove", work);
+      document.body.style.touchAction = "";
+      document.body.style.overflow = "";
+    };
+  }, []);
+
+  useEffect(() => {
+    let instance;
+    let zoom = 1;
+    const loaded = () => {
+      instance = panzoom(document.querySelector("#panthis"), {
+        onTouch: function(e) {
+          let paths = [...e.composedPath()].map(v => {
+            return v.id;
+          });
+          if (paths.some(v => v === "backButton" || v === "menuButton"))
+            return false;
+          return true;
+        },
+        minZoom: 1,
+        smoothScroll: false
+      });
+      // @ts-ignore
+      const origWidth = imgRef.current.getBoundingClientRect().width;
+      const work = e => {
+        setTimeout(() => {
+          // @ts-ignore
+          zoom = imgRef.current.getBoundingClientRect().width / origWidth;
+          setZoom(zoom);
+          if (1.05 > zoom && zoom >= 1) e.moveTo(0, 0);
+        }, 100);
+      };
+      instance.on("zoom", work);
+      instance.on("panend", work);
+    };
+    // @ts-ignore
+    imgRef.current.addEventListener("load", loaded);
+    return () => {
+      // @ts-ignore
+      imgRef.current.removeEventListener("load", loaded);
+      instance && instance.dispose();
+    };
+  }, []);
+
+  return (
+    <div className={classes.root}>
+      <div id="panthis" className={classes.imgContainer}>
+        <img ref={imgRef} className={classes.img} src={url} alt="" />
+      </div>
+      <IconButton id="backButton" className={classes.backButton} onClick={back}>
+        <BackIcon />
+      </IconButton>
+    </div>
+  );
+}
+function Text({ image, ...props }) {
+  const classes = useStyles({});
+  const back = () => {
+    props.history.goBack();
+  };
+  return (
+    <div>
+      <div style={{ marginTop: "60px" }}>
+        <Paper style={{ padding: "10px", minHeight: "80vh" }}>
+          <Typography variant="h5" component="h2">
+            {image.name}
+          </Typography>
+          <Divider style={{ marginTop: "10px", marginBottom: "10px" }} />
+          <Typography style={{ fontStyle: "italic" }}>{image.text}</Typography>
+        </Paper>
+      </div>
+
+      <IconButton id="backButton" className={classes.backButton} onClick={back}>
+        <BackIcon />
+      </IconButton>
+    </div>
+  );
+}
 
 export default PageImage;

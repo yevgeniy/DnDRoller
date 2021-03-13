@@ -71,7 +71,7 @@ const ActorContent = ({
         listComponent={InstanceEntry}
         updateComponent={PageInstancesAdd}
       />
-      <EntityContentTabImages
+      <EntityContentTabRelation
         label="Images"
         icon={<Photo />}
         listSubheader="Images"
