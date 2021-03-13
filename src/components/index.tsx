@@ -18,3 +18,4 @@ export { default as Layout } from "./Layout";
 export { default as LayoutMenu } from "./LayoutMenu";
 export { default as Input } from "./Input";
 export { default as HistoryWrapper } from "./HistoryWrapper";
+export * from "./OnContenEntries";

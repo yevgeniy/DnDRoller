@@ -49,7 +49,8 @@ const EntityContentTabs = (props: IEntityContentTabs) => {
       React.cloneElement(v, {
         key: i,
         value: tab,
-        index: i
+        index: i,
+        id: props.id
       })
     );
   };

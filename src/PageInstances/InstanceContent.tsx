@@ -12,25 +12,18 @@ import {
   EntityContentTabInfo,
   EntityContentTabRelation,
   EntityContentTabImages,
-  EntityContentTabs
+  EntityContentTabs,
+  ActorEntry,
+  ImageEntry
 } from "../components";
 import PageImagesAdd from "../PageImages/PageImagesAdd";
 import PageActorsAdd from "../PageActors/PageActorsAdd";
-import { Link } from "react-router-dom";
-import blue from "@material-ui/core/colors/blue";
 
 import DirectionsRun from "@material-ui/icons/DirectionsRun";
 import Photo from "@material-ui/icons/Photo";
 import Info from "@material-ui/icons/Info";
 
-import {
-  useInstance,
-  useImage,
-  useInstanceIdsForActor,
-  useActor,
-  useCommonHook
-} from "../util/hooks";
-import { ModelInstance } from "../models/ModelInstance";
+import { useInstance, useCommonHook } from "../util/hooks";
 
 const useStyles = makeStyles(
   theme => {
@@ -74,9 +67,9 @@ const InstanceContent = ({
       className={clsx(classes.root, className)}
       id={instance.id}
     >
-      <EntityContentTabInfo label="Info" icon={<Info />}>
+      {/* <EntityContentTabInfo label="Info" icon={<Info />}>
         Item One
-      </EntityContentTabInfo>
+      </EntityContentTabInfo> */}
       <EntityContentTabRelation
         label="Actors"
         icon={<DirectionsRun />}
@@ -86,7 +79,7 @@ const InstanceContent = ({
         listComponent={ActorEntry}
         updateComponent={PageActorsAdd}
       />
-      <EntityContentTabImages
+      <EntityContentTabRelation
         label="Images"
         icon={<Photo />}
         listSubheader="Images"
@@ -99,76 +92,3 @@ const InstanceContent = ({
   );
 };
 export default InstanceContent;
-
-const useImageEntryStyles = makeStyles(theme => {
-  return createStyles({
-    entry: {
-      padding: theme.spacing(1 / 2),
-      position: "relative",
-      "& img": {
-        height: "200px"
-      }
-    }
-  });
-});
-interface IImageEntry {
-  id: number;
-}
-const ImageEntry = React.memo((props: IImageEntry) => {
-  const classes = useImageEntryStyles({});
-  const [image, , , url] = useImage(props.id);
-
-  if (!image) return null;
-  if (!url) return null;
-  return (
-    <div className={classes.entry}>
-      <Link to={{ pathname: "/image", state: { imageId: image.id } }}>
-        <img src={url} alt="" />
-      </Link>
-    </div>
-  );
-});
-
-const useActorEntryStyles = makeStyles(theme =>
-  createStyles({
-    avatar: {
-      backgroundColor: blue[500],
-      [theme.breakpoints.down("xs")]: {
-        width: 30,
-        height: 30
-      }
-    }
-  })
-);
-interface IActorEntry {
-  id: number;
-}
-const ActorEntry = React.memo((props: IActorEntry) => {
-  const classes = useActorEntryStyles({});
-  const [actor] = useActor(props.id);
-
-  if (!actor) return null;
-
-  let c = [];
-  for (let i in actor.class) {
-    c.push(`${i} lvl: ${actor.class[i]}`);
-  }
-
-  return (
-    <ListItem
-      button
-      component={Link}
-      to={{
-        pathname: "/actors",
-        state: {
-          discover: props.id
-        }
-      }}
-    >
-      <ListItemAvatar>
-        <Avatar className={clsx(classes.avatar)}>{actor.name[0]}</Avatar>
-      </ListItemAvatar>
-      <ListItemText primary={actor.name} secondary={<>{c.join(", ")}</>} />
-    </ListItem>
-  );
-});

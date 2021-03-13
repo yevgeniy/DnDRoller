@@ -109,14 +109,16 @@ type ImageProps = { [P in keyof ModelImage]?: ModelImage[P] } & {
 const Image = React.memo((props: ImageProps) => {
   const classes = useStyles({});
   const buttonLabelClasses = useStylesButtonLabel({});
-  const [image, updateImage, upload, url] = useCommonHook(
-    useImage,
-    props.id
-  ) || [null, null, null, null];
+  const [image, updateImage, , url] = useCommonHook(useImage, props.id) || [
+    null,
+    null,
+    null,
+    null
+  ];
 
   useEffect(() => {
     if (!image) return;
-    props.setSortImage(image);
+    props.setSortImage && props.setSortImage(image);
   }, [image]);
 
   const [showThumbOnImages] = useCommonHook(useShowThumbOnImages) || [null];
@@ -124,7 +126,7 @@ const Image = React.memo((props: ImageProps) => {
   if (!image) return null;
 
   const doDelete = () => {
-    props.deleteImage(props.id);
+    props.deleteImage && props.deleteImage(props.id);
   };
 
   const renderView = () => {

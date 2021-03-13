@@ -35,13 +35,11 @@ import {
   Drawer,
   Checkbox
 } from "@material-ui/core";
-import { TabPanel } from "../components";
+import { TabPanel, InstanceEntry, ActorEntry } from "../components";
 import PageInstancesAdd from "../PageInstances/PageInstancesAdd";
 import PageActorsAdd from "../PageActors/PageActorsAdd";
 import { makeStyles, createStyles } from "@material-ui/core/styles";
 import { useInstanceIdsForImage, useActorIdsForImage } from "../util/hooks";
-import OnInstanceEntry from "./OnInstanceEntry";
-import OnActorEntry from "./OnActorEntry";
 import {
   EntityContentTabInfo,
   EntityContentTabRelation,
@@ -112,16 +110,16 @@ const ImageContent = React.memo((props: ImageContentProps) => {
       className={clsx(classes.root, props.className)}
       id={image.id}
     >
-      <EntityContentTabInfo label="Info" icon={<Info />}>
+      {/* <EntityContentTabInfo label="Info" icon={<Info />}>
         Item One
-      </EntityContentTabInfo>
+      </EntityContentTabInfo> */}
       <EntityContentTabRelation
         label="Instances"
         icon={<Extension />}
         listSubheader="Instances"
         ids={instanceIds || []}
         update={setInstances}
-        listComponent={OnInstanceEntry}
+        listComponent={InstanceEntry}
         updateComponent={PageInstancesAdd}
       />
       <EntityContentTabRelation
@@ -130,7 +128,7 @@ const ImageContent = React.memo((props: ImageContentProps) => {
         listSubheader="Actors"
         ids={actorIds || []}
         update={setActors}
-        listComponent={OnActorEntry}
+        listComponent={ActorEntry}
         updateComponent={PageActorsAdd}
       />
     </EntityContentTabs>
