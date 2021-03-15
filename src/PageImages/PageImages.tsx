@@ -32,6 +32,7 @@ import Search from "./Search";
 import Uploader from "../components/Uploader";
 
 import { ModelRoutedPage } from "../models/ModelRoutedPage";
+import { ModelImage } from "../models/ModelImage";
 
 const useStyles = makeStyles(theme => {
   return createStyles({
@@ -47,6 +48,7 @@ const useStyles = makeStyles(theme => {
 
 interface PageImagesLocationState {
   discover?: number;
+  image?: ModelImage;
 }
 
 const PageInstances = React.memo(
@@ -56,9 +58,19 @@ const PageInstances = React.memo(
       { update: updatePageImages }
     ] = usePageImagesHistory();
 
-    const [imageIds, createImage, deleteImage] = useImageIds(
-      currentKeyWords.length ? currentKeyWords : null
+    const state = props.history.location.state || {};
+
+    const effectiveKeyWords = Array.from(
+      new Set([
+        ...currentKeyWords,
+        ...(state.image ? state.image.keywords || [] : [])
+      ])
     );
+    let [imageIds, createImage, deleteImage, possibleKeyWords] = useImageIds(
+      effectiveKeyWords.length ? effectiveKeyWords : null
+    );
+    state.image && (imageIds = imageIds.filter(v => v !== state.image.id));
+
     const [openNewImageDialog, setOpenNewImageDialog] = useState(false);
     const [newImageName, setNewImageName] = useState("");
     const {
@@ -90,7 +102,10 @@ const PageInstances = React.memo(
     if (!imageIds) return null;
 
     return (
-      <Layout historyId={props.history.location.key} title="Image Respository">
+      <Layout
+        historyId={props.history.location.key}
+        title={state.image ? state.image.name : "Image Respository"}
+      >
         <LayoutControl>
           <IconButton onClick={onSearch} color="inherit">
             <SearchIcon
@@ -153,7 +168,9 @@ const PageInstances = React.memo(
         <Drawer open={searchIsOpen} onClose={searchDoClose} anchor="top">
           <Search
             onUpdate={v => updatePageImages({ currentKeyWords: v })}
-            currentKeyWords={currentKeyWords}
+            currentKeyWords={effectiveKeyWords}
+            immutable={state.image ? state.image.keywords || [] : []}
+            possibleKeywords={possibleKeyWords}
           />
         </Drawer>
       </Layout>

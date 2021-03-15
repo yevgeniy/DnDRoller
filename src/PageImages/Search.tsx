@@ -1,5 +1,5 @@
 import * as React from "react";
-import { useRef } from "react";
+import { useRef, useEffect } from "react";
 import { makeStyles, createStyles, TextField } from "@material-ui/core";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import { useKeywords } from "../util/hooks";
@@ -33,13 +33,15 @@ const stuff = [
 interface ISearch {
   onUpdate?: (e: string[]) => void;
   currentKeyWords: string[];
+  possibleKeywords?: string[];
+  immutable?: string[];
 }
 
 const Search = (props: ISearch) => {
   const classes = useStyles({});
   const classesInput = useStylesInput({});
   const ref = useRef({});
-  const allKeyWords = useKeywords();
+  const allKeyWords = props.possibleKeywords || useKeywords();
   if (!allKeyWords) return null;
 
   const update = e => {
@@ -52,6 +54,20 @@ const Search = (props: ISearch) => {
       props.onUpdate(kw);
     });
   };
+
+  useEffect(() => {
+    if (!props.immutable) return;
+    //@ts-ignore
+    [...ref.current.querySelectorAll(".MuiChip-root")].forEach(v => {
+      if (
+        props.immutable.indexOf(v.querySelector(".MuiChip-label").innerText) >
+        -1
+      ) {
+        v.style.pointerEvents = "none";
+        v.querySelector("svg") && v.querySelector("svg").remove();
+      }
+    });
+  });
   return (
     <div className={classes.root}>
       <Autocomplete

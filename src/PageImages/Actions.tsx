@@ -119,6 +119,7 @@ const Actions = React.memo((props: ActorProps) => {
             <MenuItem value={"image"}>Image</MenuItem>
             <MenuItem value={"text"}>Text</MenuItem>
             <MenuItem value={"site"}>Site</MenuItem>
+            <MenuItem value={"filter"}>Filter</MenuItem>
           </Select>
         </FormControl>
         <div>

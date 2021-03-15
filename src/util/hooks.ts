@@ -254,10 +254,21 @@ export function useImageIds(keyWords?: string[] | null) {
   };
 
   if (keyWords)
-    images = images.filter(v =>
-      (v.keywords || []).some(w => keyWords.some(z => z === w))
-    );
-  return [(images || []).map(v => v.id), createImage, deleteImage];
+    for (let keyword of keyWords) {
+      images = (images || []).filter(v =>
+        (v.keywords || []).some(z => z === keyword)
+      );
+    }
+  const possibleKeyWords = Array.from(
+    new Set((images || []).reduce((p, c) => [...p, ...(c.keywords || [])], []))
+  );
+
+  return [
+    (images || []).map(v => v.id),
+    createImage,
+    deleteImage,
+    possibleKeyWords
+  ];
 }
 export function useInstanceIdsForActor(id: number) {
   const serviceInstance = useService(ServiceInstance);

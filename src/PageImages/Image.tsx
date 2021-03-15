@@ -129,6 +129,9 @@ const Image = React.memo((props: ImageProps) => {
     props.deleteImage && props.deleteImage(props.id);
   };
 
+  const AvatarLink =
+    image.type === "filter" ? AvatarLinkFilter : AvatarLinkImage;
+
   const renderView = () => {
     return (
       <>
@@ -142,7 +145,7 @@ const Image = React.memo((props: ImageProps) => {
           updateEntity={updateImage}
         >
           <Avatar className={classes.avatar}>
-            <Link to={{ pathname: "/image", state: { imageId: image.id } }}>
+            <AvatarLink image={image}>
               {image.type === "image" && url ? (
                 <img
                   src={url}
@@ -151,7 +154,7 @@ const Image = React.memo((props: ImageProps) => {
               ) : (
                 image.name[0]
               )}
-            </Link>
+            </AvatarLink>
           </Avatar>
 
           <EntityTitle>
@@ -177,6 +180,26 @@ const Image = React.memo((props: ImageProps) => {
 
   return renderView();
 });
+
+function AvatarLinkImage({ image, children }) {
+  return (
+    <Link to={{ pathname: "/image", state: { imageId: image.id } }}>
+      {children}
+    </Link>
+  );
+}
+function AvatarLinkFilter({ image, children }) {
+  return (
+    <Link
+      to={{
+        pathname: "/images",
+        state: { image }
+      }}
+    >
+      {children}
+    </Link>
+  );
+}
 
 function ImageSubheader({ classes, id, name, type, url }) {
   if (type !== "image" || !type) return null;

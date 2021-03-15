@@ -6,5 +6,5 @@ export interface ModelImage {
   file?: string;
   url?: string;
   text?: string;
-  type: "image" | "site" | "text";
+  type: "image" | "site" | "text" | "filter";
 }
