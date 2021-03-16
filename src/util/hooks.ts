@@ -14,6 +14,7 @@ import { ModelActor } from "../models/ModelActor";
 import { ModelInstance } from "../models/ModelInstance";
 
 import useCommonHook from "./useCommonHook";
+import { ModelImage } from "../models/ModelImage";
 export { default as useCommonHook } from "./useCommonHook";
 export { default as useHistory } from "./useHistory";
 export * from "./historyHooks";
@@ -243,16 +244,6 @@ export function useImageIds(keyWords?: string[] | null) {
     serviceImage.getAll().then(setImages);
   }, [serviceImage, keyWords]);
 
-  const createImage = async (name: string, file: File = null) => {
-    const newid = (await serviceImage.createImage(name)).id;
-    if (file) await serviceImage.upload(newid, file);
-    serviceImage.getAll().then(setImages);
-  };
-  const deleteImage = async id => {
-    await serviceImage.deleteImage(id);
-    serviceImage.getAll().then(setImages);
-  };
-
   if (keyWords)
     for (let keyword of keyWords) {
       images = (images || []).filter(v =>
@@ -263,6 +254,16 @@ export function useImageIds(keyWords?: string[] | null) {
     new Set((images || []).reduce((p, c) => [...p, ...(c.keywords || [])], []))
   );
 
+  const createImage = async (name: string, file: File = null) => {
+    const newid = (await serviceImage.createImage(name)).id;
+    if (file) await serviceImage.upload(newid, file);
+    serviceImage.getAll().then(setImages);
+  };
+  const deleteImage = async id => {
+    await serviceImage.deleteImage(id);
+    serviceImage.getAll().then(setImages);
+  };
+
   return [
     (images || []).map(v => v.id),
     createImage,
@@ -270,6 +271,7 @@ export function useImageIds(keyWords?: string[] | null) {
     possibleKeyWords
   ];
 }
+
 export function useInstanceIdsForActor(id: number) {
   const serviceInstance = useService(ServiceInstance);
   const serviceActor = useService(ServiceActor);

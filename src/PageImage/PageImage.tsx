@@ -181,7 +181,12 @@ function Text({ image, ...props }) {
             {image.name}
           </Typography>
           <Divider style={{ marginTop: "10px", marginBottom: "10px" }} />
-          <Typography style={{ fontStyle: "italic" }}>{image.text}</Typography>
+          <Typography
+            component="pre"
+            style={{ fontStyle: "italic", whiteSpace: "pre-wrap" }}
+          >
+            {image.text}
+          </Typography>
         </Paper>
       </div>
 

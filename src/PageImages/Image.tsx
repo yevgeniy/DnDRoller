@@ -221,7 +221,10 @@ function TextSubheader({ classes, type, text }) {
 
   return (
     <div className={classes.textSubheader}>
-      <Typography variant="body2" component="p" color="textSecondary">
+      <Typography
+        component="pre"
+        style={{ fontStyle: "italic", whiteSpace: "pre-wrap" }}
+      >
         {text}
       </Typography>
     </div>
