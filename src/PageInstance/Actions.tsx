@@ -18,6 +18,8 @@ import {
 } from "@material-ui/core";
 
 import { ModelActor } from "../models/ModelActor";
+import { useCommonHook, useActor } from "../util/hooks";
+import { Input } from "../components";
 
 const useStyle = makeStyles(theme => {
   return {
@@ -46,42 +48,54 @@ const useStyle = makeStyles(theme => {
 
 type ActionsProps = { [P in keyof ModelActor]: ModelActor[P] } & {
   /*update any prop of actor*/
-  onDone: (a: { [P in keyof ModelActor]?: ModelActor[P] }) => void;
+  onDone: (a?: { [P in keyof ModelActor]?: ModelActor[P] }) => void;
 };
 
 const Actions = React.memo((props: ActionsProps) => {
   const classes = useStyle({});
-  const [demage, setDemage] = useState();
-  const [initiative, setInitiative] = useState();
+
+  const [initiative, setinitiative] = useState(0);
+  const [demage, setdemage] = useState(0);
+  const [actor, updateActor] = useCommonHook(useActor, props.id) || [
+    null,
+    null
+  ];
+
+  if (!actor) return null;
 
   const addDemage = e => {
     e.preventDefault();
 
-    props.onDone({ hpCurrent: props.hpCurrent - demage });
+    updateActor({ hpCurrent: actor.hpCurrent - demage });
+    props.onDone();
   };
   const assignInitiative = e => {
     e.preventDefault();
 
-    props.onDone({ initiative: initiative });
+    updateActor({ initiative: initiative });
+    props.onDone();
   };
   const onResetInitiative = e => {
     e.preventDefault();
-    props.onDone({ initiative: null });
+    updateActor({ initiative: null });
+    props.onDone();
   };
   const onResetHp = e => {
     e.preventDefault();
-    props.onDone({ hpCurrent: props.hp });
+    updateActor({ hpCurrent: props.hp });
+    props.onDone();
   };
 
+  console.log(actor);
   const c: string[] = [];
-  for (let i in props.class) c.push(`${i} lvl ${props.class[i]}`);
+  for (let i in actor.class) c.push(`${i} lvl ${actor.class[i]}`);
 
   return (
     <div className={classes.container}>
       <Card className={classes.nameCard}>
         <CardHeader
           avatar={<FaceIcon />}
-          title={props.name}
+          title={actor.name}
           subheader={c.join(", ")}
           action={
             <>
@@ -91,7 +105,7 @@ const Actions = React.memo((props: ActionsProps) => {
                 to={{
                   pathname: "/actors",
                   state: {
-                    discover: props.id
+                    discover: actor.id
                   }
                 }}
               >
@@ -103,40 +117,41 @@ const Actions = React.memo((props: ActionsProps) => {
       </Card>
 
       <form onSubmit={addDemage}>
-        <TextField
+        <Input
           className={classes.mainEntry}
           id="standard-number"
           label="Add Demage"
-          value={demage}
-          onChange={e => setDemage(e.target.value)}
+          defaultValue=""
+          onChange={v => setdemage(v)}
           type="number"
-          InputLabelProps={{
-            shrink: true
-          }}
-          margin="normal"
-          variant="filled"
         />
         <Fab color="secondary" size="small" onClick={onResetHp}>
           <Replay />
         </Fab>
       </form>
       <form onSubmit={assignInitiative}>
-        <TextField
+        <Input
           className={classes.mainEntry}
           id="standard-number"
           label="Set Initiative"
-          value={initiative}
-          onChange={e => setInitiative(e.target.value)}
+          defaultValue={initiative || ""}
+          onChange={v => setinitiative(v)}
           type="number"
-          InputLabelProps={{
-            shrink: true
-          }}
-          margin="normal"
-          variant="filled"
         />
         <Fab color="secondary" size="small" onClick={onResetInitiative}>
           <Replay />
         </Fab>
+      </form>
+      <Divider />
+      <form onSubmit={e => e.preventDefault()}>
+        <Input
+          className={classes.mainEntry}
+          id="standard-number"
+          label="Current hp"
+          defaultValue={actor.hpCurrent}
+          onChange={v => updateActor({ hpCurrent: v })}
+          type="number"
+        />
       </form>
     </div>
   );

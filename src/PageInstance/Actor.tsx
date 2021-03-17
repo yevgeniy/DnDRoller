@@ -17,7 +17,13 @@ import ActorContent from "./ActorContent";
 
 import Actions from "./Actions";
 import { ModelActor } from "../models/ModelActor";
-import { useService, useImage, useHot } from "../util/hooks";
+import {
+  useService,
+  useImage,
+  useHot,
+  useCommonHook,
+  useActor
+} from "../util/hooks";
 import ServiceActor from "../services/ServiceActor";
 
 import {
@@ -126,7 +132,14 @@ type IActorProps = { [P in keyof ModelActor]?: ModelActor[P] } & {
 
 const Actor = React.memo((props: IActorProps) => {
   const classes = useActorStyles({});
-  const [actor, updateActor] = useActor(props.id, props.resetActor);
+  const [actor, updateActor, { resetActor }] = useCommonHook(
+    useActor,
+    props.id
+  ) || [null, null, { resetActor: null }];
+
+  useEffect(() => {
+    resetActor && resetActor();
+  }, [props.resetActor]);
 
   if (!actor) return null;
 
@@ -195,30 +208,5 @@ const useImageEntryPropsStyles = makeStyles(theme => {
     }
   });
 });
-
-function useActor(id: number, resetActorToken?: number) {
-  const serviceActor = useService(ServiceActor);
-  const [actor, setActor] = useState(null);
-
-  useEffect(() => {
-    if (!serviceActor) return;
-    serviceActor.get(id).then(setActor);
-  }, [serviceActor]);
-
-  useEffect(() => {
-    if (!resetActorToken) return;
-    if (!actor) return;
-
-    updateActor({ hpCurrent: actor.hp, initiative: null });
-  }, [resetActorToken]);
-
-  async function updateActor(updateActor) {
-    const na = { ...actor, ...updateActor };
-    serviceActor.save(na);
-    setActor(na);
-  }
-
-  return [actor, updateActor];
-}
 
 export default Actor;

@@ -147,7 +147,13 @@ export function useActorIds() {
 
 export function useActor(
   id: number
-): [ModelActor, (f: { [P in keyof ModelActor]?: ModelActor[P] }) => void] {
+): [
+  ModelActor,
+  (f: { [P in keyof ModelActor]?: ModelActor[P] }) => void,
+  {
+    resetActor: () => void;
+  }
+] {
   const serviceActor = useService(ServiceActor);
   const [actor, setActor] = useState(null);
 
@@ -162,7 +168,11 @@ export function useActor(
     await serviceActor.save({ id, ...updateActor });
   }
 
-  return [actor, updateActor];
+  function resetActor() {
+    updateActor({ hpCurrent: actor.hp, initiative: null });
+  }
+
+  return [actor, updateActor, { resetActor }];
 }
 export function useImage(id: number) {
   const serviceImage = useService(ServiceImage);
