@@ -41,12 +41,10 @@ export const ImageEntry = React.memo((props: IImageEntry) => {
 
   if (!image) return null;
 
+  const ListI = image.type === "filter" ? ListItemFilter : ListItemImage;
+
   return (
-    <ListItem
-      button
-      component={Link}
-      to={{ pathname: "/image", state: { imageId: image.id } }}
-    >
+    <ListI button component={Link} image={image}>
       <ListItemAvatar>
         <Avatar className={clsx(classes.avatar, classes.imageAvatar)}>
           {image.type === "image" && url ? (
@@ -57,7 +55,7 @@ export const ImageEntry = React.memo((props: IImageEntry) => {
         </Avatar>
       </ListItemAvatar>
       <ListItemText primary={image.name} />
-    </ListItem>
+    </ListI>
   );
 });
 
@@ -123,3 +121,27 @@ export const InstanceEntry = React.memo((props: InstanceEntryProps) => {
     </ListItem>
   );
 });
+
+export function ListItemImage({ image, children, ...props }) {
+  return (
+    <ListItem
+      to={{ pathname: "/image", state: { imageId: image.id } }}
+      {...props}
+    >
+      {children}
+    </ListItem>
+  );
+}
+export function ListItemFilter({ image, children, ...props }) {
+  return (
+    <ListItem
+      to={{
+        pathname: "/images",
+        state: { image }
+      }}
+      {...props}
+    >
+      {children}
+    </ListItem>
+  );
+}

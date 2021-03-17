@@ -1,7 +1,9 @@
 import * as React from "react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { SortActorsBy } from "../enums";
+import { useService } from "../util/hooks";
+import ServiceActor from "../services/ServiceActor";
 
 const useStyles = makeStyles(theme => {
   return {
@@ -15,61 +17,41 @@ const useStyles = makeStyles(theme => {
 });
 
 interface ActorsProps {
-  children: React.ReactElement | React.ReactElement[];
+  children: (ModelActor) => React.ReactElement;
   sort: SortActorsBy;
+  ids: number[];
 }
-const Actors = React.memo(({ children, ...props }: ActorsProps) => {
-  const classes = useStyles(props);
-  const [sortedElms] = useSort(props.sort, children);
+const Actors = React.memo(({ children, sort, ids }: ActorsProps) => {
+  const classes = useStyles({});
+  const [entries, setentries] = useState([]);
+  const service = useService(ServiceActor);
+
+  useEffect(() => {
+    if (!service) return;
+
+    service.getAll(ids).then(actors => {
+      setentries(actors);
+    });
+  }, [service, ids.join(",")]);
+
+  switch (sort) {
+    case "name":
+      entries.sort((a, b) => (a.name > b.name ? 1 : -1));
+      break;
+
+    default:
+  }
 
   return (
     <div>
-      {sortedElms.map(v =>
-        React.cloneElement(v, {
+      {entries.map(v =>
+        React.cloneElement(children(v), {
+          key: v.id,
           classes
         })
       )}
     </div>
   );
 });
-
-function useSort(
-  by: SortActorsBy,
-  children: React.ReactElement | React.ReactElement[]
-): [any[]] {
-  const [sort, setSort] = useState([]);
-
-  switch (by) {
-    case "name":
-      sort.sort((a, b) => (a.name > b.name ? 1 : -1));
-      break;
-    case "initiative":
-      sort.sort((a, b) => (a.initiative > b.initiative ? -1 : 1));
-      break;
-    default:
-  }
-
-  const elms = React.Children.map(children, v => {
-    return React.cloneElement(v, {
-      setSortActor: a => {
-        const i = sort.findIndex(v => v.id === a.id);
-        if (i === -1) setSort([...sort, a]);
-        else {
-          sort[i] = { ...a };
-          setSort([...sort]);
-        }
-      }
-    });
-  });
-  const sortedelms = [];
-
-  sort.forEach(v => {
-    var id = elms.findIndex(z => z.props.id === v.id);
-    var elm = elms.splice(id, 1)[0];
-    if (elm) sortedelms.push(elm);
-  });
-  sortedelms.push(...elms);
-  return [sortedelms];
-}
 
 export default Actors;

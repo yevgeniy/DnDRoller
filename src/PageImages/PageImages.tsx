@@ -122,10 +122,8 @@ const PageInstances = React.memo(
         <LayoutMenu>
           <Menu />
         </LayoutMenu>
-        <Images sort="name">
-          {imageIds.map(v => (
-            <Image key={v} id={v} deleteImage={deleteImage} />
-          ))}
+        <Images sort="name" ids={imageIds}>
+          {v => <Image deleteImage={deleteImage} {...v} />}
         </Images>
         <Dialog
           open={openNewImageDialog}

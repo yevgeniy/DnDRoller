@@ -57,16 +57,15 @@ const PageInstanceAdd = React.memo((props: IPageInstanceAdd) => {
           <Add />
         </IconButton>
       </LayoutControl>
-      <Instances sort="name">
-        {instanceIds.map(v => (
+      <Instances sort="name" ids={instanceIds}>
+        {v => (
           <Instance
-            key={v}
-            id={v}
             setSelected={onSetSelected(v)}
-            selected={selected.some(z => v === z)}
+            selected={selected.some(z => v.id === z)}
             cloneInstance={cloneInstance}
+            {...v}
           />
-        ))}
+        )}
       </Instances>
       <Dialog
         open={openNewInstanceDialog}

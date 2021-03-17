@@ -52,7 +52,7 @@ const useStyles = makeStyles(theme =>
 
 type InstanceProps = { [P in keyof ModelInstance]?: ModelInstance[P] } & {
   classes?: { card: string };
-  setSortInstance?: (a: ModelInstance) => void;
+
   deleteInstance?: (i: number) => void;
   setSelected?: (f: boolean) => void;
   selected?: boolean;
@@ -66,11 +66,6 @@ const Instance = React.memo((props: InstanceProps) => {
     null,
     null
   ];
-
-  useEffect(() => {
-    if (!instance) return;
-    props.setSortInstance(instance);
-  }, [instance]);
 
   if (!instance) return null;
 

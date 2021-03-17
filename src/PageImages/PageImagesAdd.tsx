@@ -76,16 +76,15 @@ const PageImagesAdd = React.memo((props: PageImageAttachProps) => {
           <Add />
         </IconButton>
       </LayoutControl>
-      <Images sort="name">
-        {imageIds.map(v => (
+      <Images sort="name" ids={imageIds}>
+        {v => (
           <Image
-            key={v}
-            id={v}
-            setSelected={onSetSelected(v)}
-            selected={selected.some(z => v === z)}
+            setSelected={onSetSelected(v.id)}
+            selected={selected.some(z => v.id === z)}
             deleteImage={deleteImage}
+            {...v}
           />
-        ))}
+        )}
       </Images>
       <Dialog
         open={openNewImageDialog}

@@ -57,17 +57,16 @@ const PageActorsAdd = React.memo((props: PageActorAddProps) => {
           <Add />
         </IconButton>
       </LayoutControl>
-      <Actors sort="name">
-        {actorIds.map(v => (
+      <Actors sort="name" ids={actorIds}>
+        {v => (
           <Actor
-            key={v}
-            id={v}
-            setSelected={onSetSelected(v)}
-            selected={selected.some(z => v === z)}
+            setSelected={onSetSelected(v.id)}
+            selected={selected.some(z => v.id === z)}
             deleteActor={deleteActor}
             cloneActor={cloneActor}
+            {...v}
           />
-        ))}
+        )}
       </Actors>
       <Dialog
         open={openNewActorDialog}

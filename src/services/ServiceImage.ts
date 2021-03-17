@@ -44,8 +44,11 @@ class ServiceImage {
   async getUrl(file: string): Promise<string> {
     return this.db.getUrl(file);
   }
-  async getAll(): Promise<ModelImage[]> {
-    return this.images || (this.images = await this.db.getImages());
+  async getAll(ids?: number[]): Promise<ModelImage[]> {
+    const res = this.images || (this.images = await this.db.getImages());
+    if (!ids) return res;
+
+    return res.filter(v => ids.some(z => v.id === z));
   }
   async getKeyWords(): Promise<string[]> {
     const res = await this.getAll();

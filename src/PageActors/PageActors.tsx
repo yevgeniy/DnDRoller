@@ -48,16 +48,15 @@ const PageActors = (props: ModelRoutedPage<PageActorLocationState>) => {
         </IconButton>
       </LayoutControl>
 
-      <Actors sort="name">
-        {actorIds.map(v => (
+      <Actors sort="name" ids={actorIds}>
+        {v => (
           <Actor
-            key={v}
-            id={v}
             deleteActor={deleteActor}
             cloneActor={cloneActor}
             discover={props.location.state.discover}
+            {...v}
           />
-        ))}
+        )}
       </Actors>
       <Dialog
         open={openNewActorDialog}

@@ -63,7 +63,6 @@ const useStyles = makeStyles(theme =>
 
 type ActorProps = { [P in keyof ModelActor]?: ModelActor[P] } & {
   classes?: any;
-  setSortActor?: (a: ModelActor) => void;
   setSelected?: (f: boolean) => void;
   deleteActor?: (i: number) => any;
   cloneActor?: (a: ModelActor) => any;
@@ -77,11 +76,6 @@ const Actor = React.memo((props: ActorProps) => {
     null,
     null
   ];
-
-  useEffect(() => {
-    if (!actor) return;
-    props.setSortActor(actor);
-  }, [actor]);
 
   if (!actor) return null;
 

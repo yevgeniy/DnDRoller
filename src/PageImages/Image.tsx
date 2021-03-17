@@ -99,7 +99,6 @@ const useStylesButtonLabel = makeStyles(
 
 type ImageProps = { [P in keyof ModelImage]?: ModelImage[P] } & {
   classes?: any;
-  setSortImage?: (a: ModelImage) => void;
   setSelected?: (f: boolean) => void;
   deleteImage?: (i: number) => void;
   selected?: boolean;
@@ -115,11 +114,6 @@ const Image = React.memo((props: ImageProps) => {
     null,
     null
   ];
-
-  useEffect(() => {
-    if (!image) return;
-    props.setSortImage && props.setSortImage(image);
-  }, [image]);
 
   const [showThumbOnImages] = useCommonHook(useShowThumbOnImages) || [null];
 

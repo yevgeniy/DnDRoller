@@ -119,7 +119,6 @@ const useActorStyles = makeStyles(theme =>
 
 type IActorProps = { [P in keyof ModelActor]?: ModelActor[P] } & {
   classes?: any;
-  setSortActor?: (a: ModelActor) => void;
   resetActor?: number;
   removeActor?: (id: number) => void;
   cloneActor?: (actor: ModelActor) => any;
@@ -128,11 +127,6 @@ type IActorProps = { [P in keyof ModelActor]?: ModelActor[P] } & {
 const Actor = React.memo((props: IActorProps) => {
   const classes = useActorStyles({});
   const [actor, updateActor] = useActor(props.id, props.resetActor);
-
-  useEffect(() => {
-    if (!actor) return;
-    props.setSortActor(actor);
-  }, [actor]);
 
   if (!actor) return null;
 

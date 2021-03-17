@@ -2,6 +2,8 @@ import * as React from "react";
 import { useState, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { SortImagesBy } from "../enums";
+import { useImageIds, useService } from "../util/hooks";
+import ServiceImage from "../services/ServiceImage";
 
 const useStyles = makeStyles(theme => {
   return {
@@ -15,64 +17,46 @@ const useStyles = makeStyles(theme => {
 });
 
 interface ImageProps {
-  children: React.ReactElement | React.ReactElement[];
+  children: (ModelImage) => React.ReactElement;
   sort: SortImagesBy;
+  ids: number[];
 }
-const Images = React.memo(({ children, ...props }: ImageProps) => {
-  const classes = useStyles(props);
-  const [sortedElms] = useSort(props.sort, children);
+const Images = React.memo(({ children, ids, sort }: ImageProps) => {
+  const classes = useStyles({});
+  const [entries, setentries] = useState([]);
+  const imageService = useService(ServiceImage);
+
+  useEffect(() => {
+    if (!imageService) return;
+
+    imageService.getAll(ids).then(images => {
+      setentries(images);
+    });
+  }, [imageService, ids.join(",")]);
+
+  switch (sort) {
+    case "name":
+      entries.sort((a, b) => (a.name > b.name ? 1 : -1));
+      break;
+    case "newest":
+      entries.sort((a, b) => (a.created > b.created ? -1 : 1));
+      break;
+    case "oldest":
+      entries.sort((a, b) => (a.created > b.created ? 1 : -1));
+      break;
+    default:
+  }
 
   return (
     <div>
-      {sortedElms.map(v =>
-        React.cloneElement(v, {
+      {entries.map(v =>
+        React.cloneElement(children(v), {
+          key: v.id,
           classes
         })
       )}
     </div>
   );
 });
-
-function useSort(
-  by: SortImagesBy,
-  children: React.ReactElement | React.ReactElement[]
-): [any[]] {
-  const [sort, setSort] = useState([]);
-
-  switch (by) {
-    case "name":
-      sort.sort((a, b) => (a.name > b.name ? 1 : -1));
-      break;
-    case "newest":
-      sort.sort((a, b) => (a.created > b.created ? -1 : 1));
-      break;
-    case "oldest":
-      sort.sort((a, b) => (a.created > b.created ? 1 : -1));
-      break;
-    default:
-  }
-
-  const elms = React.Children.map(children, v => {
-    return React.cloneElement(v, {
-      setSortImage: a => {
-        const i = sort.findIndex(v => v.id === a.id);
-        if (i === -1) setSort([...sort, a]);
-        else {
-          sort[i] = { ...a };
-          setSort([...sort]);
-        }
-      }
-    });
-  });
-  const sortedelms = [];
-
-  sort.forEach(v => {
-    var id = elms.findIndex(z => z.props.id === v.id);
-    var elm = elms.splice(id, 1)[0];
-    if (elm) sortedelms.push(elm);
-  });
-  sortedelms.push(...elms);
-  return [sortedelms];
-}
 
 export default Images;

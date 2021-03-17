@@ -117,16 +117,15 @@ const PageInstance = (props: ModelRoutedPage<PageInstanceLocationState>) => {
         </IconButton>
       </LayoutControl>
 
-      <Actors sort={sort}>
-        {instance.actors.map(v => (
+      <Actors sort={sort} ids={instance.actors}>
+        {v => (
           <Actor
-            key={v}
-            id={v}
             resetActor={resetActors}
             removeActor={removeActor}
             cloneActor={cloneActor}
+            {...v}
           />
-        ))}
+        )}
       </Actors>
       <Menu
         id="simple-menu"

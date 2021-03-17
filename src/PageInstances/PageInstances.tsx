@@ -55,15 +55,14 @@ const PageInstances = (props: ModelRoutedPage<PageInstancesLocationState>) => {
           <Add />
         </IconButton>
       </LayoutControl>
-      <Instances sort="name">
-        {instanceIds.map(v => (
+      <Instances sort="name" ids={instanceIds}>
+        {v => (
           <Instance
-            key={v}
-            id={v}
             deleteInstance={deleteInstance}
             cloneInstance={cloneInstance}
+            {...v}
           />
-        ))}
+        )}
       </Instances>
       <Dialog
         open={openNewInstanceDialog}
