@@ -21,7 +21,7 @@ interface ImageProps {
   sort: SortImagesBy;
   ids: number[];
 }
-const Images = React.memo(({ children, ids, sort }: ImageProps) => {
+const Images = ({ children, ids, sort }: ImageProps) => {
   const classes = useStyles({});
   const [entries, setentries] = useState([]);
   const imageService = useService(ServiceImage);
@@ -29,9 +29,14 @@ const Images = React.memo(({ children, ids, sort }: ImageProps) => {
   useEffect(() => {
     if (!imageService) return;
 
-    imageService.getAll(ids).then(images => {
-      setentries(images);
-    });
+    if (!ids || !ids.length) {
+      setentries([]);
+      return;
+    }
+
+    let done = setentries;
+    imageService.getAll(ids).then(done);
+    return () => (done = () => {});
   }, [imageService, ids.join(",")]);
 
   switch (sort) {
@@ -57,6 +62,6 @@ const Images = React.memo(({ children, ids, sort }: ImageProps) => {
       )}
     </div>
   );
-});
+};
 
 export default Images;

@@ -48,7 +48,8 @@ class ServiceImage {
     const res = this.images || (this.images = await this.db.getImages());
     if (!ids) return res;
 
-    return res.filter(v => ids.some(z => v.id === z));
+    console.log("IDS:", ids);
+    return res.filter(v => ids.indexOf(v.id) > -1);
   }
   async getKeyWords(): Promise<string[]> {
     const res = await this.getAll();
