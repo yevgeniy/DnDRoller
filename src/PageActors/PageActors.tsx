@@ -17,6 +17,8 @@ import Actors from "./Actors";
 import { useActorIds } from "../util/hooks";
 
 import { ModelRoutedPage } from "../models/ModelRoutedPage";
+import { LayoutMenu } from "../components";
+import Menu from "./Menu";
 
 interface PageActorLocationState {
   discover?: number;
@@ -24,7 +26,13 @@ interface PageActorLocationState {
 
 const PageActors = (props: ModelRoutedPage<PageActorLocationState>) => {
   props.location.state = props.location.state || {};
-  const [actorIds, createActor, deleteActor, cloneActor] = useActorIds();
+  const [
+    actorIds,
+    createActor,
+    deleteActor,
+    cloneActor,
+    { deleteFreeActors }
+  ] = useActorIds();
   const [openNewActorDialog, setOpenNewActorDialog] = useState(false);
   const [newActorName, setNewActorName] = useState("");
 
@@ -58,6 +66,11 @@ const PageActors = (props: ModelRoutedPage<PageActorLocationState>) => {
           />
         )}
       </Actors>
+
+      <LayoutMenu>
+        <Menu deleteFreeActors={deleteFreeActors} />
+      </LayoutMenu>
+
       <Dialog
         open={openNewActorDialog}
         onClose={e => setOpenNewActorDialog(false)}

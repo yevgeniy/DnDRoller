@@ -7,7 +7,7 @@ import ServiceActor from "./ServiceActor";
 
 let instance: Promise<ServiceInstance>;
 class ServiceInstance {
-  db: ServiceDB = null;
+  instances: ModelInstance[] = null;
 
   constructor() {}
 
@@ -15,17 +15,23 @@ class ServiceInstance {
     if (!instance)
       instance = new Promise(async res => {
         const serv = new ServiceInstance();
-        serv.db = await ServiceDB.init();
         res(serv);
       });
 
     return await instance;
   }
-
+  async getAll(ids = null): Promise<ModelInstance[]> {
+    const res =
+      this.instances ||
+      (this.instances = await ServiceDB.init().then(v => v.getInstances()));
+    if (!ids) return res;
+    return res.filter(v => ids.some(z => z === v.id));
+  }
   async get(id: number): Promise<ModelInstance> {
     const instance = (await this.getAll()).find(v => v.id === id);
     return instance;
   }
+
   async getForActor(id: number): Promise<ModelInstance[]> {
     /*
         db.players.find( { $where: function() {
@@ -42,11 +48,7 @@ class ServiceInstance {
       v.filter(z => (z.images || []).some(a => a === id))
     );
   }
-  async getAll(ids = null): Promise<ModelInstance[]> {
-    const res = await this.db.getInstances();
-    if (!ids) return res;
-    return res.filter(v => ids.some(z => z === v.id));
-  }
+
   async getKeyWords(): Promise<string[]> {
     const res = await this.getAll();
     return Array.from(new Set(res.map(v => v.keywords || []).flat()));
@@ -58,13 +60,32 @@ class ServiceInstance {
       created: +new Date(),
       actors: []
     });
+    this.instances && this.instances.push(newInstance);
     return newInstance;
   }
   async deleteInstance(id: number): Promise<void> {
-    await this.db.deleteInstace(id);
+    const instance = await this.get(id);
+
+    this.instances &&
+      (this.instances = this.instances.filter(v => v.id !== id));
+
+    await ServiceDB.init().then(v => v.deleteInstace(id));
+
+    for (let actorId of instance.actors || []) {
+      ServiceActor.init().then(v => v.deleteActor(actorId));
+    }
   }
   async save(instance: ModelInstance): Promise<ModelInstance> {
-    return await this.db.saveInstance(instance);
+    const updatedInstance = await ServiceDB.init().then(v =>
+      v.saveInstance(instance)
+    );
+
+    this.instances &&
+      this.instances.map(v =>
+        v.id === instance.id ? v : { ...v, ...updatedInstance }
+      );
+
+    return updatedInstance;
   }
   async removeActor(id: number, actorId: number): Promise<ModelInstance> {
     let instance = await this.get(id);

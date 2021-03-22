@@ -12,19 +12,12 @@ let ID = 0;
 
 let inst: Promise<ServiceImage> = null;
 class ServiceImage {
-  serviceActor: ServiceActor = null;
-  serviceInstance: ServiceInstance = null;
-  db: ServiceDB = null;
-
   images: ModelImage[] = null;
 
   static async init(): Promise<ServiceImage> {
     if (!inst) {
       inst = new Promise(async res => {
         const serv = new ServiceImage();
-        serv.serviceActor = await ServiceActor.init();
-        serv.serviceInstance = await ServiceInstance.init();
-        serv.db = await ServiceDB.init();
         res(serv);
       });
     }
@@ -42,10 +35,12 @@ class ServiceImage {
     return img;
   }
   async getUrl(file: string): Promise<string> {
-    return this.db.getUrl(file);
+    return ServiceDB.init().then(v => v.getUrl(file));
   }
   async getAll(ids?: number[]): Promise<ModelImage[]> {
-    const res = this.images || (this.images = await this.db.getImages());
+    const res =
+      this.images ||
+      (this.images = await ServiceDB.init().then(v => v.getImages()));
     if (!ids) return res;
 
     console.log("IDS:", ids);
@@ -67,26 +62,34 @@ class ServiceImage {
     return img;
   }
   async deleteImage(imageId: number): Promise<void> {
-    await this.serviceInstance.getForImage(imageId).then(instances =>
-      instances.map(instance => {
-        return this.serviceInstance.removeImage(instance.id, imageId);
-      })
-    );
-    await this.serviceActor.getForImage(imageId).then(actors =>
-      actors.map(actor => {
-        return this.serviceActor.removeImage(actor.id, imageId);
-      })
-    );
+    await ServiceInstance.init()
+      .then(v => v.getForImage(imageId))
+      .then(instances =>
+        instances.map(instance => {
+          return ServiceInstance.init().then(v =>
+            v.removeImage(instance.id, imageId)
+          );
+        })
+      );
+    await ServiceActor.init()
+      .then(v => v.getForImage(imageId))
+      .then(actors =>
+        actors.map(actor => {
+          return ServiceInstance.init().then(v =>
+            v.removeImage(actor.id, imageId)
+          );
+        })
+      );
     const image = await this.get(imageId);
 
-    if (image.file) await this.db.deleteFile(image.file);
+    if (image.file) await ServiceDB.init().then(v => v.deleteFile(image.file));
 
     this.images && (this.images = this.images.filter(v => v.id !== imageId));
 
-    await this.db.deleteImage(imageId);
+    await ServiceDB.init().then(v => v.deleteImage(imageId));
   }
   async save(image: ModelImage): Promise<ModelImage> {
-    const updatedImage = await this.db.saveImage(image);
+    const updatedImage = await ServiceDB.init().then(v => v.saveImage(image));
 
     this.images &&
       (this.images = this.images.map(v => {
@@ -103,14 +106,14 @@ class ServiceImage {
   async upload(id: number, file: File): Promise<ModelImage> {
     const image = await this.get(id);
 
-    if (image.file) await this.db.deleteFile(image.file);
+    if (image.file) await ServiceDB.init().then(v => v.deleteFile(image.file));
 
     const m = file.name.match(/\.\w+?$/);
     const ext = m ? m[0] : "";
     const name = `${+new Date()}_${++ID}${ext}`;
     image.file = name;
 
-    await this.db.upload(name, file.data);
+    await ServiceDB.init().then(v => v.upload(name, file.data));
     return await this.save(image);
   }
 }

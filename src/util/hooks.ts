@@ -141,8 +141,15 @@ export function useActorIds() {
     let newactor = await serviceActor.cloneActorFrom(actor);
     setActorIds([...actorIds, newactor.id]);
   }
+  async function deleteFreeActors() {
+    const freeActors = await serviceActor.getFreeActorIds();
 
-  return [actorIds, createActor, deleteActor, cloneActor];
+    setActorIds(ids => ids.filter(id => freeActors.indexOf(id) >= -1));
+
+    await serviceActor.deleteActors(freeActors);
+  }
+
+  return [actorIds, createActor, deleteActor, cloneActor, { deleteFreeActors }];
 }
 
 export function useActor(

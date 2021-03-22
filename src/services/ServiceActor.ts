@@ -4,17 +4,12 @@ import ServiceInstance from "./ServiceInstance";
 
 let inst: Promise<ServiceActor> = null;
 class ServiceActor {
-  serviceInstance: ServiceInstance = null;
-  db: ServiceDB = null;
   actors: ModelActor[] = null;
 
   static async init(): Promise<ServiceActor> {
     if (!inst) {
       inst = new Promise(async res => {
         const serv = new ServiceActor();
-        serv.db = await ServiceDB.init();
-        serv.serviceInstance = await ServiceInstance.init();
-
         res(serv);
       });
     }
@@ -26,7 +21,9 @@ class ServiceActor {
     return res.find(v => v.id === id);
   }
   async getAll(ids: number[] = null): Promise<ModelActor[]> {
-    const res = this.actors || (this.actors = await this.db.getActors());
+    const res =
+      this.actors ||
+      (this.actors = await ServiceDB.init().then(v => v.getActors()));
     if (!ids) return res;
 
     return res.filter(v => ids.some(z => v.id === z));
@@ -89,18 +86,25 @@ class ServiceActor {
     );
   }
   async deleteActor(actorId: number): Promise<void> {
-    await this.serviceInstance.getForActor(actorId).then(instances =>
-      instances.map(instance => {
-        return this.serviceInstance.removeActor(instance.id, actorId);
-      })
-    );
+    await ServiceInstance.init()
+      .then(v => v.getForActor(actorId))
+      .then(instances =>
+        instances.map(instance => {
+          return ServiceInstance.init().then(v =>
+            v.removeActor(instance.id, actorId)
+          );
+        })
+      );
 
     this.actors = this.actors.filter(v => v.id !== actorId);
 
-    await this.db.deleteActor(actorId);
+    await ServiceDB.init().then(v => v.deleteActor(actorId));
+  }
+  async deleteActors(actorIds: number[]): Promise<void> {
+    for (let id of actorIds) await this.deleteActor(id);
   }
   async save(actor: ModelActor): Promise<ModelActor> {
-    const updatedActor = await this.db.saveActor(actor);
+    const updatedActor = await ServiceDB.init().then(v => v.saveActor(actor));
 
     this.actors = this.actors.map(v => {
       if (v.id === updatedActor.id)
@@ -120,6 +124,20 @@ class ServiceActor {
     if (!actor.images.length) delete actor.images;
     await this.save(actor);
     return actor;
+  }
+  async getFreeActorIds(): Promise<number[]> {
+    const actors = await this.getAll();
+    const res = [];
+
+    for (let actor of actors) {
+      const instancesForActor = await ServiceInstance.init().then(v =>
+        v.getForActor(actor.id)
+      );
+      if (instancesForActor.length) res.push(actor.id);
+    }
+    console.log(res);
+
+    return res;
   }
 }
 
