@@ -86,7 +86,6 @@ const Actions = React.memo((props: ActionsProps) => {
     props.onDone();
   };
 
-  console.log(actor);
   const c: string[] = [];
   for (let i in actor.class) c.push(`${i} lvl ${actor.class[i]}`);
 

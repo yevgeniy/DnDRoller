@@ -115,7 +115,7 @@ class ServiceActor {
       return v;
     });
 
-    return updatedActor;
+    return this.get(actor.id);
   }
   async removeImage(id: number, imageId: number): Promise<ModelActor> {
     let actor = await this.get(id);

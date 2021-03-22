@@ -151,7 +151,6 @@ export function useActorIds() {
 
   return [actorIds, createActor, deleteActor, cloneActor, { deleteFreeActors }];
 }
-
 export function useActor(
   id: number
 ): [
@@ -172,7 +171,9 @@ export function useActor(
   }, [serviceActor, id]);
   async function updateActor(updateActor) {
     setActor(actor => ({ ...actor, ...updateActor }));
-    await serviceActor.save({ id, ...updateActor });
+    const updatedActor = await serviceActor.save({ id, ...updateActor });
+    console.log("a", updatedActor.initiative);
+    setActor(() => ({ ...updatedActor }));
   }
 
   function resetActor() {

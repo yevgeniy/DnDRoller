@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { makeStyles, createStyles } from "@material-ui/core/styles";
 import { SortActorsBy } from "../enums";
 import { ModelActor } from "../models/ModelActor";
-import { useService } from "../util/hooks";
+import { useService, useCommonHook, useActor } from "../util/hooks";
 import ServiceActor from "../services/ServiceActor";
 
 const useStyles = makeStyles(
@@ -26,7 +26,7 @@ interface ActorsProps {
   sort: SortActorsBy;
   ids: number[];
 }
-const Actors = React.memo(({ children, sort, ids }: ActorsProps) => {
+const Actors = ({ children, sort, ids }: ActorsProps) => {
   const classes = useStyles({});
   const [entries, setentries] = useState([]);
   const service = useService(ServiceActor);
@@ -35,7 +35,7 @@ const Actors = React.memo(({ children, sort, ids }: ActorsProps) => {
     if (!service) return;
 
     service.getAll(ids).then(actors => {
-      setentries(actors);
+      setentries([...actors]);
     });
   }, [service, ids.join(",")]);
 
@@ -51,14 +51,30 @@ const Actors = React.memo(({ children, sort, ids }: ActorsProps) => {
 
   return (
     <div>
-      {entries.map(v =>
-        React.cloneElement(children(v), {
-          key: v.id,
-          classes
-        })
-      )}
+      {entries.map(v => (
+        <SortableEntry key={v.id} entry={v} setEntries={setentries}>
+          {React.cloneElement(children(v), {
+            classes
+          })}
+        </SortableEntry>
+      ))}
     </div>
   );
-});
+};
+
+function SortableEntry({ entry, children, setEntries }) {
+  const [actor] = useCommonHook(useActor, entry.id) || [null];
+
+  useEffect(() => {
+    if (!actor) return;
+
+    if (entry.name !== actor.name || entry.initiative !== actor.initiative)
+      setEntries(entries => entries.map(v => (v.id === actor.id ? actor : v)));
+  }, [actor && actor.initiative, actor && actor.name]);
+
+  if (!actor) return null;
+
+  return children;
+}
 
 export default Actors;
