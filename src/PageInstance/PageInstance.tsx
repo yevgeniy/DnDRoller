@@ -26,7 +26,7 @@ import Actors from "./Actors";
 import { SortActorsBy } from "../enums";
 
 import PageActorsAdd from "../PageActors/PageActorsAdd";
-import { Layout, LayoutControl } from "../components";
+import { Layout, LayoutControl, LayoutSubHeader } from "../components";
 import { useInstance } from "../util/hooks";
 
 import { ModelRoutedPage } from "../models/ModelRoutedPage";
@@ -89,11 +89,7 @@ const PageInstance = (props: ModelRoutedPage<PageInstanceLocationState>) => {
   if (!instance) return null;
 
   return (
-    <Layout
-      historyId={props.history.location.key}
-      title={instance.id && `Instance: ${instance.name}`}
-      router={props}
-    >
+    <Layout historyId={props.history.location.key} router={props}>
       {!instance.id && (
         <LayoutControl>
           <Button variant="contained" color="default" onClick={onSave}>
@@ -101,6 +97,7 @@ const PageInstance = (props: ModelRoutedPage<PageInstanceLocationState>) => {
           </Button>
         </LayoutControl>
       )}
+      {instance.id && <LayoutSubHeader>{instance.name}</LayoutSubHeader>}
       <LayoutControl>
         <IconButton onClick={e => setSelectActors(true)} color="inherit">
           <Add />

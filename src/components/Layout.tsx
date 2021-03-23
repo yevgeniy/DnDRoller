@@ -12,26 +12,30 @@ import Drawer from "@material-ui/core/Drawer";
 import MainOptions from "./MainOptions";
 import { useModalState, useLayoutHistory } from "../util/hooks";
 
-import { LayoutControl, LayoutMenu } from "./";
+import { LayoutControl, LayoutMenu, LayoutSubHeader } from "./";
 
-const useStyles = makeStyles(theme => ({
-  container: {
-    flexGrow: 1
-  },
-  menuButton: {
-    marginRight: theme.spacing(2)
-  },
-  title: {
-    flexGrow: 1
-  },
-  content: {
-    marginTop: theme.spacing(1)
-  }
-}));
+const useStyles = makeStyles(
+  theme => ({
+    container: {
+      flexGrow: 1
+    },
+    menuButton: {
+      marginRight: theme.spacing(2)
+    },
+    title: {
+      flexGrow: 1
+    },
+    content: {
+      marginTop: theme.spacing(1)
+    },
+    subheader: {}
+  }),
+  { name: "Layout" }
+);
 
 interface ILayout {
   children: React.ReactElement | React.ReactElement[];
-  title: React.ReactNode;
+  title?: React.ReactNode;
   control?: React.ReactNode;
   historyId?: any;
 }
@@ -41,10 +45,12 @@ export default function Layout(props: ILayout) {
 
   const layoutControls = [];
   let layoutMenu;
+  let layoutSubHeader;
   const other = [];
   React.Children.map(props.children, v => v).forEach(v => {
     if (v.type === LayoutControl) layoutControls.push(v);
     else if (v.type === LayoutMenu) layoutMenu = v;
+    else if (v.type === LayoutSubHeader) layoutSubHeader = v;
     else other.push(v);
   });
 
@@ -69,6 +75,10 @@ export default function Layout(props: ILayout) {
           {layoutControls}
         </Toolbar>
       </AppBar>
+      {layoutSubHeader && (
+        <div className={classes.subheader}>{layoutSubHeader}</div>
+      )}
+
       <div className={classes.content}>{other}</div>
       <Drawer open={mainMenuOpen} onClose={() => setMainMenuOpen(false)}>
         <MainMenu {...{ classes, setMainMenuOpen }} />
