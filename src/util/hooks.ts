@@ -144,7 +144,7 @@ export function useActorIds() {
   async function deleteFreeActors() {
     const freeActors = await serviceActor.getFreeActorIds();
 
-    setActorIds(ids => ids.filter(id => freeActors.indexOf(id) >= -1));
+    setActorIds(ids => ids.filter(id => freeActors.indexOf(id) === -1));
 
     await serviceActor.deleteActors(freeActors);
   }

@@ -43,17 +43,28 @@ class ServiceActor {
     const res = await this.getAll();
     return Array.from(new Set(res.map(v => v.keywords || []).flat()));
   }
-  async createActor(name: string): Promise<ModelActor> {
-    let newActor: ModelActor = {
-      id: null,
-      class: {},
-      hp: null,
-      hpCurrent: null,
-      initiative: null,
-      name: name,
-      race: null,
-      size: "medium"
-    };
+  async createActor(newActorData: string | ModelActor): Promise<ModelActor> {
+    let newActor: ModelActor;
+    if (newActorData.constructor === String) {
+      newActor = {
+        id: null,
+        class: {},
+        hp: null,
+        hpCurrent: null,
+        initiative: null,
+        name: newActorData as string,
+        race: null,
+        size: "medium"
+      };
+    } else {
+      newActor = {
+        ...(newActorData as ModelActor),
+        id: undefined,
+        //@ts-ignore
+        _id: undefined
+      };
+    }
+
     newActor = await this.save(newActor);
     this.actors.push(newActor);
     return newActor;
@@ -66,16 +77,11 @@ class ServiceActor {
       )
       .then(v => v.length);
 
-    let newactor = await this.save({
+    let newactor = await this.createActor({
       ...actor,
       isTemplate: false,
-      name: predicate + counts,
-      id: undefined,
-      //@ts-ignore
-      _id: undefined
+      name: predicate + counts
     });
-
-    this.actors.push(newactor);
 
     return newactor;
   }
@@ -115,7 +121,7 @@ class ServiceActor {
       return v;
     });
 
-    return this.get(actor.id);
+    return (await this.get(actor.id)) || updatedActor;
   }
   async removeImage(id: number, imageId: number): Promise<ModelActor> {
     let actor = await this.get(id);
@@ -126,16 +132,15 @@ class ServiceActor {
     return actor;
   }
   async getFreeActorIds(): Promise<number[]> {
-    const actors = await this.getAll();
+    const actors = await this.getAll().then(v => v.filter(v => !v.isTemplate));
     const res = [];
 
     for (let actor of actors) {
       const instancesForActor = await ServiceInstance.init().then(v =>
         v.getForActor(actor.id)
       );
-      if (instancesForActor.length) res.push(actor.id);
+      if (!instancesForActor.length) res.push(actor.id);
     }
-    console.log(res);
 
     return res;
   }
