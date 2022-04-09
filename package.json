@@ -11,7 +11,7 @@
     "@types/node": "12.0.3",
     "@types/react-router-dom": "4.3.3",
     "clsx": "1.0.4",
-    "moment": "2.24.0",
+    "moment": "2.29.2",
     "mongodb-stitch-browser-sdk": "^4.8.0",
     "panzoom": "8.1.2",
     "react": "16.8.4",
